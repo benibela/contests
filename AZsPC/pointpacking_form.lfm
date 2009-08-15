@@ -1,0 +1,155 @@
+object Form1: TForm1
+  Left = 293
+  Height = 406
+  Top = 181
+  Width = 670
+  Caption = 'Form1'
+  ClientHeight = 406
+  ClientWidth = 670
+  OnCreate = FormCreate
+  LCLVersion = '0.9.27'
+  object PaintBox1: TPaintBox
+    Left = 0
+    Height = 406
+    Top = 0
+    Width = 404
+    Align = alClient
+    OnMouseUp = PaintBox1MouseUp
+    OnPaint = PaintBox1Paint
+  end
+  object Panel1: TPanel
+    Left = 404
+    Height = 406
+    Top = 0
+    Width = 266
+    Align = alRight
+    Caption = 'Panel1'
+    ClientHeight = 406
+    ClientWidth = 266
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 9
+      Height = 14
+      Top = 8
+      Width = 50
+      Caption = 'circel size:'
+      ParentColor = False
+    end
+    object sizelabel: TLabel
+      Left = 84
+      Height = 14
+      Top = 26
+      Width = 41
+      Caption = 'sizelabel'
+      ParentColor = False
+    end
+    object Label2: TLabel
+      Left = 9
+      Height = 14
+      Top = 26
+      Width = 66
+      Caption = 'circel area/pi:'
+      ParentColor = False
+    end
+    object radlabel: TLabel
+      Left = 84
+      Height = 14
+      Top = 8
+      Width = 39
+      Caption = 'radlabel'
+      ParentColor = False
+    end
+    object Memo1: TMemo
+      Left = 1
+      Height = 229
+      Top = 176
+      Width = 264
+      Align = alBottom
+      Lines.Strings = (
+        'Memo1'
+      )
+      TabOrder = 0
+      WordWrap = False
+    end
+    object Button2: TButton
+      Left = 10
+      Height = 25
+      Top = 144
+      Width = 33
+      Caption = '>>'
+      OnClick = Button2Click
+      TabOrder = 1
+    end
+    object drawcheck: TCheckBox
+      Left = 10
+      Height = 17
+      Top = 122
+      Width = 72
+      Caption = 'draw check'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
+    object Button3: TButton
+      Left = 21
+      Height = 25
+      Top = 55
+      Width = 75
+      Caption = 'gen:'
+      OnClick = Button3Click
+      TabOrder = 3
+    end
+    object Edit1: TEdit
+      Left = 100
+      Height = 23
+      Top = 57
+      Width = 34
+      TabOrder = 4
+      Text = '4'
+    end
+    object Edit2: TEdit
+      Left = 140
+      Height = 23
+      Top = 56
+      Width = 39
+      TabOrder = 5
+      Text = '5'
+    end
+    object Button4: TButton
+      Left = 44
+      Height = 25
+      Top = 144
+      Width = 31
+      Caption = '<<'
+      OnClick = Button4Click
+      TabOrder = 6
+    end
+    object Button5: TButton
+      Left = 116
+      Height = 25
+      Top = 144
+      Width = 75
+      Caption = 'choose best'
+      OnClick = Button5Click
+      TabOrder = 7
+    end
+    object Button1: TButton
+      Left = 21
+      Height = 25
+      Top = 80
+      Width = 75
+      Caption = 'extend'
+      OnClick = Button1Click
+      TabOrder = 8
+    end
+    object Button6: TButton
+      Left = 194
+      Height = 25
+      Top = 144
+      Width = 29
+      Caption = '(..;'
+      OnClick = Button6Click
+      TabOrder = 9
+    end
+  end
+end

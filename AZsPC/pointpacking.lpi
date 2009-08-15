@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="7"/>
+    <General>
+      <Flags>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <AlwaysBuild Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <TargetFileExt Value=".exe"/>
+      <Icon Value="0"/>
+      <UseXPManifest Value="True"/>
+      <ActiveEditorIndexAtStart Value="1"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="13">
+      <Unit0>
+        <Filename Value="pointpacking.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="pointpacking"/>
+        <CursorPos X="1" Y="54"/>
+        <TopLine Value="28"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="49"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\..\..\components\pascal\data\bbutils.pas"/>
+        <UnitName Value="bbutils"/>
+        <CursorPos X="21" Y="989"/>
+        <TopLine Value="975"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\win32\classes.pp"/>
+        <UnitName Value="Classes"/>
+        <CursorPos X="59" Y="44"/>
+        <TopLine Value="27"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\fgl.pp"/>
+        <UnitName Value="fgl"/>
+        <CursorPos X="50" Y="1025"/>
+        <TopLine Value="1004"/>
+        <UsageCount Value="12"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\components\lazarus\bbutilsgeometry.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="bbutilsgeometry"/>
+        <CursorPos X="1" Y="57"/>
+        <TopLine Value="42"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="49"/>
+        <Bookmarks Count="1">
+          <Item0 X="22" Y="326" ID="8"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\inc\matrix.pp"/>
+        <UnitName Value="matrix"/>
+        <CursorPos X="1" Y="222"/>
+        <TopLine Value="222"/>
+        <EditorIndex Value="8"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\classes\classesh.inc"/>
+        <CursorPos X="15" Y="207"/>
+        <TopLine Value="194"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\classes\lists.inc"/>
+        <CursorPos X="11" Y="247"/>
+        <TopLine Value="245"/>
+        <UsageCount Value="7"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\inc\heaph.inc"/>
+        <CursorPos X="10" Y="94"/>
+        <TopLine Value="79"/>
+        <UsageCount Value="12"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\objpas.pp"/>
+        <UnitName Value="objpas"/>
+        <CursorPos X="8" Y="36"/>
+        <TopLine Value="23"/>
+        <UsageCount Value="9"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="pointpacking_form.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="pointpacking_form"/>
+        <CursorPos X="54" Y="373"/>
+        <TopLine Value="354"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="31"/>
+        <Bookmarks Count="3">
+          <Item0 X="1" Y="61" ID="1"/>
+          <Item1 X="3" Y="122" ID="2"/>
+          <Item2 X="52" Y="335" ID="3"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\math.pp"/>
+        <UnitName Value="math"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="pointpacking.solutions.txt"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="44" Y="45"/>
+        <TopLine Value="34"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="None"/>
+      </Unit12>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="273" Column="44" TopLine="260"/>
+      </Position1>
+      <Position2>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="16" Column="22" TopLine="16"/>
+      </Position2>
+      <Position3>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="125" Column="5" TopLine="97"/>
+      </Position3>
+      <Position4>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="170" Column="18" TopLine="165"/>
+      </Position4>
+      <Position5>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="178" Column="8" TopLine="165"/>
+      </Position5>
+      <Position6>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="171" Column="18" TopLine="164"/>
+      </Position6>
+      <Position7>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="177" Column="11" TopLine="164"/>
+      </Position7>
+      <Position8>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="215" Column="22" TopLine="197"/>
+      </Position8>
+      <Position9>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="136" Column="1" TopLine="128"/>
+      </Position9>
+      <Position10>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="173" Column="18" TopLine="173"/>
+      </Position10>
+      <Position11>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="174" Column="18" TopLine="174"/>
+      </Position11>
+      <Position12>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="187" Column="3" TopLine="179"/>
+      </Position12>
+      <Position13>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="175" Column="19" TopLine="175"/>
+      </Position13>
+      <Position14>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="176" Column="19" TopLine="176"/>
+      </Position14>
+      <Position15>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="196" Column="7" TopLine="179"/>
+      </Position15>
+      <Position16>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="177" Column="18" TopLine="177"/>
+      </Position16>
+      <Position17>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="198" Column="11" TopLine="183"/>
+      </Position17>
+      <Position18>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="203" Column="11" TopLine="189"/>
+      </Position18>
+      <Position19>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="178" Column="19" TopLine="178"/>
+      </Position19>
+      <Position20>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="204" Column="10" TopLine="189"/>
+      </Position20>
+      <Position21>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="217" Column="20" TopLine="197"/>
+      </Position21>
+      <Position22>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="125" Column="18" TopLine="123"/>
+      </Position22>
+      <Position23>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="140" Column="96" TopLine="123"/>
+      </Position23>
+      <Position24>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="131" Column="11" TopLine="116"/>
+      </Position24>
+      <Position25>
+        <Filename Value="pointpacking.solutions.txt"/>
+        <Caret Line="12" Column="48" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="130" Column="59" TopLine="119"/>
+      </Position26>
+      <Position27>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="37" Column="45" TopLine="21"/>
+      </Position27>
+      <Position28>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="372" Column="20" TopLine="352"/>
+      </Position28>
+      <Position29>
+        <Filename Value="pointpacking.solutions.txt"/>
+        <Caret Line="3" Column="17" TopLine="1"/>
+      </Position29>
+      <Position30>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="373" Column="20" TopLine="353"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="8"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)\"/>
+      <OtherUnitFiles Value="U:\components\pascal\data\;U:\components\pascal\internet\;U:\components\pascal\import\regexpr\Source\;U:\components\pascal\system\;U:\components\lazarus\"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
