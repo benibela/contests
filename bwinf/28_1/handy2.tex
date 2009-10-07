@@ -1,0 +1,326 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{algorithmic}
+\usepackage{fancyvrb}
+%Quick & Dirty:
+\setlength{\parskip}{0.5cm}
+\setlength{\parindent}{0cm}
+\begin{document}
+\section{Kostenberechnung}
+Da in der Aufgabenstellung verlangt wird, dass die ">Zahl von Tastendrücken durchschnittlich minimal"< sein soll, macht es eigentlich nur Sinn für die Kosten den Erwartungswert der Zahl der gedrückten Tasten zu nehmen.
+
+Dieser Erwartungswert ist einfach für jeden Buchstaben die Wahrscheinlichkeit seines Vorkommens multipliziert mit seiner Position auf der Taste. Formuliert man dies, weil's so schön ist, mathematisch, so erhält man:
+
+Die Eingabe sei gegeben durch: Sei $N$ die Zahl der Buchstaben (also 26 in unserem Fall) und $K$ die Zahl der Tasten (=8). Außerdem sei für jeden Buchstaben $i$ mit $1 \leq i \leq N$ eine relative Häufigkeit $h_i$ gegeben.
+
+Für die Lösung gibt es verschiedene Darstellung, eine ist:
+
+Für jeden Buchstaben $i$ mit $1\leq i \leq N$ sei $b_i$ die Position auf der jeweiligen Taste. Da die Buchstaben alphabetisch sortiert sein sollen, muss der erste Buchstabe offensichtlich der erste auf der ersten Taste sein und jeder nachfolgende Buchstabe liegt entweder eine Position weiter auf dieser Taste oder auf der nächsten (übersprungene Tasten können vernachlässigt werden, da sie in einer optimalen Lösung nicht vorkommen). Damit lässt sich $b$ definieren als:
+\[b_1 = 1\]
+\[b_{i+1} = \begin{cases}
+b_{i} + 1 & \text{wenn $b_i$ und $b_{i+1}$ auf derselben Taste sind}\\
+1 & \text{wenn $b_i$ und $b_{i+1}$ auf unterschiedlichen Tasten sind}
+\end{cases}\]
+
+Da es zudem nur endlich viele Tasten gibt und alle verwendet werden sollen, gilt zudem die Einschränkung:
+\[|\{i | b_i = 1\}| = K\]
+
+Der Vorteil dieser Darstellung gegenüber den anderen ist, dass man die beiden Folgen $b$ und $h$ nun als $N$ -dimensionale Vektoren auffassen kann, wodurch sich der Erwartungswert einfach als Skalarprodukt $\vec{h}\cdot\vec{b}$ ergibt. (man kann den Normierungsfaktor $1/||\vec{h}||_1$ der Summe der relativen Häufigkeiten (100000 bei den Eingabedaten von bwinf.de) ignorieren, da er vom gesuchten $b$ unabhängig ist.)
+
+
+Eine andere Darstellung ist es für jede Taste $i$ mit $1\leq i\leq K$ anzugeben, welches der erste Buchstabe $k_i$ auf ihr ist. Für diese $k_i$ gilt, da die Buchstaben alphabetisch sortiert sind und nur einmal vorkommen:
+\[k_1 = 1\]
+\[ 1 \leq k_i < k_j \leq N \qquad \text{ für }1 \leq i < j \leq K \]
+
+
+Dann ist der Erwartungswert die Summe der Erwartungswerte der Buchstaben auf jeder Taste, also: (es gelte $k_{K+1}=N+1$ zur Vereinfachung der Notation)
+\[\sum\limits_{i=1}^{K}\sum\limits_{j=k_i}^{k_{i+1}-1}(j-k_i+1)\cdot h_j\]
+\[=\sum\limits_{i=1}^{N}(i+1)\cdot h_i - \sum\limits_{i=1}^{K}\sum\limits_{j=k_i}^{k_{i+1}-1}k_i\cdot h_j\]
+\[=\sum\limits_{i=1}^{N}(i+1)\cdot h_i - \sum\limits_{i=1}^{K}k_i\sum\limits_{j=k_i}^{k_{i+1}-1} h_j\]
+Da der erste Term konstant ist, sind die Kosten somit:
+\[\simeq- \sum\limits_{i=1}^{K}k_i\sum\limits_{j=k_i}^{k_{i+1}-1} h_j\]
+
+Setzt man $\alpha_i = \sum\limits_{j=k_i}^{k_{i+1}-1} h_j$ die Wahrscheinlichkeit (wieder wird der Faktor $1/100000$ ignoriert), dass einer Buchstaben auf Taste $i$ gedrückt werden muss, so muss eine optimale Belegung also $- \sum\limits_{i=1}^{K}k_i\alpha_i$ minimieren. (bzw. den Absolutbetrag maximieren)
+
+Man kann dies auch wieder als Skalarprodukt $-\vec{k}\cdot\vec{\alpha}$ schreiben, was aber im Gegensatz zum Skalarprodukt $\vec{h}\cdot\vec{b}$ (mir zumindest) nicht intuitiv verständlich ist, da $\alpha$ ja von $k$ abhängt. Vielleicht deutet es daraufhin, dass die Wahl der Belegung von späteren Tasten (wo $k_i$ besonders groß ist) wichtiger ist, als die Belegung der ersten Tasten (wo $k_i$ kleiner ist), da man dort  am Anfang sowieso weniger Wahlmöglichkeiten hat. (für die erste Taste ist $k_1=1$ fest, für die zweite Taste muss man im Alphabet früh vorkommende Buchstaben wählen, damit für die restlichen Tasten Buchstaben ">übrig"< bleiben,...)
+Oder aber es bedeutet (wenn man die $\alpha_i$ als ungefähr gleich verteilt betrachtet), dass man möglichst viele Buchstaben auf spätere Tasten legen soll.
+
+Man kann auch eine weitere Darstellung als Variante der obrigen $k$ angeben, indem man für jede Taste $1 \leq i \leq K$ die Zahl der darauf liegenden Buchstaben $d_i$ angibt. Dann gelten die einfachen Beziehung $d_i = k_{i+1} - k_{i}$ und $k_i = 1+\sum\limits_{j=1}^{i-1}d_j$
+
+In dieser Darstellung scheint es für die Berechnung des Erwartungswertes am einfachsten die $d$s in $k$s umzurechnen. Man kann aber eine Matrix $M\in \mathbb{N}^{K\times N}$ für die Berechnung des Vektors $\vec{\alpha}$ definieren:
+
+\[
+M = \left(\begin{matrix}
+\overbrace{1\quad\ldots\quad 1}^{d_1}& \\
+&\overbrace{1\quad\ldots\quad 1}^{d_2}& \\
+&&\overbrace{1\quad\ldots\quad 1}^{d_3}& \\
+&&&\ddots&\\
+&&&&\overbrace{1\quad\ldots\quad 1}^{d_K}
+\end{matrix}\right)\]
+
+Dann gilt $\vec{\alpha}=M\vec{h}$.
+
+
+Die beiden Buchstaben/Tasten-Darstellungen sind durch folgende Gleichung verbunden:
+\[k_i + b_j - 1 = j \qquad \text{ falls Buchstabe $j$ auf Taste $i$ liegt}\]
+Beziehungsweise:
+\[k_i + b_j - 1 = j < k_{i+1} \wedge 1 \leq i \leq K \wedge 1 \leq i \leq N\]
+
+
+Eine weitere Darstellung entsteht, wenn man den Buchstaben zuordnet auf welcher Taste (anstatt an welcher Position derjeweiligen Taste) sie sind. Für einen Buchstaben $1 \leq i \leq N$ auf Taste $j$ sei $t_i = j$. Dann ist der Erwartungswert (wieder ohne Normalisierung):
+\[\sum\limits_{i=1}^{N}|\{j | t_j = t_i \wedge j\leq i\}|\cdot h_i\]
+Es gilt bei dieser Darstellung offensichtlich $b_i = |\{j | t_j = t_i \wedge j\leq i\}|$ und $d_i = |\{j|t_j=i\}|$.
+
+Eine weitere Darstellung erhält man, wenn man feststellt, dass sich die Folge $b_i$ vollständig dadurch bestimmen lässt, dass man angibt, welche Buchstaben die ersten auf ihren jeweiligen Tasten sind, also durch die Menge $E=\{i|b_i=1\}$ mit $|E| = K$. 
+
+Daraus folgt keine einfache Formel für den Erwartungswert allerdings kann man leicht berechnen, wie viele $K$-elementigen Teilmengen von $\{1,\ldots,N\}$ existieren: Es gibt genau $\binom{N}{K}$.
+Auf Grund der alphabetischen Sortierung muss aber $1 \in E$ sein, also gibt es sogar nur $\binom{N-1}{K-1}$.
+
+Da die Teilnehmer voraussichtlich keinen mathematischen Formalismus verwenden werden, sollte aber für informale Beschreibungen kein Punktabzug erfolgen.
+
+\section{Berechnung}
+Da es nur $\binom{N-1}{K-1} = 1 081 575$ mögliche Zuordnungen gibt, kann man prinzipiell alle Kombination mit Brute-Force durchprobieren, jeweils die Kosten berechnen und die bestmögliche Zuordnung finden.
+
+
+Es gibt aber auch ein DP-Verfahren, dass die Lösung in $O(N^2K)$ findet:
+Dazu wählt man die oben beschriebene $k$-Darstellung und beobachtet, dass in der Kostenformel $- \sum\limits_{i=1}^{K}k_i\sum\limits_{j=k_i}^{k_{i+1}-1} h_j$ die summierten Terme nicht von früheren $k_i$ abhängen und man somit das Optimum für jedes Suffix der Buchstaben $1\ldots N$ und für jedes Suffix der Tasten $1\ldots K$ berechnen. 
+
+Mathematisch: Ist $k_l = k'_l$ und $k_{l+1}=k'_{l+1}$, so gilt $- \sum\limits_{i=l}^{K}k_i\sum\limits_{j=k_i}^{k_{i+1}-1} h_j < - \sum\limits_{i=l}^{K}k'_i\sum\limits_{j=k'_i}^{k'_{i+1}-1} h_j$ genau dann, wenn gilt $- \sum\limits_{i=l+1}^{K}k_i\sum\limits_{j=k_i}^{k_{i+1}-1} h_j < - \sum\limits_{i=l+1}^{K}k'_i\sum\limits_{j=k'_i}^{k'_{i+1}-1} h_j$.
+
+Man kann also einfach eine Tabelle erstellen, in der man für jede Taste $i$ und jeden Buchstaben $j$ speichert, wie die optimalen Kosten  wären, wenn es weder frühere Tasten noch frühere Buchstaben gäbe. Für ein solches Paar $(i,j)$ berechnet man diese Kosten, indem man für jeden späteren Buchstaben $l$ die Kosten berechnet, die entstehen, wenn $l$ der erste Buchstabe auf der Taste $i+1$ wäre, und davon das Minimum wählt.
+
+\begin{figure}[h]
+\begin{algorithmic}[1]
+\FOR{$j = 1$ to $N$}
+\STATE $COSTS[K][j] \gets \left(- j\sum\limits_{l=j}^{N} h_l\right)$
+\ENDFOR
+\FOR{$i = K-1$ to $1$}
+\FOR{$j = 1$ to $N$}
+\STATE $COSTS[i][j] \gets \min\left\lbrace\left.COSTS[i+1][l] -  \left(j\sum\limits_{m=j}^{l-1} h_m\right)\right|l>j\right\rbrace$
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{figure}
+
+Damit erhält man die Kosten der optimalen Belegung, die Belegung selbst erhält man, indem man zum Minimum noch den Index des minimalen Elementes speichert.
+
+
+\section{Erweiterungen}
+Man könnte zusätzlich zum Erwartungswert der Zahl der gedrückten Tasten noch berücksichtigen, noch die Varianz berücksichtigen. Sonst könnte man im Extremfall mit einer Verteilung enden, bei der man die häufigsten Buchstaben mit einem Tastendrücken erreicht, aber für manche Buchstaben die Taste achtzehnmal drücken muss.
+
+Oder man könnte nach jedem Tastendruck die Tastatur ändern um auch die Häufigkeit von Digrammen zu berücksichtigen. (oder Trigrammen, etc. womit man aber wider zum T9 wird)
+
+Oder man ermöglicht zusätzlich eine nicht alphabetische Anordnung der Buchstaben auf den Tasten. (dieses Fall lässt sich allerdings mit einem einfachen Greedy-Verfahren lösen)
+
+
+\section{Lösungen}
+\newenvironment{lansol}[2]{\begin{minipage}{5cm}#1:#2 }{\end{minipage}}
+
+\begin{lansol}{Deutsch}{158780}
+\begin{verbatim}
+AB
+CD
+EFG
+HIJK
+LM
+NOPQ
+RS
+TUVWXYZ
+\end{verbatim}
+\end{lansol}
+\begin{lansol}{Englisch}{164682}
+\begin{verbatim}
+AB
+CD
+EFG
+HIJK
+LM
+NOPQ
+RS
+TUVWXYZ
+\end{verbatim}
+\end{lansol}
+\begin{lansol}{Finnisch}{154931}
+\begin{verbatim}
+ABCD
+EFGH
+IJ
+KLM
+NOPQ
+RS
+TUVWX
+YZ
+\end{verbatim}
+\end{lansol}
+\begin{lansol}{Französisch}{150573}
+\begin{verbatim}
+AB
+CD
+EFGH
+IJK
+LM
+NOPQ
+RS
+TUVWXYZ
+\end{verbatim}
+\end{lansol}
+\begin{lansol}{Italienisch}{148640}
+\begin{verbatim}
+AB
+CD
+EFGH
+IJK
+LM
+NOPQ
+RS
+TUVWXYZ
+\end{verbatim}
+\end{lansol}
+\begin{lansol}{Spanisch}{154210}
+\begin{verbatim}
+AB
+CD
+EFGH
+IJK
+LM
+NOPQ
+RS
+TUVWXYZ
+\end{verbatim}
+\end{lansol}
+\begin{lansol}{Polnisch}{178678}
+\begin{verbatim}
+ABCD
+EFGH
+IJ
+KLM
+NOPQ
+RSTUV
+WX
+YZ
+\end{verbatim}
+\end{lansol}
+
+Man kann also damit auch verwandte Sprachen erkennen.
+
+\section{Programme}
+
+Bruteforce:
+\begin{Verbatim}[numbers=left]
+program bruteforce;
+const n=26;
+      k=8;
+var s:longint;
+	i,j,b,l,m,c,bestc:longint;
+	fkey,curpos:longint;
+	h:array[1..n] of longint;
+	bests:array[1..100] of longint;
+	bestsc:longint;
+begin
+	for i:=1 to n do
+		readln(h[i]);
+	bestc:=26000000;
+	for s:=1 shl k -1 to 1 shl n - 1 do begin
+		c:=0;
+		fkey:=1;
+		curpos:=0;
+		for i:=1 to n do 
+			if s and (1 shl (i-1)) <> 0 then begin
+				fkey+=1;
+				curpos:=1;
+				c+=curpos*h[i];
+				if fkey>k then 
+					break;
+			end else begin
+				curpos+=1;
+				c+=curpos*h[i];
+			end;
+		if fkey<>k then continue;
+		if c<bestc then begin
+			bestc:=c;
+			bests[1]:=s;
+			bestsc:=1;
+		end else if c=bestc then begin
+			bests[bestsc+1]:=s;
+			bestsc+=1;
+		end;
+	end;
+	writeln('Best: ',bestc);
+	writeln();
+	for j:=1 to bestsc do begin
+		for i:=1 to n do
+			if bests[j] and (1 shl (i-1)) <> 0 then begin
+				writeln();
+				write(i);
+			end else 
+				write(' ',i);
+		writeln();
+		writeln();
+		for i:=1 to n do
+			if bests[j] and (1 shl (i-1)) <> 0 then begin
+				writeln();
+				write(chr(ord('A')+i-1));
+			end else 
+				write(chr(ord('A')+i-1));
+		writeln();
+		writeln();
+		writeln();
+	end;
+end.
+\end{Verbatim}
+
+Dynamische Programmierung:
+
+\begin{Verbatim}[numbers=left]
+program dp;
+const n=26;
+      k=8;
+var s:longint;
+	cur,i,j,b,l,m,c,bestc:longint;
+	fkey,curpos:longint;
+	h:array[1..n] of longint;
+	costs:array[1..K,1..N] of longint;
+	choosen:array[1..k,1..n]of longint;
+	bestsc:longint;
+begin
+	for i:=1 to n do
+		readln(h[i]);
+	bestc:=26000000;
+	for j:=1 to n do begin
+		costs[k][j]:=0;
+		for l:=j to n do 
+			costs[k][j]-=j*h[l];
+		choosen[k][j]:=27;
+	end;
+	for i:=k-1 downto 1 do begin
+		for j:=1 to n do begin
+			costs[i][j]:=0;
+			for l:=j+1 to n do begin
+				c:=costs[i+1][l];
+				for m:=j to l-1 do 
+					c-=j*h[m];
+				if c<=costs[i][j] then begin
+					costs[i][j]:=c;
+					choosen[i][j]:=l;
+				end;
+			end;
+		end;
+	end;
+	writeln('(base)COSTS:',costs[1][1]);
+	for i:=1 to n do
+		costs[1][1]+=(i+1)*h[i];
+	writeln('COSTS:',costs[1][1]);
+	cur:=1;
+	for i:=1 to k do begin
+		for j:=cur to choosen[i][cur]-1 do 
+			write(chr(ord('A')+j-1));
+		writeln();
+		cur:=choosen[i][cur];
+	end;
+end.
+\end{Verbatim}
+\end{document}
