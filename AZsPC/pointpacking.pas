@@ -3,7 +3,7 @@ program pointpacking;
 {$mode objfpc}{$H+}
 
 uses    Interfaces, forms, LResources,
-  Classes, SysUtils,bbutils,math, bbutilsgeometry, pointpacking_form;
+  Classes, SysUtils,pointpacking_form;
   {
 
 var a:tpointarray;

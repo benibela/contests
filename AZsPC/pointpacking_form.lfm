@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 293
+  Left = 235
   Height = 406
-  Top = 181
+  Top = 175
   Width = 670
   Caption = 'Form1'
   ClientHeight = 406
@@ -14,6 +14,9 @@ object Form1: TForm1
     Top = 0
     Width = 404
     Align = alClient
+    ParentShowHint = False
+    ShowHint = True
+    OnMouseMove = PaintBox1MouseMove
     OnMouseUp = PaintBox1MouseUp
     OnPaint = PaintBox1Paint
   end
@@ -30,7 +33,7 @@ object Form1: TForm1
     object Label1: TLabel
       Left = 9
       Height = 14
-      Top = 8
+      Top = 22
       Width = 50
       Caption = 'circel size:'
       ParentColor = False
@@ -38,7 +41,7 @@ object Form1: TForm1
     object sizelabel: TLabel
       Left = 84
       Height = 14
-      Top = 26
+      Top = 40
       Width = 41
       Caption = 'sizelabel'
       ParentColor = False
@@ -46,7 +49,7 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 9
       Height = 14
-      Top = 26
+      Top = 40
       Width = 66
       Caption = 'circel area/pi:'
       ParentColor = False
@@ -54,15 +57,39 @@ object Form1: TForm1
     object radlabel: TLabel
       Left = 84
       Height = 14
-      Top = 8
+      Top = 22
       Width = 39
       Caption = 'radlabel'
       ParentColor = False
     end
+    object Label3: TLabel
+      Left = 33
+      Height = 14
+      Top = 56
+      Width = 32
+      Caption = 'Label3'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      Left = 8
+      Height = 14
+      Top = 7
+      Width = 34
+      Caption = 'points:'
+      ParentColor = False
+    end
+    object pointlengthlabel: TLabel
+      Left = 83
+      Height = 14
+      Top = 7
+      Width = 77
+      Caption = 'pointlengthlabel'
+      ParentColor = False
+    end
     object Memo1: TMemo
       Left = 1
-      Height = 229
-      Top = 176
+      Height = 205
+      Top = 200
       Width = 264
       Align = alBottom
       Lines.Strings = (
@@ -74,7 +101,7 @@ object Form1: TForm1
     object Button2: TButton
       Left = 10
       Height = 25
-      Top = 144
+      Top = 158
       Width = 33
       Caption = '>>'
       OnClick = Button2Click
@@ -83,73 +110,151 @@ object Form1: TForm1
     object drawcheck: TCheckBox
       Left = 10
       Height = 17
-      Top = 122
+      Top = 136
       Width = 72
       Caption = 'draw check'
       Checked = True
       State = cbChecked
       TabOrder = 2
     end
-    object Button3: TButton
-      Left = 21
-      Height = 25
-      Top = 55
-      Width = 75
-      Caption = 'gen:'
-      OnClick = Button3Click
-      TabOrder = 3
-    end
     object Edit1: TEdit
-      Left = 100
+      Left = 132
       Height = 23
-      Top = 57
+      Top = 56
       Width = 34
-      TabOrder = 4
+      TabOrder = 3
       Text = '4'
     end
     object Edit2: TEdit
-      Left = 140
+      Left = 172
       Height = 23
       Top = 56
       Width = 39
-      TabOrder = 5
+      TabOrder = 4
       Text = '5'
     end
     object Button4: TButton
       Left = 44
       Height = 25
-      Top = 144
+      Top = 158
       Width = 31
       Caption = '<<'
       OnClick = Button4Click
-      TabOrder = 6
+      TabOrder = 5
     end
-    object Button5: TButton
+    object btnchoosebest: TButton
       Left = 116
       Height = 25
-      Top = 144
+      Top = 158
       Width = 75
       Caption = 'choose best'
-      OnClick = Button5Click
-      TabOrder = 7
+      OnClick = btnchoosebestClick
+      TabOrder = 6
     end
     object Button1: TButton
       Left = 21
       Height = 25
-      Top = 80
-      Width = 75
+      Top = 102
+      Width = 43
       Caption = 'extend'
       OnClick = Button1Click
-      TabOrder = 8
+      TabOrder = 7
     end
     object Button6: TButton
       Left = 194
       Height = 25
-      Top = 144
+      Top = 158
       Width = 29
       Caption = '(..;'
       OnClick = Button6Click
+      TabOrder = 8
+    end
+    object Button8: TButton
+      Left = 183
+      Height = 25
+      Top = 19
+      Width = 75
+      Caption = 'test sth.'
+      OnClick = Button8Click
       TabOrder = 9
+    end
+    object Button9: TButton
+      Left = 188
+      Height = 25
+      Top = 184
+      Width = 75
+      Caption = 'Button9'
+      OnClick = Button9Click
+      TabOrder = 10
+    end
+    object Edit3: TEdit
+      Left = 68
+      Height = 23
+      Top = 71
+      Width = 18
+      TabOrder = 11
+      Text = '3'
+    end
+    object btnextend2: TButton
+      Left = 66
+      Height = 25
+      Top = 102
+      Width = 46
+      Caption = 'extend 2'
+      OnClick = btnextend2Click
+      TabOrder = 12
+    end
+    object Button10: TButton
+      Left = 180
+      Height = 25
+      Top = 102
+      Width = 47
+      Caption = 'all'
+      OnClick = Button10Click
+      TabOrder = 13
+    end
+    object Edit4: TEdit
+      Left = 84
+      Height = 23
+      Top = 80
+      Width = 88
+      TabOrder = 14
+      Text = '0'
+    end
+    object Button5: TButton
+      Left = 116
+      Height = 25
+      Top = 102
+      Width = 43
+      Caption = 'extend3'
+      OnClick = Button5Click
+      TabOrder = 15
+    end
+    object Edit5: TEdit
+      Left = 183
+      Height = 23
+      Top = 80
+      Width = 30
+      TabOrder = 16
+      Text = '512'
+    end
+    object Button3: TButton
+      Left = 22
+      Height = 25
+      Top = 71
+      Width = 35
+      Caption = 'gen'
+      OnClick = Button3Click
+      TabOrder = 17
+    end
+    object Button7: TButton
+      Left = 129
+      Height = 25
+      Top = 128
+      Width = 75
+      Caption = 'monte'
+      OnClick = Button7Click
+      TabOrder = 18
     end
   end
 end

@@ -37,52 +37,48 @@
         <MinVersion Major="1" Valid="True"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="14">
       <Unit0>
         <Filename Value="pointpacking.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="pointpacking"/>
-        <CursorPos X="1" Y="54"/>
-        <TopLine Value="28"/>
+        <CursorPos X="70" Y="7"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="113"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\..\..\components\pascal\data\bbutils.pas"/>
         <UnitName Value="bbutils"/>
-        <CursorPos X="21" Y="989"/>
-        <TopLine Value="975"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="24"/>
-        <Loaded Value="True"/>
+        <CursorPos X="11" Y="36"/>
+        <TopLine Value="34"/>
+        <UsageCount Value="20"/>
       </Unit1>
       <Unit2>
         <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\win32\classes.pp"/>
         <UnitName Value="Classes"/>
-        <CursorPos X="59" Y="44"/>
-        <TopLine Value="27"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="24"/>
-        <Loaded Value="True"/>
+        <CursorPos X="56" Y="22"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="29"/>
       </Unit2>
       <Unit3>
         <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\fgl.pp"/>
         <UnitName Value="fgl"/>
         <CursorPos X="50" Y="1025"/>
         <TopLine Value="1004"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="5"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\components\lazarus\bbutilsgeometry.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="bbutilsgeometry"/>
-        <CursorPos X="1" Y="57"/>
-        <TopLine Value="42"/>
-        <EditorIndex Value="5"/>
-        <UsageCount Value="49"/>
+        <CursorPos X="1" Y="113"/>
+        <TopLine Value="100"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="113"/>
         <Bookmarks Count="1">
-          <Item0 X="22" Y="326" ID="8"/>
+          <Item0 X="22" Y="352" ID="8"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit4>
@@ -91,36 +87,36 @@
         <UnitName Value="matrix"/>
         <CursorPos X="1" Y="222"/>
         <TopLine Value="222"/>
-        <EditorIndex Value="8"/>
-        <UsageCount Value="24"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="54"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\classes\classesh.inc"/>
         <CursorPos X="15" Y="207"/>
         <TopLine Value="194"/>
-        <EditorIndex Value="7"/>
-        <UsageCount Value="24"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="54"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\classes\lists.inc"/>
         <CursorPos X="11" Y="247"/>
         <TopLine Value="245"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="0"/>
       </Unit7>
       <Unit8>
         <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\inc\heaph.inc"/>
         <CursorPos X="10" Y="94"/>
         <TopLine Value="79"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="5"/>
       </Unit8>
       <Unit9>
         <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\objpas.pp"/>
         <UnitName Value="objpas"/>
         <CursorPos X="8" Y="36"/>
         <TopLine Value="23"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="2"/>
       </Unit9>
       <Unit10>
         <Filename Value="pointpacking_form.pas"/>
@@ -128,157 +124,165 @@
         <ComponentName Value="Form1"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="pointpacking_form"/>
-        <CursorPos X="54" Y="373"/>
-        <TopLine Value="354"/>
+        <CursorPos X="41" Y="1052"/>
+        <TopLine Value="1031"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="31"/>
-        <Bookmarks Count="3">
-          <Item0 X="1" Y="61" ID="1"/>
-          <Item1 X="3" Y="122" ID="2"/>
-          <Item2 X="52" Y="335" ID="3"/>
+        <UsageCount Value="95"/>
+        <Bookmarks Count="4">
+          <Item0 X="1" Y="749" ID="1"/>
+          <Item1 X="35" Y="1046" ID="2"/>
+          <Item2 X="11" Y="1134" ID="3"/>
+          <Item3 X="20" Y="1069" ID="4"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\objpas\math.pp"/>
         <UnitName Value="math"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="6"/>
-        <UsageCount Value="14"/>
+        <CursorPos X="1" Y="131"/>
+        <TopLine Value="108"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="44"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="pointpacking.solutions.txt"/>
-        <IsPartOfProject Value="True"/>
-        <CursorPos X="44" Y="45"/>
-        <TopLine Value="34"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="25"/>
+        <CursorPos X="31" Y="13"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="68"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="None"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="P:\programming\lazarus\lcl\include\control.inc"/>
+        <CursorPos X="23" Y="2268"/>
+        <TopLine Value="2253"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit13>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="273" Column="44" TopLine="260"/>
+        <Caret Line="1042" Column="32" TopLine="1030"/>
       </Position1>
       <Position2>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="16" Column="22" TopLine="16"/>
+        <Caret Line="1043" Column="1" TopLine="1031"/>
       </Position2>
       <Position3>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="125" Column="5" TopLine="97"/>
+        <Caret Line="1044" Column="1" TopLine="1032"/>
       </Position3>
       <Position4>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="170" Column="18" TopLine="165"/>
+        <Caret Line="1054" Column="13" TopLine="1033"/>
       </Position4>
       <Position5>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="178" Column="8" TopLine="165"/>
+        <Caret Line="1042" Column="1" TopLine="1030"/>
       </Position5>
       <Position6>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="171" Column="18" TopLine="164"/>
+        <Caret Line="1047" Column="38" TopLine="1036"/>
       </Position6>
       <Position7>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="177" Column="11" TopLine="164"/>
+        <Caret Line="1049" Column="1" TopLine="1037"/>
       </Position7>
       <Position8>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="215" Column="22" TopLine="197"/>
+        <Caret Line="1050" Column="1" TopLine="1038"/>
       </Position8>
       <Position9>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="136" Column="1" TopLine="128"/>
+        <Caret Line="1051" Column="1" TopLine="1039"/>
       </Position9>
       <Position10>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="173" Column="18" TopLine="173"/>
+        <Caret Line="1143" Column="1" TopLine="1131"/>
       </Position10>
       <Position11>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="174" Column="18" TopLine="174"/>
+        <Caret Line="1146" Column="23" TopLine="1132"/>
       </Position11>
       <Position12>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="187" Column="3" TopLine="179"/>
+        <Caret Line="1048" Column="1" TopLine="1036"/>
       </Position12>
       <Position13>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="175" Column="19" TopLine="175"/>
+        <Caret Line="1042" Column="40" TopLine="1030"/>
       </Position13>
       <Position14>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="176" Column="19" TopLine="176"/>
+        <Caret Line="1043" Column="1" TopLine="1031"/>
       </Position14>
       <Position15>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="196" Column="7" TopLine="179"/>
+        <Caret Line="1044" Column="1" TopLine="1032"/>
       </Position15>
       <Position16>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="177" Column="18" TopLine="177"/>
+        <Caret Line="1049" Column="1" TopLine="1037"/>
       </Position16>
       <Position17>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="198" Column="11" TopLine="183"/>
+        <Caret Line="1050" Column="1" TopLine="1038"/>
       </Position17>
       <Position18>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="203" Column="11" TopLine="189"/>
+        <Caret Line="1051" Column="1" TopLine="1039"/>
       </Position18>
       <Position19>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="178" Column="19" TopLine="178"/>
+        <Caret Line="1143" Column="1" TopLine="1131"/>
       </Position19>
       <Position20>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="204" Column="10" TopLine="189"/>
+        <Caret Line="1049" Column="1" TopLine="1037"/>
       </Position20>
       <Position21>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="217" Column="20" TopLine="197"/>
+        <Caret Line="1050" Column="1" TopLine="1038"/>
       </Position21>
       <Position22>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="125" Column="18" TopLine="123"/>
+        <Caret Line="1049" Column="1" TopLine="1037"/>
       </Position22>
       <Position23>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="140" Column="96" TopLine="123"/>
+        <Caret Line="1042" Column="1" TopLine="1030"/>
       </Position23>
       <Position24>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="131" Column="11" TopLine="116"/>
+        <Caret Line="1054" Column="1" TopLine="1042"/>
       </Position24>
       <Position25>
-        <Filename Value="pointpacking.solutions.txt"/>
-        <Caret Line="12" Column="48" TopLine="1"/>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="1137" Column="1" TopLine="1125"/>
       </Position25>
       <Position26>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="130" Column="59" TopLine="119"/>
+        <Caret Line="1145" Column="1" TopLine="1133"/>
       </Position26>
       <Position27>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="37" Column="45" TopLine="21"/>
+        <Caret Line="1054" Column="1" TopLine="1042"/>
       </Position27>
       <Position28>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="372" Column="20" TopLine="352"/>
+        <Caret Line="1137" Column="1" TopLine="1125"/>
       </Position28>
       <Position29>
-        <Filename Value="pointpacking.solutions.txt"/>
-        <Caret Line="3" Column="17" TopLine="1"/>
+        <Filename Value="pointpacking_form.pas"/>
+        <Caret Line="1145" Column="1" TopLine="1133"/>
       </Position29>
       <Position30>
         <Filename Value="pointpacking_form.pas"/>
-        <Caret Line="373" Column="20" TopLine="353"/>
+        <Caret Line="1140" Column="1" TopLine="1128"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -294,6 +298,11 @@
         <CStyleOperator Value="False"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+    </CodeGeneration>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
