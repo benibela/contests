@@ -1,15 +1,27 @@
 program bruteforce;
-const n=26;
-      k=8;
+var n:longint=26;
+const      k=8;
 var s:longint;
 	i,j,b,l,m,c,bestc:longint;
 	fkey,curpos:longint;
-	h:array[1..n] of longint;
+	h:array[1..26] of longint;
+	i2b: array[1..26] of char;
+	cur: char;
 	bests:array[1..100] of longint;
 	bestsc:longint;
 begin
-	for i:=1 to n do
+	i:=1;
+	cur:='A';
+	while (i<=n) do begin
 		readln(h[i]);
+		if h[i]=0 then begin
+		  n-=1;
+		end else begin
+		  i2b[i]:=cur;
+		  i+=1;
+		end;
+		inc(cur);
+	end;
 	bestc:=26000000;
 	for s:=1 shl k -1 to 1 shl n - 1 do begin
 		c:=0;
@@ -50,9 +62,9 @@ begin
 		for i:=1 to n do
 			if bests[j] and (1 shl (i-1)) <> 0 then begin
 				writeln();
-				write(chr(ord('A')+i-1));
+				write(i2b[i]);
 			end else 
-				write(chr(ord('A')+i-1));
+				write(i2b[i]);
 		writeln();
 		writeln();
 		writeln();
