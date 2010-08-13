@@ -1,0 +1,468 @@
+\documentclass [12pt] {report}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\usepackage{fancyhdr}
+\usepackage{lgrind}
+\usepackage{emp} %Grafiken Metapost
+\usepackage{ifpdf} % needed by pdflatex
+\ifpdf
+   \DeclareGraphicsRule{*}{mps}{*}{}
+\fi
+
+\setlength{\headheight}{28pt}
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+\newcommand{\mN}{\mathbb{N}}
+
+\newcommand{\function}[1]{\textbf{\textrm{#1}}}
+\newcommand{\functionF}[1]{\function{#1}\marginpar{\rlap{\small{\function{#1}}}}}
+\newcommand{\keyword}[1]{\textbf{\textrm{#1}}}
+%\newcommand{\function}[1]{\K{#1}}
+\newcommand{\variable}[1]{\texttt{#1}}
+\newcommand{\type}{\variable}
+\newcommand{\component}{\variable}
+
+\title {BWInf 24.2.1 }
+\pagestyle{fancyplain}
+\lhead{BWINF 24.2.1 Museum\n Benito van der Zander}
+\rhead{\thepage}
+\fancyfoot{}
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{10pt} 
+
+\begin{document}
+\chapter{Lösungsidee}
+Die erste Aufgabe, das Einlesen und Darstellen des Museums ist simpel, es müssen bloß die Punkte in den einzelnen Zeilen eingelesen und den Polygonen zugewiesen werden. Dann muss man nur noch die Punkte auf dem Bildschirm ausgeben und miteinander verbinden. 
+
+
+ Bei der zweiten Aufgabe ist das größte Problem eine sinnvolle Modellierung für den Weg des Nachtwächters zu entwerfen. Ich habe mich dafür entschieden, diesen Weg, wie das Museum selbst, durch ein Polygon darzustellen, dessen Rand den Weg repräsentiert. Dargestellt und gespeichert kann der Weg dadurch in derselben Weise werden, wie das Museum.\n
+Eine solche Form hat die Vorteile, dass sie sehr einfach zu speichern, auszugeben und zu verarbeiten ist, vor allem wenn die nötigen Methoden bereits für das Museum geschrieben worden sind.\n
+Die Nachteile sind, dass ein Polygon den Weg wahrscheinlich nicht exakt wiedergibt, da Menschen nicht dazu neigen, zuerst eine Richtung beizubehalten und sie dann überraschend zu wechseln, sondern stattdessen in einem Bogen wenden. Eine solcher Weg mit glatten Richtungswechsel wäre realistischer durch Bezierkurven oder ähnliches simuliert. Dies würde allerdings die Berechnung der sichtbaren Bereiche unnötig verkomplizieren, da man die runden Wege ja auch durch das Hinzufügen von Ecken zu einem Polygon approximieren kann. \n
+Ein weiteres Problem ist, dass der Nachtwächter nicht immer exakt denselben Weg laufen wird, und daher möglicherweise in manchen Rundgängen Bereiche sehen kann, die er in anderen nicht sieht. Dafür ist es am sinnvollsten das Museum nicht nur in sichtbare und unsichtbare Bereiche aufzuteilen, sondern in Bereiche mit unterschiedlichen Sichtbarkeitswahrscheinlichkeiten. Ich habe mich aber zunächst dafür entschieden, ein präzises Ergebnis zu berechnen, bei dem der Nachtwächter wie ein Roboter (vielleicht ist es ja auch einer) nur auf einem exakt definierten Weg läuft. Später (das heißt am 23. April) habe ich allerdings beschlossen, probeweise einen Algorithmus mit Wahrscheinlichkeiten zu implementieren, den ich am Schluss dieses Kapitels beschreibe. Für diesen Algorithmus verwende ich als Dateiformat für den Rundgang kein Polygon, sondern ein Bitmap, in dem die Farben unterschiedliche Aufenthaltswahrscheinlichkeiten für deb Wächter angegeben. Aber das kommt alles später.
+ 
+Der eigentliche Algorithmus zur Berechnung der Sichtbarkeit läuft grob betrachtet, so ab, dass für jede Seite des Wegpolygons separat berechnet wird, welche Segmente der Seiten der anderen Polygone, der Museumspolygone, von dort aus gesehen werden können. Ein Segment wird dabei jeweils von zwei Punkten auf der jeweiligen Seite begrenzt, die von einem oder zwei Punkten auf der gewählten Seite des Wegpolygons gesehen werden können. Diese Punkte bilden dann jeweils ein Dreieck oder Viereck, dass komplett sichtbar ist.\n
+Sind diese Berechnungen abgeschlossen, ist das gesamte sichtbare Museumspolygon in eine Reihe von (sich überschneidenden) Drei/Vierecken zerlegt, die man auf der Ausgabe des Polygons hervorheben kann. Man könnte sie nun auch mit Standardalgorithmen zu einem großen Polygon zusammenfassen, aber davon habe ich abgesehen, da es eigentlich unnötig ist, wenn man die Ausgabe nicht weiter verarbeiten, sondern nur ausgeben will.\n
+Im folgenden beschreibe ich nun zuerst, wie die Berechnung der von einem Punkt aus sichtbaren Abschnitte abläuft, dann die Berechnung derselben von einer Linie aus und abschließend die Berechnung der Drei-/Vierecke aus den sichtbaren Liniensegmente.
+\newpage
+\section{Sichtbarkeit von einem Punkt aus}
+Man kann sich einen Strahl vorstellen, der von einem Punkt $P$ im Museum ausgeht und der sich, wie das Licht eines Leuchtturms, langsam um diesen Punkt dreht. Während dieser Rotation trifft er immer eine Seite des Museumspolygons (dazu zähle ich auch die Seiten der "`Löcher"'): \n
+\begin{empfile}	
+   \begin{emp}(100,100)
+     draw (0,0) withpen pencircle scaled 4bp;
+     path p[];
+     p[0]:=(-1cm,-1.5cm)--(2.5cm,-1.1cm)--(4cm,-3cm)--(4.5cm,1cm)--(-2.5cm,1cm)--cycle;
+     p[1]:=(-0.7cm,-0.5cm)--(0.1cm,-1cm)--(-0.5,-1.2cm)--cycle;
+     p[2]:=(2cm,0.7cm)--(1cm,0.2cm)--(2.7cm,-1cm)--(3cm,0.3cm)--cycle;
+     draw p[0] withpen pencircle scaled 1.25bp;
+     draw p[1] withpen pencircle scaled 1.25bp;
+     draw p[2] withpen pencircle scaled 1.25bp;
+     pair u,v;
+     for i=20 step 10 until 210:
+       if i<>20: v:=u; fi;
+       u:=(((0,0)--3cm*dir i) intersectionpoint p[0]); 
+       if i=20: v:=u; fi;
+       if i=160: v:=u; fi;
+       draw (0,0)--u withcolor .5white;
+       draw u--v withpen pencircle scaled 3bp;
+     endfor;
+     for i=220 step 10 until 270:
+       if i<>220: v:=u; fi;
+       u:=(((0,0)--3cm*dir i) intersectionpoint p[1]); 
+       if i=220: v:=u; fi;
+       draw (0,0)--u withcolor .5white;
+       draw u--v withpen pencircle scaled 3bp;
+     endfor;
+     for i=280 step 10 until 330:
+       if i<>280: v:=u; fi;
+       u:=(((0,0)--3cm*dir i) intersectionpoint p[0]); 
+       if i=280: v:=u; fi;
+       draw (0,0)--u withcolor .5white;
+       draw u--v withpen pencircle scaled 3bp;
+     endfor;
+     for i=340 step 10 until 370:
+       if i<>340: v:=u; fi;
+       u:=(((0,0)--3cm*dir i) intersectionpoint p[2]); 
+       if i=340: v:=u; fi;
+       draw (0,0)--u withcolor .5white;
+       draw u--v withpen pencircle scaled 3bp;
+     endfor;
+  \end{emp}
+
+
+Wenn diese Seiten nun lichtempfindlich sind, und sich beim Auftreffen des Strahles verfärben, entstehen nun farblich hervorgehobene Bereiche auf den Seiten. Diese hervorgehobenen Bereiche sind nun die zu berechnenden Liniensegmente. (Anmerkung: So kann man auch ohne Computer die sichtbaren Bereiche erkennen. Man streicht einfach das gesamte Museum mit einer lichtempfindlichen Farbe, gibt dem Nachtwächter eine Laterne und lässt ihn im Kreis laufen. Wenn es dann bunt genug geworden ist, braucht man auch keine moderne Kunst mehr aufzustellen. gnukremnA)\n
+Die Erzeugung der Segmente durch einen wandernden Lichtstrahl erklärt auch, warum das Dreieck das entsteht, wenn man die Endpunkte eines Segmentes mit dem Punkt $P$ verbindet, komplett sichtbar ist. Gäbe es Hindernisse innerhalb dieses Dreiecks, wäre der Strahl auf diese getroffen, und gar nicht erst bis zum Segment auf der Polygonseite gekommen.
+
+Für den Algorithmus von Interesse sind aber nur die Endpunkte der Segmente, weshalb es unnötig ist, tatsächlich einen langsam rotierenden Strahl in den Algorithmus zu implementieren. Vielmehr reicht es einen Strahl vom Punkt $P$ auf die Eckpunkte der Museumspolygone zu senden, da, wie man leicht einsieht, es nur dann einen Wechsel der getroffenen Seite geben kann, wenn sie entweder endet (in diesem Fall wird eine weiter entfernte Seite getroffen) oder wenn eine nähere Seite beginnt (dann wird diese getroffen). In jedem Fall findet der Wechsel genau an einem Endpunkt einer Seite statt. 
+
+Wenn man nun vom Punkt $P$ aus einen Strahl zu einem anderen Eckpunkt sendet, können sowohl Punkte wie auch Seiten der Museumspolygone getroffen werden. Wird (ausschließlich) eine Seite getroffen, weiß man, dass der Strahl dort endet, da der Nachtwächter ja nicht durch Wände sehen kann. (tja, ohne Röntgenaugen ist man aufgeschmissen ;-). Allerdings ist dieser Fall unwichtig, da der Strahl die Seite wahrscheinlich innerhalb eines sichtbaren Segmentes trifft und nicht an einem Ende. \n
+\begin{emp}(1,1)
+  draw (5cm,1cm)--(7cm,0) withpen pencircle scaled 2bp;
+  drawarrow (6cm,-1cm)--(6cm,0.5cm);
+  drawarrow (6cm,-1cm)--(5cm,0.9cm) dashed evenly; 
+  drawarrow (6cm,-1cm)--(5.5cm,0.7cm) dashed evenly;
+  drawarrow (6cm,-1cm)--(6.5cm,0.2cm) dashed evenly; 
+  drawarrow (6cm,-1cm)--(7cm,-0.1cm) dashed evenly;
+  draw (6cm,-1cm) withpen pencircle scaled 3bp;
+\end{emp}
+
+
+Komplizierter ist die Situation, wenn ein Eckpunkt getroffen wird. Dieser hält den Strahl nämlich nur dann auf, wenn die anderen Endpunkte beider an dem getroffenen Punkt endenden Wände auf unterschiedlichen Seiten des Strahles liegen (siehe Bild: Fall 1). Liegen diese beiden anderen Endpunkte dagegen auf derselben Seite, kann der Strahl seitlich (beliebig nah) an dem Punkt vorbei. (so etwas nenne ich "`Zacke"') Dies bedeutet normalerweise, dass sowohl der eben getroffene Punkt, als auch ein später getroffener sichtbar sind (Fall 2). Es kann allerdings auch passieren, dass der Strahl auf zwei Seiten von solchen Ecken begrenzt wird, und der letzte getroffene Punkt nicht sichtbar ist. (Fall 3):\n
+   \begin{emp}(100,100)
+      draw (0,0)--(1cm,1cm)--(2cm,0) withpen pencircle scaled 2bp;
+      drawarrow (1cm,-2cm)--(1cm,0.9cm);
+      drawarrow (1cm,-2cm)--(0.5cm,0.4cm) dashed evenly; 
+      drawarrow (1cm,-2cm)--(1.5cm,0.4cm) dashed evenly;
+      drawarrow (1cm,-2cm)--(0.1cm,0cm) dashed evenly; 
+      drawarrow (1cm,-2cm)--(1.9cm,0cm) dashed evenly;
+      draw (1cm,-2cm) withpen pencircle scaled 3bp;
+      
+      draw (2.5cm,1cm)--(3.5cm,0.5cm)--(4.5cm,1cm) withpen pencircle scaled 2bp;
+      drawarrow (3.5cm,-2cm)--(3.5cm,0.4cm);
+      drawarrow (3.5cm,-2cm)--(3cm,0.7cm) dashed evenly; 
+      drawarrow (3.5cm,-2cm)--(4cm,0.7cm) dashed evenly;
+      drawarrow (3.5cm,-2cm)--(2.5cm,0.9cm) dashed evenly; 
+      drawarrow (3.5cm,-2cm)--(4.5cm,0.9cm) dashed evenly;
+      draw (3.5cm,-2cm) withpen pencircle scaled 3bp;
+      
+      label.bot("Fall 1", (2.25cm,-2cm)); 
+
+      draw (5.5cm,1cm)--(6.5cm,0.5cm) withpen pencircle scaled 1bp;
+      draw (6.5cm,0.5cm)--(7.5cm,0) withpen pencircle scaled 2bp;
+      draw (5.8cm,0.5cm)--(6.5cm,0cm) withpen pencircle scaled 1bp;
+      draw (6.5cm,0cm)--(5.7cm,-0.5cm) withpen pencircle scaled 2bp;
+      drawarrow (6.5cm,-2cm)--(6.5cm,0.5cm);
+      drawarrow (6.5cm,-2cm)--(5.9cm,-0.45cm) dashed evenly; 
+      drawarrow (6.5cm,-2cm)--(6.25cm,-0.25cm) dashed evenly;
+      drawarrow (6.5cm,-2cm)--(7cm,0.2cm) dashed evenly; 
+      drawarrow (6.5cm,-2cm)--(7.5cm,0.1cm) dashed evenly;
+      draw (6.5cm,-2cm) withpen pencircle scaled 3bp;
+
+
+      draw (8cm,1cm)--(9cm,0.5cm) withpen pencircle scaled 2bp;
+      draw (9cm,0.5cm)--(10cm,0) withpen pencircle scaled 1bp;
+      draw (9cm,-0.5cm)--(10cm,-0.1cm) withpen pencircle scaled 1bp;
+      draw (9cm,-0.5cm)--(10cm,-1cm) withpen pencircle scaled 2bp;
+      drawarrow (9cm,-2cm)--(9cm,0.5cm);
+      drawarrow (9cm,-2cm)--(8cm,0.9cm) dashed evenly; 
+      drawarrow (9cm,-2cm)--(8.5cm,0.7cm) dashed evenly;
+      drawarrow (9cm,-2cm)--(9.5cm,-0.85cm) dashed evenly; 
+      drawarrow (9cm,-2cm)--(9.9cm,-1.05cm) dashed evenly;
+      draw (9cm,-2cm) withpen pencircle scaled 3bp;
+      
+      label.bot("Fall 2", (7.75cm,-2cm)); 
+
+      draw (10.5cm,1cm)--(12.5cm,0cm) withpen pencircle scaled 1bp;
+      draw (10.8cm,0.5cm)--(11.5cm,0cm) withpen pencircle scaled 1bp;
+      draw (11.5cm,0cm)--(10.7cm,-0.5cm) withpen pencircle scaled 2bp;
+      draw (11.5cm,-0.5cm)--(12.5cm,-0.1cm) withpen pencircle scaled 1bp;
+      draw (11.5cm,-0.5cm)--(12.5cm,-1cm) withpen pencircle scaled 2bp;
+      drawarrow (11.5cm,-2cm)--(11.5cm,0.5cm);
+      drawarrow (11.5cm,-2cm)--(10.9cm,-0.45cm) dashed evenly; 
+      drawarrow (11.5cm,-2cm)--(11.25cm,-0.25cm) dashed evenly;
+      drawarrow (11.5cm,-2cm)--(12cm,-0.85cm) dashed evenly; 
+      drawarrow (11.5cm,-2cm)--(12.4cm,-1.05cm) dashed evenly;
+      draw (11.5cm,-2cm) withpen pencircle scaled 3bp;
+
+      label.bot("Fall 3", (11.5cm,-2cm)); 
+   \end{emp}
+
+Falls bei der Berechnung der Treffpunkte, ein Treffpunkt gefunden wird, an dem der Strahl endet, muss man natürlich alle weiter entfernten Punkten ignorieren, da diese dann nicht mehr getroffen werden können.
+
+Der letzte vom Strahl getroffene Punkt auf einer Seite markiert genau dann die Begrenzung eines sichtbaren Liniensegments, wenn der Strahl auf exakt einer Seite von einer Zacke begrenzt wird. Ist er nämlich auf keiner Seite begrenzt, wird nur ein beliebiger Punkt innerhalb eines sichtbares Segments getroffen und kein Randpunkt, wie man an dem Bild auf der vorherigen Seite sehen kann. Wird der Strahl auf beiden Seiten begrenzt, gibt es überhaupt kein sichtbares Segment, und genau genommen ist noch nicht einmal der Punkt selbst sichtbar (siehe Fall 3 und 2).
+Der andere Randpunkt eines am Rand getroffenen Liniensegmentes liegt hierbei natürlich auf der anderen Seite des Strahles als die begrenzende Zacke. (Intuitiv ist das völlig klar, aber für den Algorithmus ist es wichtig, in welche Richtung das Segment fortgesetzt werden muss).\n
+Liegt der letzte getroffene Punkt nicht auf einer Seite, sondern ist vielmehr der Endpunkt einer Seite (genauer gesagt zweier Seiten), kann er auch der Randpunkt zweier sichtbaren Segmente sein, dann nämlich wenn der Strahl nicht begrenzt wurde (siehe Fall 1), da jedes sichtbare Segment dort endet. Ist der Strahl auf zwei Seiten begrenzt, ist natürlich wieder nichts sichtbar. Ist er auf nur einer begrenzt,  liegt das sichtbare Segment auf der Seite des Strahls auf der nicht die Zacke liegt (vergleiche Fall 2).\n
+Der andere Randpunkt des Segmentes befindet sich immer in Richtung des anderen Endpunktes der Seite.
+
+Die letzte Art der getroffenen Punkte, sind die Eckpunkte der Zacken. Hierbei muss man nur die Punkte der ersten Zacke (also die, die am nächsten zum Startpunkt des Strahles ist) auf jeder Seite betrachten, da darauf folgende Zacken von der ersten verdeckt werden. \n
+Die Eckpunkte markieren immer den Randpunkt eines sichtbaren Segmentes auf einer der beiden, an den Punkt grenzenden Wände. Sichtbar ist dabei allerdings immer nur eine Wand, da die andere von dieser sichtbaren verdeckt wird. Zum Glück ist es aber gerade dadurch, dass die sichtbare Wand die andere verdeckt, relativ simpel herauszufinden, welche die sichtbare ist. Es ist immer die, bei der die andere Seite (bzw. deren Endpunkt) und der Startpunkt auf verschiedenen Seiten der Wand liegen, da durch das Liegen auf verschiedenen Seiten, der Blick auf die andere Wand blockiert wird.
+Das reicht aus, um die Randpunkte aller sichtbaren Segmente zu finden. \n
+Wendet man das Verfahren beispielhaft auf die oben gezeigten Polygone an, ergibt sich wie gewünscht:\n
+\begin{emp}(1,1)
+     numeric u;
+     u:=0.4cm;
+     draw (0,0) withpen pencircle scaled 4bp;
+     pair p[];
+     p[0]:=(-1u,-1.5u);     p[1]:=(2.5u,-1.1u);     p[2]:=(4u,-3u);     
+     p[3]:=(4.5u,1u);     p[4]:=(-2.5u,1u);     p[5]:=(-0.7u,-0.5u);
+     p[6]:=(0.1u,-1u);     p[7]:=(-0.5,-1.2u);     p[8]:=(2u,0.7u);
+     p[9]:=(1u,0.2u);     p[10]:=(2.7u,-1u);     p[11]:=(3u,0.3u);
+     path pa[];
+     pa[0]:=p[0]--p[1]--p[2]--p[3]--p[4]--cycle;
+     pa[1]:=(-0.7u,-0.5u)--(0.1u,-1u)--(-0.5,-1.2u)--cycle;
+     pa[2]:=p[8]--(1u,0.2u)--(2.7u,-1u)--(3u,0.3u)--cycle;
+     draw pa[0] withpen pencircle scaled 1.25bp;
+     draw pa[1] withpen pencircle scaled 1.25bp;
+     draw pa[2] withpen pencircle scaled 1.25bp;
+
+     pair temp;
+     def drawIntersection(expr to,path) = 
+       temp:=(((0,0)--100*to) intersectionpoint path); 
+       draw (0,0)--temp withcolor .5white;
+       if temp<>to:  draw temp--to withcolor .5white dashed evenly; fi;
+     enddef;
+
+     drawIntersection(p[0],pa[1]);
+     drawIntersection(p[1],p[2]--p[3]--p[4]--p[0]--p[1]--cycle);
+     drawIntersection(p[2],pa[0]);
+     drawIntersection(p[3],pa[2]);
+     drawIntersection(p[4],pa[0]);
+     drawIntersection(p[5],pa[0]);
+     drawIntersection(p[6],pa[0]);
+     drawIntersection(p[7],pa[1]);
+     drawIntersection(p[8],pa[0]);
+     drawIntersection(p[9],pa[2]);
+     drawIntersection(p[10],pa[0]);
+     drawIntersection(p[11],pa[2]);
+\end{emp}
+
+\section{Sichtbarkeit von einer Linie aus}
+Nun folgt die Berechnung der, von einer Linie aus sichtbaren Bereiche der Wände. Im Prinzip funktioniert diese ähnlich, wie die Berechnung der von den Punkten aus sichtbaren Liniensegmente.\n
+Der erste Schritt besteht darin, die Bereiche, die man von den Eckpunkten der Linie aus sehen kann, zu berechnen, da die Endpunkte natürlich zu der Linie gehören. \n
+Als nächstes müssen die Liniensegmente der Museumswände gesucht werden, die zwar von der Linie, nicht aber von ihren Endpunkten aus, gesehen werden können. Der Algorithmus hierfür basiert darauf, das man im Prinzip alles, was man von der Linie aus, auch von einem der Endpunkte sehen kann, es sei denn, der Blick vom Endpunkt aus wird durch die Seite eines anderen Polygons blockiert.\n
+Sieht man an dieser Linie vorbei, um den verdeckten Bereich doch noch zu erblicken, ist es natürlich am besten möglichst nahe an der Seite vorbei zu sehen, um einen möglichst großen Bereich abzudecken. Das heißt also so, dass ein Strahl von der Linie zum äußersten sichtbaren Punkt einen Eckpunkt dieser Polygonenseite berühren muss. \n
+Weiterhin gibt es noch einen Punkt der Museumspolygone, den dieser Strahl berühren muss. Entweder wird der Strahl nochmals von einer Zacke begrenzt, oder er trifft einen Eckpunkt. Würde er nämlich nicht von einer Zacke begrenzt werden und auch mitten auf eine Seite treffen, ist unmöglich, dass er den Endpunkt eines sichtbaren Segments getroffen hat. Man kann den Strahl dann nämlich langsam um den ersten Eckpunkt drehen, wodurch man einen größeren Teil der letztlich getroffenen Seite sieht. Diesen Drehen kann man solange durchführen, bis man mit dem Strahl auf eine Begrenzung (eine zweite Ecke) stößt.
+
+Das heißt also, dass jeder Strahl von der Weglinie zu dem äußeren Rand eines sichtbaren Liniensegmentes mindestens 2 Punkte des Museumspolygons schneidet. Wenn man nun eine Gerade durch je zwei Eckpunkte legt, und den Schnittpunkt mit dem Museumspolygon und dem Weg berechnet, hat man folglich jeden äußeren Randpunkt eines sichtbaren Liniensegments mitsamt einem dazugehörenden Punkt auf der Weglinie gefunden: \n
+\begin{emp}(1,1)
+  draw (-2.0cm,0cm)--(1.5cm,0cm);
+  draw (-2.0cm,0cm) withpen pencircle scaled 3bp;
+  draw (1.5cm,0cm) withpen pencircle scaled 3bp;
+  
+  path rand; 
+  path triL; 
+  path triR;
+  rand:=(-2.3cm,1.8cm)--(2cm,2.4cm)--(1.7cm,-0.5cm)--(-2.4cm,-0.4cm)--cycle;
+  triL:=(-2cm,1.5cm)--(-0.5cm,0.5cm)--(-0.5cm,1.3cm)--cycle;
+  triR:=(1.2cm,1.5cm)--(0.5cm,0.5cm)--(1.6cm,1.3cm)--cycle;
+  draw rand;
+  draw triL;
+  draw triR;
+  
+  pair temp;
+  def drawIntersectionFrom(expr from,to,path) = 
+    temp:=(from--100*(to-from)) intersectionpoint path;
+    draw from--temp withcolor .5white
+  enddef;
+  
+  drawIntersectionFrom((-0.5cm,0.5cm),(-0.5cm,5cm),rand);
+  drawIntersectionFrom((-0.5cm,1.3cm),(-0.5cm,-5cm),rand);
+
+  drawIntersectionFrom((-2cm,0cm),(-0.5cm,0.5cm),triR);
+  drawIntersectionFrom((-1.7cm,0cm),(-0.5cm,0.5cm),triR);
+  drawIntersectionFrom((-1.45cm,0cm),(-0.5cm,0.5cm),triR);
+  drawIntersectionFrom((-1.3cm,0cm),(1.2cm,1.5cm),rand);
+  draw (-1.15cm,0cm)--(2cm,2.4cm)  withcolor .5white;
+  draw (2cm,2.4cm)--temp withcolor .5white withpen pencircle scaled 2bp;
+  
+  drawIntersectionFrom((1.1cm,0cm),(-0.5cm,1.3cm),rand);
+  draw (2cm,2.4cm)--temp withcolor .5white withpen pencircle scaled 2bp;
+  
+\end{emp}
+
+Wie man an dem Bild auch erkennen kann, liegt der dem Treffpunkt entgegengesetzte Randpunkt eines getroffenen sichtbaren Segments, immer auf der Seite des Strahls, auf der nicht die letzte berührte Zacke ist.\n
+Falls beide Zacken auf derselben Seite liegen, (oder sogar identisch sind, wie im Bild) trifft der Strahl nicht den Rand eines sichtbaren Liniensegmentes, sondern nur die einen Punkt innerhalb des Segmentes und ist damit nutzlos.
+
+\section{Sichtbare Bereiche}
+Da man nun alle Randpunkte der sichtbaren Segmente gefunden hat und jeweils weiß, in welcher Richtung der Rest des Segments liegt, kann man die Segmente selbst finden. \n
+Dazu betrachtet man alle Wände des Museums separat, und sortiert die darauf liegenden Punkte nach ihrem Abstand von einem der Eckpunkte der Wand. Es gibt hierbei  zwei verschiedene Sorten von Punkten. Bei den einen liegt der Rest des Segmentes weiter vom gewählten Eckpunkt entfernt, als der Punkt selber, bei den anderen ist es genau umgekehrt. Die erste Art von Punkten nenne ich im folgenden Startpunkte die anderen Endpunkte. Welcher Punkt zu welcher Sorte gehört, wurde im Programm bereits berechnet. (siehe oben)\n
+Hat man einen Start- und Endpunkt, die von dem gleichen Punkt auf der Weglinie sichtbar sind, kann man ein Dreick bilden das diese Punkt als Eckpunkte hat und das komplett vom Punkt auf der  Weglinie sichtbar ist, sofern die Strecke zwischen den beiden Randpunkten sichtbar ist. Sind die Start/Endpunkte von unterschiedlichen Punkten aus sichtbar, kann man entsprechend ein solches Viereck machen. Ein solches Drei- oder Viereck nenne ich "`Bereich"'.\n 
+Am einfachsten wäre es nun, wenn auf der Linie abwechselnd, Start und Endpunkte liegen würden. Dann könnte man die Startpunkte mit dem jeweils nächsten Endpunkt verbinden, und hätte alle sichtbaren Segmente der Linie, da kein sichtbares Segment nach einem Endpunkt einen Startpunkt enthält. Dies liegt daran, dass ein Punkt immer bedeutet, dass eine Zacke die Sicht in eine Richtung blockiert. Würde nun auf einen Endpunkt ein Startpunkt folgen, würde diese Zacke innerhalb des Bereichs zu diesen Randpunkten liegen. \n
+Es kann allerdings auch vorkommen, dass auf einen Startpunkt direkt weitere Startpunkte folgen, oder dass auf einen Endpunkt weitere Endpunkte, zum Beispiel, wenn man einem Teil der Weglinie weiter sehen kann, als von einem anderen. Das bedeutet zwar, dass die gesamte Linie, vom ersten Startpunkt bis zum letzten Endpunkt sichtbar ist, man weiß aber nicht, ob auch der Bereich zu den beiden äußersten Punkten sichtbar ist.\n
+Der Unterschied zu dem Fall vorhin liegt darin, dass es hierbei häufig möglich ist, den Bereich von einem der weiter innen liegenden Startpunkte zu einem inneren Endpunkt zu sehen. Leider ist es nicht direkt möglich herauszufinden, welche der Punkte einen sichtbaren Bereich erzeugen und häufig gibt es auch mehrere, die dies tun. Eine einfache Lösung hierzu ist es, einfach alle Bereiche für je einen Start- und Endpunkt auf Sichtbarkeit zu überprüfen. Ein Bereich ist genau dann komplett sichtbar, wenn kein Teil der Museumspolygone innerhalb von diesem Bereich liegt, und das ist genau dann der Fall, wenn kein Eckpunkt dieses Polygons dort liegt. (Die einzige Alternative wäre es, wenn der Bereich von einer Seite des Polygones geschnitten würde. In dem Fall wäre aber der Strahl zum Randpunkt des Segments unterbrochen und es wäre überhaupt kein Bereich zu überprüfen). Überprüft man also alle Punkte des Polygons, weiß man definitiv, ob der Bereich sichtbar ist.\n
+Das einzige Problem dabei ist, dass das Viereck möglicherweise konkav ist oder sich selbst schneidet. Das löse ich, indem ich zuerst feststelle, ob einer dieser Fälle vorliegt, indem ich überprüfe, welche Eckpunkte des Vierecks auf welcher Seite der einzelnen Viereckseiten liegen, und das Viereck entsprechend in zwei Dreiecke aufteile. Dann kann man einfach testen, auf welcher Seite bezüglich der Dreieckseiten der Eckpunkt der Museumspolygone liegt. Wenn es immer dieselbe ist, ist er innerhalb der Dreiecke und somit innerhalb des Vierecks, wenn nicht, außerhalb.\n
+Es gibt auch noch schnellere Tests, die feststellen können, ob ein Bereich nicht völlig sichtbar ist, allerdings sagen diese nur, ob der Bereich sichtbar ist oder vielleicht nicht, bzw. ob es nicht sichtbar ist, oder vielleicht doch. Der erste Test ist, zu überprüfen, auf welcher Seite des Strahls von dem Punkt auf der Weglinie zum sichtbaren Randpunkt des Segments der jeweils andere Randpunkt liegt. Liegt er auf der Seite, auf der auch die Zacke liegt, die den Strahl begrenzt, ist diese Zacke innerhalb des Bereichs. (natürlich kann es sein, dass der Strahl garnicht von einer Zacke begrenzt wird).\n
+Der zweite ist, zu überprüfen, ob der andere Randpunkt auf der selben Seite vom Strahl liegt, wie der Punkt von dem man ihn sehen kann. Trifft das zu, kann es sein, dass der Bereich sichtbar ist, oder auch nicht. In jedem Fall ist der Bereich nutzlos, da man im Normalfall, wenn einer der Punkte nicht der Rand der Weglinie ist, mehr sehen kann, wenn sie auf unterschiedlichen Seiten liegen. Nur wenn es sich um Randpunkte der Weglinie handelt, wäre es effizienter, diesen Bereich zu nehmen, als ihn durch einen sich selbst schneidenden und zwei Dreiecke zu ersetzen. Diese Ersatzpolygone werden aber sowieso erzeugt, da sie sichtbar sind, und es auch vorkommen kann, dass nur ein paar von den "`Ersatzpolygonen"' sichtbar sind, und der nutzlose Bereich überhaupt nicht. Diese Fälle zu unterscheiden, wäre wahrscheinlich noch ineffizienter, als einfach nur diesen Bereich abzufangen.\n
+Der letzte Test ist, ob es sich bei dem Bereich um ein Dreieck handelt, also sowohl der Start als auch der Endpunkt, vom selben Punkt auf der Linie aus sichtbar sind. In dem Fall muss es komplett sichtbar sein, da es, wenn es nicht so wäre, Start- und Endpunkte auf der Wand geben müsste, die das Segment und somit auch den Bereich für ungültig erklären.
+
+\section{Der Wahrscheinlichkeitsalgorithmus}
+Ich habe noch einen zweiten Algorithmus zu dem bisher beschrieben programmiert, der auf komplett andere Weise arbeitet, und wesentlich simpler und langsamer ist. Es wird einfacher von jeder möglichen Position im Museum überprüft, welche anderen Positionen sichtbar sind, und zu jeder Position ist eine Wahrscheinlichkeit gespeichert, die angibt, wie wahrscheinlich eine Aufenthalt des Nachtwächters dort ist. \n
+Wenn man nun bei jeder Position, die Wahrscheinlichkeit, dass der Nachtwächter nicht an der anderen Position ist, von der er sie aus sehen kann, mit der bisherigen Wahrscheinlichkeit multipliziert, dass er die Position nicht sehen kann, erhält man die Wahrscheinlichkeit, dass er die Position nicht sehen kann, unter Berücksichtigung des neuen Punktes. (Also ein Wahrscheinlichkeitsbaum, bei dem der Ast für das nicht Eintreten, des Ereignisses berechnet wird.)\n
+Dieser Algorithmus hat den großen Nachteil, dass er weitaus langsamer ist, als der andere, da ja, für ein sinnvolles Ergebnis, eine große Anzahl von Positionen überprüft werden muss. Dafür kann er wesentlich leichter erweitert werden, zum Beispiel, so dass die Wahrscheinlichkeit für Sichtbarkeit bei weiter entfernten Punkten abnimmt. Dafür muss man nur, die Wahrscheinlichkeit mit der multiplizieren wird (also die für ein Fehlen des Wächters) vor der Multiplikation um einen Bruchteil des Abstands erhöhen. Das habe ich auch implementiert, und zwar so, dass die Wahrscheinlichkeit für "`nicht sehen"' wie das Taschenlampenlicht proportional zum Quadrat der Entfernung zunimmt, und ab einer bestimmten Entfernung 100\% wird.\n
+Was man auch noch leicht einbauen könnte wäre eine Abnahme der Sicht bei besonders dunklen Stellen, wozu man noch Lampen berücksichtigen müsste, was dadurch möglich ist, dass man die Helligkeit wie die Sichtbarkeit zwischen allen Punkten berechnet. Automatisch gehen auch mehrere Wächter, indem man einfach nicht verbundene Bereiche zeichnet.\n
+Ganz allgemein, kann man diesen Algorithmus gut erweitern, da man ja Informationen über alle Punkte hat. Der andere Algorithmus ist dagegen sehr speziell, und kann nur schwer neue Funktionen kriegen.\n
+Weiterhin hat er den Vorteil, dass es nur linear zur Anzahl der Polgonenlinien ist (dafür aber Quadratisch zur Auflösung der Punkte), was bei großen Museen, mit vielen Winkel sinnvoller sein kann, als die ungefähr kubische Laufzeit des anderen. Man kann außerdem schnell ein provisorisches Ergebnis mit geringer Auflösung erhalten.
+
+Wenn es nur um die Sichtbarkeit geht, ist der Algorithmus der über Polgonanalyse geht, zweifelsohne sehr stark überlegen, da er schneller und eleganter ist.\n
+Spielt Rechenzeit aber keine Rolle, wäre der andere, der empirisch vorgeht, wegen seiner Flexibilität besser.
+
+
+\chapter{Programmdokumentation}
+\section{Einlesen der Daten}
+Ein Polygon wird im Programm als Array von Linien gespeichert. Eine Linie ist dabei ein Record namens \type{TLine} mit folgenden Feldern:\n
+\begin{tabular}{lll}
+  \b{Name} & \b{Typ} & \b{Beschreibung} \\
+  \variable{start} & \type{TPointf} & Startpunkt der Linie \\
+  \variable{dir} & \type{TPointf} & Richtungsvektor der Linie \\
+  \variable{left} & \type{PLine} & vorherige Linie \\
+  \variable{right} & \type{PLine} & nächste Linie \\
+  \variable{sees} & \keyword{array of} \type{TSeenPos} & sichtbare Punkte\\
+\end{tabular}\n
+Der Typ \type{TPointf} ist dabei ebenfalls ein Record, mit zwei Feldern \variable{x} und \variable{y} vom Typ \type{double}. Der Endpunkte der Linie wird nicht gespeichert, da er mit dem Startpunkt der nächsten Linie \variable{right$\hat{ }$.start} und dem Punkt $\variable{start} + \variable{dir}$ identisch ist. Die Verweise auf die nächste und vorherige Linie sind  eigentlich ebenso sinnlos, da man ja auch über die Arrayindizes auf diese Linien zugreifen kann. Die Zeiger haben aber den Vorteil, dass man sie so setzen kann, dass man bei der letzten Linie im Array automatisch zur ersten kommt, ohne auf die Arraygrenzen achten zu müssen.
+Was es genau mit \variable{sees} auf sich hat, erkläre ich später (in Sektion 2.3), beim Einlesen ist das nicht weiter wichtig.
+
+Geladen wird ein Polygon von der Funktion \functionF{loadPolygon}, die als Parameter eine Textdatei \variable{f}, die Anzahl der Punkte im Polygon \variable{len} entgegen nimmt und Zeiger auf zwei Punkte \variable{min}, \variable{max} entgegen nimmt. Zurückgegeben wird zum einen das Polygon, zum anderen die kleinsten und größten Koordinaten des Polygons. Die Koordinaten werden dabei in den beiden Punkten gespeichert.\n
+Da die Anzahl der Punkte des Polygons bekannt ist, können einfach so viele Zeilen der Textdatei gelesen werden. Jede Zeile wird dann in zwei Teile, entsprechend den beiden Koordinaten, am ersten Leerzeichen geteilt. Jede Koordinate wird dann in einen Gleitkommawert umgewandelt, als Startpunkt der Linie gespeichert und mit den bisherigen minimalen, maximalen Koordinaten verglichen. \n
+Außer bei der ersten gelesenen Zeile, werden anschließend die restlichen Felder gefüllt. Dabei bekommt \variable{left} einen Zeiger auf die vorherige Linie und das Feld \variable{right} von der letzten Linie bekommt einen Zeiger auf die aktuelle. Ebenfalls wird die Richtung \variable{dir} der letzten Linie durch Subtraktion des letzten gelesenen Punkts vom aktuell gelesenen berechnet. Nachdem alle Punkte gelesen wurden, werden noch die Felder der letzten Linie berechnet, da ja immer nur die Felder der vorherigen initialisiert werden konnten.
+
+Eine ganze Datei wird von der Methode \functionF{loadMuseumClick} geladen, die aufgerufen wird, wenn der Benutzer auf den Button \component{loadMuseum} klickt. Dabei wird jeweils eine Zeile gelesen, dann werden von dieser Zeile die ersten 8 Zeichen gelöscht, die übrig gebliebenen Zeichen werden dann in eine Zahl umgewandelt, und schließlich die oben beschriebene Funktion \function{loadPolygon} mit der nun bekannten Anzahl von Koordinaten aufgerufen und das Ergebnis in dem letzten Eintrag von \variable{museum} (\variable{museum} ist ein Array von Polygonen) abgespeichert. \n
+Nachdem die Datei vollständig gelesen wurde, wird die Breite und Höhe des Museums über die Variablen \variable{min} und \variable{max} berechnet, und daraus der größte Zoomfaktor, bei dem das Museum vollständig sichtbar ist, indem einfach die Breite und Höhe der zur Ausgabe verwendeten PaintBox durch die Maße des Museums geteilt werden.
+
+Die andere Methode, die eine Datei einliest ist \functionF{loadWayClick} die, wie man am Namen erkennen kann, den Weg des Wächters liest. \n
+Ich habe mich dafür entschieden, ein ähnliches Format, wie bei dem Museumspolygon zu verwenden. In der ersten Zeile steht dabei die Zahl der Punkte, und anschließend stehen in jeder Zeile je zwei Koordinaten. (Also, der einzige Unterschied ist, dass nur ein Polygon drin steht, und vor der Zahl der Punkte kein "`polygon"' steht. \n
+\function{loadWayClick} liest die erste Zeile, ruft dann \function{loadPolygon} auf, um die Punkte zu lesen und speichert das Ergebnis in \variable{guardsWay}.\n
+Anschließend wird die Methode \function{lookAround} aufgerufen, die die sichtbaren Bereiche berechnet und die Ausgabe aktualisiert. Wie diese Ausgabe konkret geschieht, beschreibe ich nun:
+
+\section{Ausgabe}
+Die Ausgabe wird von der Methode \functionF{outputPaintBoxPaint} erledigt, deren Aufgabe nur darin besteht, einige Polygone zu zeichnen. \n
+Das Zeichnen von einem Polygon wird dabei über die Delphimethode \function{Canvas.Polygon} (genau genommen handelt es sich um eine Windowsfunktion, aber Delphi wrappt sie) erledigt, die alle Punkte eines an sie übergebenen Arrays verbindet und den Inhalt des Polygons füllt. Das komplizierteste dabei ist, dass die gespeicherten Koordinaten Gleitkommazahlen sind, aber diese Methode nur Ganze Zahlen verarbeiten kann. Deshalb werden die Koordinaten gerundet an die Methode übergeben, und damit das Bild nicht zu klein wird, werden sie vorher mit einem Zoomfaktor (siehe 2.1) multipliziert. Dann wird die y-Achse invertiert, um dieselbe Ausgabe, wie auf dem Aufgabenblatt zu erhalten. Damit man die Ausgabe auch verschieben kann, wird anschließend noch ein Vektor namens \variable{nullpoint} addiert. Berechnet werden diese Umrechnungen von der Unterfunktion \functionF{transform}.\n
+Die andere Unterprozedur \functionF{drawPolygon} ruft diese Funktion auf, um alle Punkte eines übergebenen Polygons umzuwandeln und anschließend zu zeichnen.\n
+\function{outputPaintBoxPaint} zeichnet nun zuerst das erste in \variable{museum} gespeicherte Polygon (also den Außenrand des Museums), und anschließend mit geänderter Hintergrundfarbe die anderen (die Löcher). Die Farbeinstellungen erfolgen dabei über die Standarddelphimethoden. Danach werden, je nach gewählter Einstellung, mit nochmals geänderter Hintergrundfarbe oder transparent, die sichtbaren Bereiche eingezeichnet. Dabei handelt es sich um Vierecke, die durch jeweils 4 Punkte definiert sind, die in dem Array \variable{seenAreas} gespeichert sind. Da für diese Vierecke nur die Punkte gespeichert sind, kann nicht die Prozedur \functionF{drawPolygon} verwendet werden, sondern die Punkte werden gleich in \function{outputPaintBoxPaint} umgerechnet. Dadurch stehen die transformierten Punkte auch noch zur Verfügung, um den jeweils zweiten und dritten Punkt dieser Vierecke (das sind die, die auf der getroffenen Seite des Museumspolygon liegen) mit einer dicken, roten Linie (im Ausdruck auf einem Graustufendrucker nur noch dicken) verbunden. Am Schluss wird noch transparent das Wegpolygon gezeichnet.
+
+\newpage
+\section{Berechnung der Sichtbarkeit}
+Die sichtbaren Bereiche werden von der Prozedur \functionF{lookAround} berechnet. Sie ruft 3 Methoden auf, die den Abschnitten aus dem vorherigen Kapitel entsprechende Operationen durchführen: \function{lookFromPoint}, \function{lookFromWayLine} und \function{convertLookPoints}. \n
+\function{lookAround} ruft nun für jede Linie des Weges \function{lookFromWayLine}, um die Randpunkte alle von einer Linie aus sichtbaren Liniensegmente zu berechnen, und  \function{convertLookPoints}, um aus diesem Punkten die sichtbaren Bereiche zu ermitteln, auf.\n
+\function{lookFromWayLine} ruft nun wiederum \function{lookFromPoint} auf, was ich jetzt zuerst beschreibe.
+
+\functionF{lookFromPoint} nimmt als einzigen Parameter \variable{p}, den Punkt entgegen, von dem aus die Sichtbarkeit berechnet werden soll. \n
+Dann werden mit zwei for-Schleifen für jeden Punkt des Museums (also für jeden Punkt jedes Polygons in der Variablen \variable{museum}) folgende Anweisungen durchgeführt:
+Zuerst wird ein Strahl vom Punkt \variable{p} zum gewählten Punkt erzeugt, indem durch Subtraktion des Punktes \variable{p} von dem gewählten Punkt die Richtung des Strahls berechnet wird. Der durch Startpunkt \variable{p} und Richtung eindeutig definierte Strahl wird zusammen mit dem Museum an die Funktion \function{findRayHitPoints} übergeben. Diese Prozedur berechnet den ersten Schnittpunkt des Strahls mit den übergebenen Polygonen und wird später beschrieben. Wichtig ist hier allerdings das von ihr zurückgelieferte Ergebnis. Es handelt sich um einen Record mit folgenden Feldern:\n
+\begin{tabular}{lll}
+  \b{Name} & \b{Typ} & \b{Beschreibung} \\
+  \variable{poly} & \type{integer} & getroffenes Polygon \\
+  \variable{line} & \type{integer} & im Polygon getroffene Linie \\
+  \variable{where} & \type{double} & Position des Punktes auf der Linie \\
+  \variable{when} & \type{double} & Position des Punktes auf dem Strahl \\
+  \variable{between} & \keyword{array of record} & berührte Zacken\\
+\end{tabular}\n	
+Die Positionen auf der Linie liegen linear im Interval $\left[0,1\right]$, wobei 0 der Startpunkt der Linie ist und 1 der Endpunkt. Die Position auf dem Strahl ist ähnlich, 0 bezeichnet den Startpunkt des Strahles und 1 den Punkt, der durch Addition von Richtung und Startpunkt entsteht, also in diesem Fall, den Punkt zu dem der Strahl geschickt wird. Handelt es sich bei diesem Punkt um den Eckpunkt einer Zacke, kann die Position allerdings auch über 1 liegen.
+Ein Eintrag im Feld \variable{between} hat folgende Unterfelder:\n
+\begin{tabular}{lll}
+  \b{Name} & \b{Typ} & \b{Beschreibung} \\
+  \variable{poly} & \type{integer} & getroffenes Polygon \\
+  \variable{point} & \type{integer} & im Polygon getroffener Punkt \\
+  \variable{side} & \type{integer} & Seite auf der, die Zacke liegt \\
+  \variable{when} & \type{double} & Position des Punktes auf dem Strahl \\
+\end{tabular}\n	
+Genaugenommen ist \variable{point} nicht direkt der Index des Punktes, sondern der Index der Linie, die den Punkt als Startpunkt hat. \variable{side} ist entweder $-1$ oder $+1$, wobei $-1$ links vom Strahl und $+1$ rechts vom Strahl bedeutet. \n
+Diese Seitennummerierung verwende ich auch noch an anderen Stellen im Programm, wobei dann noch $0$ hinzu kommt, was aber in diesem Fall bedeuten würde, dass die Zacke auf dem Strahl liegt.
+
+Nach dem Aufruf von \function{findRayHitPoints} muss nur noch das Ergebnis interpretiert werden. Dazu wird zuerst überprüft, auf welcher Seite der Strahl von Zacken begrenzt wird. Eine Begrenzung auf der linken Seite wird in der \type{boolean}-Variable \variable{hideLeft}, eine auf der rechten entsprechend in \variable{hideRight} gespeichert.\n
+Anschließend wird die Sichtbarkeit der ersten sichtbaren Zacken auf der linken und rechten Seite des Strahles gespeichert. Dafür wird die Prozedur \function{searchVisibleLine} mit dem Startpunkt des Strahls und der Linie, deren Startpunkt der Eckpunkt der Zacke ist, aufgerufen. 
+Diese Prozedur überprüft, wie der Strahlenstartpunkt im Bezug zur den Linien, die den Punkt als Start- und Endpunkt haben, liegt, und speichert die Sichtbarkeit im \variable{sees}-Feld einer der beiden Linien. Wie genau sie das tut, beschreibe ich später.
+
+Als nächstes wird überprüft, ob auf beiden Seiten des Strahles Zacken liegen. Ist das der Fall, ist der Strahl nutzlos, abgesehen von der Sichtbarkeitsmarkierung bei den beiden Zacken, und es wird zum nächsten Punkt übergegangen. Ansonsten wird überprüft, auf welcher Seite eine Zacke liegt. \n
+Dann wird überprüft, ob ein Startpunkt getroffen wurde oder nicht. (Ein Endpunkt wird übrigens nie getroffen, da \function{findRayHitPoints} das als Treffer eines Startpunkts der vorherigen Linie speichern würde).\n
+Wurde ein Eckpunkt getroffen,  enthält mindestens eine, der an sie grenzenden Linien, ein sichtbares Segment. Das Problem ist jetzt herauszufinden, um welche es sich handelt. Dazu wird die Funktion \function{whichSide} aufgerufen, die überprüft auf welcher Seite eines übergebenen Strahls ein übergebener Punkt liegt und die später beschrieben wird. Liegt der Endpunkt der Linie, also der Startpunkt der nächsten Linie, auf der selben Seite wie die Zacke, oder gibt es keine Zacke, ist der Punkt sichtbar und es kann die Prozedur \function{addSeePoint} aufgerufen werden, um den Punkt als sichtbar zu speichern. (siehe unten)\n
+Wurde kein Eckpunkt getroffen und der Strahl wird von einer Zacke begrenzt, muss ein Sichtbarkeitseintrag für diese Linie erstellt werden. Dazu muss zuerst einmal festgestellt werden, in welcher Richtung das Liniensegment vom Punkt aus liegt. (Bei einer getroffenen Ecke ist das simpel, von der Ecke weg). Im folgenden nenne ich die Richtung, in der der Startpunkt liegt "`linke Seite"' und die Richtung in der der Endpunkt liegt "`rechte Seite"'. Das erklärt auch die Bezeichnungen "`left"'/"`right"' der Felder im Linienrecord für die vorherige/nächste Linie. Liegt der Startpunkt der Linie auf derselben Seite wie die begrenzende Zacke, muss das sichtbare Segment auf der vom Startpunkt abgewandten Seite, also "`rechts"' liegen. Ansonsten umgekehrt.\n
+Die Prozedure \function{lookFromPoint} ist damit zu Ende beschrieben, abgesehen davon, dass nun der nächste Punkt untersucht wird.
+
+Da die Prozedur \functionF{addSeePoint} sehr kurz ist, beschreibe ich sie schon hier und nicht erst später, wie die anderen aufgerufenen Funktionen. Außerdem versteht man dann die an sie übergebenen Parameter besser. Die sind:\n
+\begin{tabular}{lll}
+  \b{Name} & \b{Typ} & \b{Beschreibung} \\
+  \variable{line} & \type{TLine} & getroffene Linie \\
+  \variable{where} & \type{double} & getroffene Position auf der Linie \\
+  \variable{seeRight} & \type{boolean} & liegt das sichtbare Segment rechts? \\
+  \variable{hiddenRaySide} & \type{integer} & Die Seite auf der eine Zacke liegt \\
+  \variable{from} & \type{TPointf} & Startpunkt des Strahls \\
+\end{tabular}\n	
+Hierbei ist anzumerken, dass \variable{hiddenRaySide} auch $0$ sein kann, dann nämlich, wenn keine Zacke den Strahl begrenzt.\n
+Als nächstes zeige ich die Felder des \type{TSeenPos}-Records, von dessen Typ die Einträge im \variable{sees}-Array sind:\n
+\begin{tabular}{lll}
+  \b{Name} & \b{Typ} & \b{Beschreibung} \\
+  \variable{where} & \type{double} & getroffene Position auf der Linie \\
+  \variable{seeRight} & \type{boolean} & liegt das sichtbare Segment rechts? \\
+  \variable{hiddenRaySide} & \type{integer} & Die Seite auf der eine Zacke liegt \\
+  \variable{from} & \type{TPointf} & Startpunkt des Strahls \\
+  \variable{wherePos} & \type{TPointf} & getroffener Punkt \\
+\end{tabular}\n	
+Wie man sieht, stimmen die Parameter von \function{addSeePoint} und die Felder von \type{TSeenPos} fast völlig überein. Die einzigen Unterschiede sind, dass bei \type{TSeenPos} die Angabe der getroffenen Linie fehlt - was natürlich daran liegt, dass \type{TSeenPos}-Variablen Einträge in einem Feld einer Linie sind - und dass ein (redunantes) Feld namens \variable{wherePos} hinzugekommen ist. \n
+\function{addSeePoint} sucht nun einfach, von rechts aus, den ersten Eintrag in dem \variable{sees}-Array der Linie, der weiter links als die übergebene Position ist. Dann werden alle Einträge rechts von diesem Eintrag noch ein Feld weiter nach rechts verschoben und die übergegebenen Werte werden eingetragen. Dadurch ist das Array immer aufsteigend sortiert. \n
+Abschließend muss noch ausgerechnet werden, wo der getroffene Punkt liegt, in dem die Richtung mit der Position multipliziert wird und der entstandene Vektor an den Startpunkt der Linie angehängt wird.
+
+Die nächste wichtige Prozedur ist \functionF{lookFromWayLine}, die als einzigen Parameter eine Linie entgegen nimmt. Zuerst wird \function{lookFromPoint} für die beiden Endpunkte aufgerufen. Dann werden alle Paare von Punkten des Museums durchlaufen, indem je zwei Polygone \variable{p1} und \variable{p2} sowie zwei Linien \variable{l1} und \variable{l2} dieser Polygone ausgewählt werden, deren Startpunkte als gewählte Punkte genommen werden. \n
+Sind zwei Punkte ausgewählt, wird ein Strahl von einem Punkt zum anderen erzeugt, indem einfach ein Punkt als Startpunkt und der anderen minus des Startpunkts als Richtung gewählt wird. Da es egal ist, ob der Strahl von \variable{p1,l1} zu \variable{p2,l2} oder umgekehrt verläuft, wird die Schleife als kleine Optimierung abgebrochen, wenn die Indizes vom ersten Punkt größer sind, als die vom zweiten. Als erstes wird nun die Richtung so gewählt, das der Strahl von \variable{p1,l1} zu \variable{p2,l2} verläuft. \n
+Da nun ein Strahl existiert, kann mit der Funktion \function{whichSide} überprüft werden, auf welcher Seite vom Strahl die an die Punkte angrenzenden Wände (bzw. deren anderen Eckpunkte) liegen. Liegen beide Wände eines Punktes auf derselben Strahlseite, handelt es sich um eine Zacke und die Seite, auf der sie den Strahl begrenzt wird in \variable{side1} bzw. \variable{side2} gespeichert. Ist es keine Zacke, wird eine 0 gespeichert. Dann kann überprüft werden, ob beide Zacken, sofern vorhanden, auf derselben Seite liegen. Ist das der Fall, trifft der Strahl keinen Begrenzungspunkt eines Segments und ist daher, wie oben beschrieben, nutzlos.\n
+Nun kann der Treffpunkt des Strahles mit der übergebenen Weglinie berechnet werden, wobei die Weglinie ebenfalls als Strahl interpretiert wird. Dann wird die Gleichung $start_1 + u * dir_1 = start_2 + v * dir_2$ nach $u$ und $v$ aufgelöst (das geht da $start_i$ und $dir_i$ 2-dimensionale Vektoren sind), wobei herauskommt: $u = \frac{dir_{2_x}*(start_{1_y} - start_{2_y}) + dir_{2_y}*(start_{2_x} - start_{1_x})}{dir_{1_x}*dir_{2_y} - dir_{1_y}*dir_{2_x}}$ und entsprechend $v = \frac{dir_{1_x}*(start_{1_y} - start_{2_y}) + dir_{1_y}*(start_{2_x} - start_{1_x})}{dir_{1_x}*dir_{2_y} - dir_{1_y}*dir_{2_x}}$\n
+Das Ergebnis existiert natürlich nur, wenn die Strahlen nicht parallel oder identisch sind, in dem Fall wäre der Divisor $0$ und die Punktekombination ist entweder nicht sichtbar, oder schon von den Randpunkten der Weglinie aus gesehen. Weiterhin geben $u$ und $v$ den Abstand vom Strahlstartpunkt in Vielfachen der Länge des Richtungsvektors an.\n
+Im Programm bezeichnet \variable{u} die Position auf dem Strahl und \variable{v} die auf der Weglinie. \variable{v} muss dabei zwischen $0$ und $1$ liegen, ansonsten wird die Linie nicht getroffen, sondern nur eine identisch liegende Gerade. \variable{u} kann dagegen einen beliebigen Wert haben, liegt er ebenfalls zwischen $0$ und $1$, ist der Weg zwischen den beiden Punkten, ist er größer als $1$, liegt der Weg hinter Punkt \variable{p2,l2}, ansonsten, wenn \variable{u} negativ ist, hinter \variable{p1,l1}. Da es einfacher ist, wenn man davon ausgehen kann, dass der Weg in Richtung des Strahls liegt, wird in diesem letzten Fall, der Strahl umgedreht und \variable{p2,l2} als Startpunkt gewählt. \n
+Anschließend muss geprüft werden, ob dieser Strahl den Weg tatsächlich trifft, oder ob er vorher von einer Wand des Museumspolygons aufgehalten wird.	Dafür wird die bereits erwähnte Prozedur \function{findRayHitPoints} aufgerufen, die den tatsächlichen Treffpunkt eines Strahles mit dem Polygon zurückgibt. Liegt dieser Treffpunkt näher als der Weg, oder zwischen den beiden gewählten Punkten, sind diese nicht beide sichtbar, und können ignoriert werden.\n
+Ansonsten kann man vom Weg wenigstens diese beiden Punkte sehen und über die Prozedur \function{searchVisibleLine} werden die Sichtbarkeitsmarkierugen der an die beiden Punkt angrenzenden Linien, gespeichert. Vorher wird allerdings noch $u$ in die oben gezeigt Gleichung eingesetzt, um die Koordinaten des Punktes auf der Weglinie zu erhalten, von dem aus die Sichtbarkeit besteht.\n
+Waren die Ecken der gewählten Punkte keine Zacken oder liegt die Weglinie zwischen den beiden Punkten (also $\variable{u} < 1$), so ist auch nichts wichtiges mehr von dem Wegpunkt aus sichtbar, da der Strahl von dem Wegpunkt zu einem der gewählten Punkte nicht sinnvoll begrenzt wird. \n
+Ansonsten wird nun ein Strahl in die umgekehrte Richtung geschickt, bei dem nicht mehr der Wegpunkt in der Richtung der Strahls liegt, um die vom Sichtstrahl getroffene Stelle auf dem Museumsrand mit \function{findRayHitPoints} zu finden. Über \function{addSeePoint} kann nun eine Sichtbarkeitsmarkierung gespeichert werden, wofür aber noch herausgefunden werden muss, in welche Richtung das getroffene Segment sichtbar ist. Dafür wird wie in \function{lookFromPoint} die Seite auf der der Startpunkt der Linie liegt, mit der Seite, auf der die begrenzende Zacke liegt, verglichen. Dies ist, wie unter "`Lösungsidee"' beschrieben, die vom Wegpunkt weiter entfernte Zacke, also entweder die erste, oder, wenn der Strahl gedreht werden muss, weil die getroffene Position negativ ist, die zweite Zacke.
+
+\function{lookAround} ruft nun, nachdem \function{lookFromWayLine} erfolgreich die Randpunkte aller von einer Linie aus sichtbaren Segmente berechnet hat, \functionF{convertLookPoints} auf, um diese Randpunkte in sichtbare Bereiche umzuwandeln. Dazu wird für jede Linie im Museumspolygon diese Schleife ausgeführt:\n
+Das (sortierte) \variable{sees}-Array wird von links nach rechts stückweise mit einer while-Schleife durchlaufen. Für jeden Punkt, der dabei am linken Rand eines Segments liegt, (liegt er am rechten Rand, ist irgendein Fehler aufgetreten) wird nun zuerst der nächste Punkt, der am rechten Rand liegt, gesucht. Dann weiß man, dass zwischen diesen Punkten nur Punkte liegen, die an einem linken Rand liegen, und die Indizes der äußersten Punkte am linken Rand, werden in \variable{border1Start} und \variable{border1End} gespeichert. (Also \variable{border1Start} ist der erste Punkt am linken Rand und \variable{border1End}
+der letzte, so dass zwischen diesen Punkten nur welche liegen, die ebenfalls am linken Rand eines Segments liegen können).\n
+Anschließend wird dasselbe für die Punkte am rechten Rand gemacht, und die Indizes dieses Bereichs in \variable{border2Start} und \variable{border2End} gespeichert. Dann wird der Index für den nächsten Durchlauf auf den des nächsten Punkts hinter \variable{border2End} gesetzt.\n
+Jetzt muss nur noch für alle Paare von Punkten, von denen einer am linken und einer am rechten Rand liegen kann, (also der erste liegt im ersten Interval, der zweite im zweiten) überprüft werden, ob der entsprechende Bereich sichtbar ist, wofür der Reihe nach die unter "`Lösungsidee"' beschriebene Tests durchgeführt werden.\n
+Zuerst wird getestet, ob die Punkte	\variable{sees[l].from} und \variable{sees[m].from}, also die Punkte, von denen aus die gewählten Segmentränder sichtbar sind, gleich sind. Wenn ja, ist das resultierende Polygon ein Dreieck und auf jeden Fall sichtbar, so dass die anderen Tests übersprungen werden.\n
+Als nächstes wird ein Strahl von \variable{sees[l].from} zu \variable{sees[l].wherePos} (der gewählte potentielle linke Randpunkt) erzeugt, und überprüft, ob die von einer Zacke begrenzte Seite dieselbe ist, auf der auch \variable{sees[m].from} liegt. Die begrenzte Seite muss dabei nicht neu berechnet werden, da das alte Ergebnis in \variable{sees[l].hiddenRaySide} beim Speichern der Sichtbarkeitsmarkierung mit gespeichert wurde. Die Seite auf der \variable{sees[l].from} liegt, muss allerdings mit \function{whichSide} neu berechnet werden. Liegen sie nun auf derselben Seite, ist der Bereich leider unsichtbar, und der nächste wird überprüft. Dann wird getestet, ob \variable{sees[l].from} und \variable{sees[l].wherePos} auf der gleichen Seite liegen, und wenn ja, ist der Bereich, wie oben beschrieben, unsichtbar. \n
+Diese Tests werden anschließend für den Strahl von \variable{sees[m].from} zu \variable{sees[m].wherePos} wiederholt.\n
+Wurde dabei nicht heraus gefunden, dass der Bereich nicht sichtbar ist, muss nun für jeden Punkt des Museums überprüft werden, ob er in dem Bereich liegt. Dafür habe ich eine Extrafunktion \function{isPointInQuad} geschrieben, die später beschriebene wird, und die das überprüft. \n
+Wurde der Bereich nun für sichtbar erklärt, wird ein neuer Eintrag in das Array \variable{seenAreas} eingefügt, das alle sichtbaren Vierecke in Form von vier Punkten enthält. (die sichtbaren Dreiecke sind auch da, wobei sie allerdings als Vierecke mit einer doppelten Ecke interpretiert werden). Die Punkte, die dieses neue Viereck begrenzen, sind die sichtbaren Randpunkte und die Punkte, von denen aus diese Randpunkte gesehen werden können. Dabei werden die Punkte so eingefügt, dass die sichtbaren Randpunkte die Indizes 1 und 2 bekommen, damit sie bei der Ausgabe extra verbunden werden können.\n
+Danach muss nur das \variable{sees}-Array wieder geleert werden, und die Berechnung kann mit der nächsten Linie fortfahren, bis alle Linien durch sind und die Sichtbarkeit berechnet wurde.
+
+Nun müssen nur noch die ganzen Hilfsfunktionen beschrieben werden, die ich bisher ausgelassen habe. Ich gehe dabei in der Reihenfolge vor, in der sie aufeinander angewiesen sind, und in der sie auch im Quellcode stehen.\n
+Danach ist die erste Funktion die Funktion \functionF{whichSide}, die in ihren ersten beiden Parametern einen Strahl entgegen nimmt und als dritten einen Punkt. Alle diese Parameter sind \type{TPointf}s.\n
+Ihre Funktionsweise kann man sich so vorstellen, dass der Strahl zusammen mit dem Punkt, so verschoben wird, dass der Strahl am Ursprungspunkt beginnt. Dann wird das Koordinatensystem linear verzerrt, indem alle Punkte entsprechend ihrem Abstand von der y-Achse parallel zur x-Achse verschoben werden, also indem von jeder x-Koordinate die dazugehörende y-Koordinate multipliziert mit einem konstanten Faktor subtrahiert wird. Dieser Faktor ist dabei so gewählt, dass der Strahl genau auf die alte y-Achse gelegt wird. Da alle Punkten mit gleicher y-Koordinate um dieselbe Strecke verschoben werden, bleibt dadurch die Ordnung der Punkte innerhalb des Koordinatensystems unverändert, und die Seite des Punktes kann nun einfach durch Vergleich mit der y-Achse ermittelt werden.\n
+Ein Problem gibt es allerdings, wenn der Strahl parallel zur x-Achse ist. Dann kann man ihn nicht so verzerren, dass er auf die y-Achse fällt. Zum Glück kann man aber in diesem Fall einfach die y-Koordinaten vergleichen. \n
+Wenn der Strahl in eine negative x oder y-Richtung geht, um sicherzustellen, dass bei einer Umkehrung beider Vorzeichen der Richtung auch die Seiten getauscht werden.
+
+Die nächste Funktion ist \functionF{whichLineSide}. Sie überprüft, auf welcher Seite einer Linie ein Punkt liegt und wird für eine Funktion gebraucht, die ich später beschreibe.\n
+Der einzige Unterschied zu \function{whichSide} liegt darin, dass der zweite Parameter hier ebenfalls einen Punkt angibt und keine Richtung. Der Ablauf ist jetzt so, dass einfach die Richtung vom ersten zum zweiten Punkt ausgerechnet wird, und dann als Parameter an \function{whichSide} übergeben wird.
+
+Danach kommt \functionF{findRayHitPoints}, die wie schon beschrieben die Treffpunkte eines übergebenen Strahls mit einem ebenfalls übergebenen Array von Polygonen berechnet. \n
+Dafür wird der Schnittpunkt des übergebenen Strahles mit jeder Linie des Polygons berechnet, mit der gleichen Formel, die ich schon in der Prozedure \function{lookFromWayLine} beschrieben habe. Wieder gibt es Variablen \variable{u} und \variable{v}, wobei \variable{u} die Position auf dem Strahl und \variable{v} die auf der Linie angibt, und \variable{v} muss wieder im Bereich $0$ bis $1$ liegen. \n
+Ist der Strahl parallel zur getesteten Linie, kann er sie nicht passieren, sondern endet an einem ihrer Endpunkte. Das heißt, auch wenn der Punkt sichtbar ist, beginnt kein Liniensegment an ihm, und die Linie kann daher ignoriert werden.\n
+Als nächstes werden Rundungsfehler am Rand (z.B.: 1e-20 statt 0) beseitigt, und überprüft, ob der getroffenen Punkt im zulässigen Bereich des Strahls ist, also näher am Startpunkt des Strahles ist, als das bisherige Ergebnis \variable{result.when}, und größer als 0. 
+Anschließend müssen die Zacken erkannt werden. Dazu wird, wenn der getroffene Punkt ein Startpunkt ist (um das genau zu erkennen, mussten die Rundungsfehler beseitigt werden), mit \function{whichSide} berechnet, auf welchen Seiten des Strahles, die an den Punkt angrenzenden Seiten sind. Sind beide auf derselben Seite, ist es tatsächlich eine Zacke und die entsprechenden Informationen (Punkt, Seite und Position auf dem Strahl) werden an der passenden Position in das sortierte \variable{between}-Array eingefügt, und zur nächsten Linie gegangen. \n
+Ein Endpunkt einer Linie wird dagegen ignoriert (also die folgende Linie wird dann überprüft), da es sich dabei ja gleichzeitig um den Startpunkt der nächsten handelt und es sinnlos ist, zweimal dieselbe Zacke zu speichern.\n
+Wenn das Programm nun noch nicht beschlossen hat, die Linie zu ignorieren, wurde diese getroffen, und der Treffpunkt wird in \variable{result} gespeichert. Anschließend müssen alle bisherigen Zacken gelöscht werden, die weiter entfernt sind als die getroffene Linie, da sie ja jetzt nicht mehr passiert werden. Da das Array sortiert ist, geht dies recht schnell.
+
+Nun würde die Funktion \function{addSeePoint} kommen, da ich diese aber schon beschrieben habe, kommt nun \functionF{searchVisibleLine}. Diese Prozedur nimmt den Startpunkt \variable{raystart} eines Strahls und eine Linie \variable{line} entgegen, wobei der Startpunkt dieser Linie der Punkt ist, der von einem Strahl getroffen wurde. Zuerst wird überprüft, ob der Startpunkt des Strahles bei beiden Linien (der übergebenen Linie und der vorherigen, die den Startpunkt als Endpunkt hat) auf der selben Seite liegt. Das ist gleichbedeutend damit, dass beide Linien auf unterschiedlichen Seiten des Strahles liegen. Wenn ja, besitzen beide Linien am Rand ein sichtbares Segment, und die entsprechenden Punkte, werden mit \function{addSeePoint} markiert. Wenn nicht, ist nur eine der Linien sichtbar und diese verdeckt die andere, das heißt, dass sie den Startpunkt des Strahls, von der anderen Linie und ihrem Endpunkt trennt. Eine Linie ist daher sichtbar, wenn der Startpunkt des Strahles, und der Endpunkt der anderen Linie, auf verschiedenen Seiten liegen. Hier wird dann wieder \function{addSeePoint} aufgerufen, allerdings mit anderen Parametern.
+
+Die letzten beiden Funktionen sind \functionF{isPointInTri} und \function{isPointInQuad}. Von ihren Parametern her, sind beide Funktionen sehr ähnlich. \function{isPointInTri} erwartet die drei Eckpunkte eines Dreiecks und dann den Punkt, der auf seine Lage überprüft werden soll. \function{isPointInQuad} bekommt dieselben Informationen, allerdings noch einen Punkt mehr.\n
+Die Funktionsweise ist allerdings unterschiedlich. Da ein Dreieck immer konvex und einfach ist, kann einfach überprüft werden, ob der Punkt in Bezug zu allen drei Linien des Dreiecks auf derselben Seite liegt. Wenn ja, ist er in dem Dreieck, ansonsten außerhalb.
+
+Die Funktionsweise von \functionF{isPointInQuad} ist dagegen etwas komplizierter, da ein Viereck konkav oder sich selbst schneidend sein kann. Daher werden diese Fälle einzeln überprüft. Wenn zwei Seiten sich schneiden, das Viereck also ungefähr wie eine Sanduhr aussieht, entstehen zwei Dreiecke. Angenommen, das Viereck liegt so, dass eines der Dreiecke oben und das andere unten liegt. Nimmt man die beiden Eckpunkte des oberen Dreiecks und verbindet sie mit einem der unteren, entsteht wieder ein Dreieck, und nimmt man den anderen unteren Punkt, entsteht ein anderes Dreieck. Überlagert man nun diese Dreiecke, so dass man alles abschneidet, das nicht in beiden Dreiecken liegt, entsteht ein neues Dreieck, das exakt dem oberen entspricht. Man muss also nur überprüfen, ob der Punkt in diesen beiden Dreiecken liegt, um festzustellen, ob er im oberen Dreieck liegt. Macht man das äquivalent noch mit dem unteren Dreieck, so erfährt man, ob der Punkt im Viereck liegt.\n
+Der andere störende Fall ist, dass das Viereck konkav ist, also eine der Diagonalen liegt nicht im Viereck. Dann liegt aber die andere Diagonale im Viereck, und das Viereck kann entlang dieser in zwei Dreiecke geteilt werden. Es muss dabei auch nur für eine Diagonale überprüft werden, ob sie im Viereck liegt, da falls sie es 
+
+\newpage
+\section{Der empirische Ansatz}
+Wenn dieser Algorithmus aktiviert wurde, werden die Polgonpunkte direkt nach dem Einlesen, so transformiert, dass sie im Bereich 0 bis 1 liegen, um Veränderung der Genuigkeit besser handhaben zu können. \n
+Die eigentliche Berechnung steht aber komplett in \functionF{loadWayProbabilityClick}. Zuerst wird ein Bild geladen, dass die Wahrscheinlichkeiten für den Wächterufenthalt enthält. voll schwarz bedeutet 100\%, voll weiß 0\% und Graustufen liegen dazwischen.
+Diese umgerechneten Wahrscheinlichkeiten werden in  \variable{invWayProbability} gespeichert.\n
+Um Punkte zu erkennen, die nicht im Museum liegen, wird dieses in eine Bitmap gezeichnet, und alle Punkte, die außerhalb oder in einem Loch sind, werden in  \variable{invWayProbability} mit einer 2 gekennzeichnet.\n
+Dann wird für jeden Punkt berechnet, welche Bereiche von dort aus sichtbar sind. (Das geht mit dem anderen Algorithmus schneller, als mit einem einfachen Strahlentest für jedes Punktepaar). Nun werden die anderen Punkte durchlaufen, und überprüft, welche in einem sichtbaren Bereich liegt. Ist einer sichtbar, wird die Wahrscheinlichkeit in invSeeProbability mit der invertierten Aufenthaltswahrscheinlickeit multipliziert und entsprechend gesetzt. \n
+Die Ausgabe geschieht wieder in outputPaintBoxPaint. Dort werden einfach, alle Punkte entsprechend eingefärbt, und das Museum drüber gezeichnet.
+
+\chapter{Quellcode}
+\begin{small}
+  \lgrindfile{a1_i.pas.lg}
+\end{small} 
+
+\chapter{Ablaufprotokoll}
+\begin{figure}[hp]
+	\centering
+		\includegraphics{E:/programs/delphi/bwinf/24/2/1/e0.eps}
+	\label{fig:e0}
+\end{figure}\n
+Die einzelnen Vierecke:
+\begin{figure}[hp]
+	\centering
+		\includegraphics{E:/programs/delphi/bwinf/24/2/1/e0w.eps}
+	\label{fig:e0}
+\end{figure}
+
+%Für jede Linie wird dabei der Startpunkt \variable{start}, die Richtung \variable{dir} und ein %Verweis zur vorherigen \variable{left} und nächsten \variable{right} Linie gespeichert. %(Zusätzlich noch, welche Punkte auf ihr gesehen werden können, aber das kommt erst später).
+%def dosomething(expr p1,...) = enddef;
+
+\end{empfile}
+\end{document}

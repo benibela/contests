@@ -1,0 +1,395 @@
+object Form1: TForm1
+  Left = 208
+  Height = 590
+  Top = 141
+  Width = 731
+  HorzScrollBar.Page = 730
+  VertScrollBar.Page = 589
+  ActiveControl = Button2
+  Caption = 'Form1'
+  ClientHeight = 590
+  ClientWidth = 731
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object Panel1: TPanel
+    Left = 596
+    Height = 590
+    Width = 135
+    Align = alRight
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
+    ClientHeight = 590
+    ClientWidth = 135
+    TabOrder = 0
+    object Label2: TLabel
+      Left = 44
+      Height = 14
+      Top = 301
+      Width = 12
+      Caption = 'R:'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      Left = 40
+      Height = 14
+      Top = 88
+      Width = 34
+      Caption = 'Größe:'
+      ParentColor = False
+    end
+    object Label5: TLabel
+      Left = 44
+      Height = 14
+      Top = 328
+      Width = 11
+      Caption = 'P:'
+      ParentColor = False
+    end
+    object autoUpdate: TCheckBox
+      Left = 16
+      Height = 13
+      Top = 238
+      Width = 20
+      OnChange = autoUpdateChange
+      TabOrder = 1
+    end
+    object Button2: TButton
+      Left = 37
+      Height = 25
+      Top = 232
+      Width = 75
+      BorderSpacing.InnerBorder = 4
+      Caption = 'Berechne 1'
+      OnClick = Button2Click
+      TabOrder = 0
+    end
+    object Button3: TButton
+      Left = 37
+      Height = 25
+      Top = 266
+      Width = 75
+      BorderSpacing.InnerBorder = 4
+      Caption = 'Berechne2'
+      OnClick = Button3Click
+      TabOrder = 2
+    end
+    object SpinEdit1: TSpinEdit
+      Left = 64
+      Height = 23
+      Top = 296
+      Width = 58
+      MaxValue = 65535
+      TabOrder = 3
+      Value = 32000
+    end
+    object SpinEdit2: TSpinEdit
+      Left = 41
+      Height = 23
+      Top = 110
+      Width = 50
+      MaxValue = 0
+      OnChange = SpinEdit3Change
+      TabOrder = 4
+      Value = 200
+    end
+    object SpinEdit3: TSpinEdit
+      Left = 41
+      Height = 23
+      Top = 136
+      Width = 50
+      MaxValue = 0
+      OnChange = SpinEdit3Change
+      TabOrder = 5
+      Value = 200
+    end
+    object SpinEdit4: TSpinEdit
+      Left = 64
+      Height = 23
+      Top = 322
+      Width = 58
+      MaxValue = 0
+      TabOrder = 6
+      Value = 8
+    end
+    object CheckBox1: TCheckBox
+      Left = 37
+      Height = 13
+      Top = 352
+      Width = 52
+      Caption = 'glätten'
+      Checked = True
+      State = cbChecked
+      TabOrder = 7
+    end
+    object SpinEdit5: TSpinEdit
+      Left = 64
+      Height = 23
+      Top = 368
+      Width = 58
+      MaxValue = 0
+      TabOrder = 8
+      Value = 255
+      Visible = False
+    end
+  end
+  object Notebook1: TNotebook
+    Height = 590
+    Width = 596
+    Align = alClient
+    OnPageChanged = Notebook1PageChanged
+    PageIndex = 0
+    TabOrder = 1
+    object PageImg: TPage
+      Caption = 'Bild'
+      ClientWidth = 588
+      ClientHeight = 564
+      object PaintBox1: TPaintBox
+        Height = 539
+        Top = 25
+        Width = 588
+        Align = alClient
+        OnMouseDown = PaintBox1MouseDown
+        OnMouseMove = PaintBox1MouseMove
+        OnMouseUp = PaintBox1MouseUp
+        OnPaint = PaintBox1Paint
+      end
+      object Panel3: TPanel
+        Height = 25
+        Width = 588
+        Align = alTop
+        ClientHeight = 25
+        ClientWidth = 588
+        TabOrder = 0
+        object Shape1: TShape
+          Left = 164
+          Height = 16
+          Top = 5
+          Width = 16
+          Brush.Color = clLime
+        end
+        object Label1: TLabel
+          Left = 216
+          Height = 283
+          Top = 5
+          Width = 374
+          Anchors = [akTop, akRight]
+          ParentColor = False
+        end
+        object drawing: TCheckBox
+          Left = 9
+          Height = 13
+          Top = 5
+          Width = 59
+          Caption = 'Zeichne'
+          Checked = True
+          State = cbChecked
+          TabOrder = 0
+        end
+        object ScrollBar1: TScrollBar
+          Left = 84
+          Height = 16
+          Top = 5
+          Width = 80
+          Max = 65535
+          Position = 65535
+          TabOrder = 1
+          OnChange = ScrollBar1Change
+        end
+        object brushsize: TScrollBar
+          Left = 188
+          Height = 16
+          Top = 5
+          Width = 81
+          Max = 20
+          Min = 2
+          Position = 5
+          TabOrder = 2
+        end
+        object Button4: TButton
+          Left = 308
+          Height = 16
+          Top = 5
+          Width = 31
+          BorderSpacing.InnerBorder = 4
+          Caption = 'save'
+          OnClick = Button4Click
+          TabOrder = 3
+        end
+        object Button1: TButton
+          Left = 276
+          Height = 16
+          Top = 5
+          Width = 32
+          BorderSpacing.InnerBorder = 4
+          Caption = 'Lade'
+          OnClick = Button1Click
+          TabOrder = 4
+        end
+        object Button5: TButton
+          Left = 346
+          Height = 16
+          Top = 5
+          Width = 35
+          BorderSpacing.InnerBorder = 4
+          Caption = 'zufall'
+          OnClick = Button5Click
+          TabOrder = 5
+        end
+      end
+    end
+    object Page3D: TPage
+      Caption = '3D'
+      ClientWidth = 588
+      ClientHeight = 564
+      object oglOutput: TPanel
+        Height = 522
+        Top = 42
+        Width = 588
+        Align = alClient
+        BevelOuter = bvNone
+        TabOrder = 0
+        OnMouseDown = oglOutputMouseDown
+        OnMouseMove = oglOutputMouseMove
+        OnMouseUp = oglOutputMouseUp
+        OnResize = oglOutputResize
+      end
+      object Panel2: TPanel
+        Height = 42
+        Width = 588
+        Align = alTop
+        ClientHeight = 42
+        ClientWidth = 588
+        TabOrder = 1
+        object pos3d: TLabel
+          Left = 8
+          Height = 21
+          Top = 2
+          Width = 39
+          ParentColor = False
+        end
+        object renderinfo: TLabel
+          Left = 8
+          Height = 25
+          Top = 18
+          Width = 62
+          ParentColor = False
+        end
+        object Label3: TLabel
+          Left = 384
+          Height = 14
+          Top = 19
+          Width = 54
+          Anchors = [akTop, akRight]
+          Caption = 'Skalierung:'
+          ParentColor = False
+        end
+        object transparenz: TCheckBox
+          Left = 468
+          Height = 13
+          Top = 2
+          Width = 111
+          Anchors = [akTop, akRight]
+          Caption = 'Wassertransparenz'
+          Checked = True
+          OnChange = transparenzChange
+          State = cbChecked
+          TabOrder = 0
+        end
+        object FloatSpinEditX: TFloatSpinEdit
+          Left = 440
+          Height = 23
+          Top = 18
+          Width = 58
+          Anchors = [akTop, akRight]
+          DecimalPlaces = 4
+          Increment = 1
+          MaxValue = 100
+          OnChange = FloatSpinEditXChange
+          TabOrder = 1
+        end
+        object FloatSpinEditY: TFloatSpinEdit
+          Left = 496
+          Height = 23
+          Top = 18
+          Width = 82
+          Anchors = [akTop, akRight]
+          DecimalPlaces = 7
+          Increment = 9.99999974737875E-6
+          MaxValue = 100
+          OnChange = FloatSpinEditXChange
+          TabOrder = 2
+        end
+        object light: TCheckBox
+          Left = 420
+          Height = 13
+          Top = 2
+          Width = 43
+          Anchors = [akTop, akRight]
+          Caption = 'Licht'
+          OnChange = lightChange
+          TabOrder = 3
+        end
+      end
+    end
+    object PageMap: TPage
+      Caption = 'Bergtabelle'
+      ClientWidth = 588
+      ClientHeight = 564
+      object StringGridMap: TStringGrid
+        Height = 417
+        Width = 456
+        Align = alClient
+        ColCount = 5
+        DefaultColWidth = 35
+        FixedColor = clBtnFace
+        FixedCols = 0
+        FixedRows = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goSmoothScroll]
+        RowCount = 5
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        TabStop = True
+        OnEditingDone = StringGridMapEditingDone
+        OnSetEditText = StringGridMapSetEditText
+      end
+    end
+    object PageWater: TPage
+      Caption = 'Wassertabelle'
+      ClientWidth = 588
+      ClientHeight = 564
+      object StringGridWater: TStringGrid
+        Height = 417
+        Width = 456
+        Align = alClient
+        ColCount = 5
+        DefaultColWidth = 35
+        FixedColor = clBtnFace
+        FixedCols = 0
+        FixedRows = 0
+        Font.Color = clBlue
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll]
+        RowCount = 5
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        TabStop = True
+        TitleFont.Color = clBlue
+      end
+    end
+  end
+  object OpenPictureDialog1: TOpenPictureDialog
+    Title = 'Vorhandene Datei öffnen'
+    left = 40
+    top = 264
+  end
+  object Timer1: TTimer
+    Interval = 200
+    OnTimer = Timer1Timer
+    left = 46
+    top = 147
+  end
+  object SavePictureDialog1: TSavePictureDialog
+    Title = 'Datei sichern als'
+    left = 46
+    top = 328
+  end
+end

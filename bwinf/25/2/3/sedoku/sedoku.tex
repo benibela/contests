@@ -1,0 +1,485 @@
+\documentclass [12pt] {report}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\DeclareGraphicsExtensions{.eps, .png, .jpg}
+%\DeclareGraphicsRule{.png}{eps}{}{convert #1 eps:-}
+%\usepackage{pgf}
+\usepackage{fancyhdr}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+\usepackage{verbatim}
+
+\usepackage[paper=a4paper,left=35mm,right=35mm,top=35mm,bottom=35mm]{geometry} 
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {BWInf 25.2.3 Folgen}
+\pagestyle{fancyplain}
+\lhead{BWInf 25.2.3 Folgen\n Benito van der Zander, 25.834.01}
+\rhead{\thepage}
+\fancyfoot{}
+
+\begin{document}
+%\maketitle
+\tableofcontents
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{15pt} 
+
+\newpage
+\chapter{Lösungsidee}
+\section{Erzeugung von Folgen}
+Bei der Erzeugung des Folgenlexikons werden zuerst einige einfache Folgen durch die Anwendung von Folgenoperatoren und Rekursionsformeln erzeugt.\n
+Diese werden dann als Basisfolgen benutzt, um daraus dann mit Folgenoperatoren alle weiteren Folgen zu erzeugen.\n
+Die Erzeugung einer Folge geht von der Darstellung eines mathematischen Ausdrucks als Syntaxbaum aus, bei dem jeder innere Knoten ein Operator ist, der auf die Ausdrücke der Kindknoten angewendet wird und die Blätter die Basisausdrücke sind, die kombiniert werden.\n
+Man kann relativ einfach alle Ausdrücke enumerieren, indem man die Ausdrücke aus kleineren Ausdrücken zusammensetzt. Die möglichen Ausdrücke für ein Blatt, einen 1-elementigen Baum, sind ja eben die Basisausdrücke. Ein 2-elementiger Baum besteht nun aus einem inneren Knoten mit einem Blatt, man muss also alle unären Operatoren jeweils auf alle Basisausdrücke anwenden, um alle Bäume dieser Größe zu erhalten.\n
+Ein 3-elementiger Baum kann dann aus zwei inneren Knoten und einem Blatt, oder einem inneren Knoten und zwei Blättern bestehen. Die Gesamtmenge aller möglichen Bäume ist also die Anwendung aller unären Operatoren auf die Ausdrücke aller 2-elementigen Bäume, vereinigt mit die Anwendung aller binären Operatoren auf alle möglichen Paare von Basiswerten. \n
+Dies ist allgemein genug, um es verallgemeinern zu können. Man kann alle Ausdrücke eines n-elementigen Syntaxbaumes durch die Anwendung aller unären Operatoren auf alle (n-1)-elementigen Syntaxbäume und aller binäre Operatoren k und (n-k-1)-elementige berechnen.\n
+Damit diese kleineren Bäume nicht jedesmal neu berechnet werden müssen, kann man mit dynamischer Programmierung alle bisherigen in einer Liste speichern und dann jeweils alle unären Operatoren auf alle Einzelbäume und alle binären auf alle Paare von Ausdrücken anwenden.\n
+Je länger man dies wiederholt, umso mehr neue Ausdrücke erhält man.\n
+Eine einfache Optimierung hierbei ist es, die unären Operatoren nur auf neue Ausdrücke, also Ausdrücke, die beim letzten Durchlauf noch nicht vorhanden waren, anzuwenden, weil sie ja schon auf die anderen angewendet worden sind. Bei den binären Operatoren kann man genauso alle Ausdruckspaare ignorieren, bei denen beide Ausdrücke nicht neu sind. Außerdem reicht es bei kommutativen Operatoren alle Vertauschungen zu ignorieren, indem man fordert, dass der erste Ausdruck neuer sein muss als der zweite. (umgekehrt geht es natürlich auch).\n
+Außerdem reicht es in einem neuen Knoten des Baumes einfach, auf die älteren Knoten zu verweisen, so dass die Größe der kleineren Syntaxbäume bei der Erzeugung (aber nicht unbedingt bei der Auswertung) egal sind.
+
+Die Erzeugung von Ausdrücken kann man sowohl für die Rekursionsformeln wie auch die Folgen, die durch die Anwendung von Operatoren auf Folgen entstehen benutzen, nur verwendet man halt unterschiedliche Basisausdrücke und Operatoren. \n
+Bei den Rekursionsformeln ist ein solcher Syntaxbaum ein einfacher mathematischer Ausdruck, mit Verweisen auf vorherige Werte der Folge.\n
+Gibt man nun die ersten Werte vor, kann man relativ leicht die komplette Folge berechnen. Man durchläuft einfach die noch unbekannten Werte und wertet für jeden Eintrag den Syntaxbaum aus, indem man an der Wurzel beginnt, die Kindausdrücke auswertet und dann mit dem angegebenen Operator verknüpft.\n
+Trifft man bei einem Zugriff auf ältere Werte, liest man natürlich die entsprechenden Stellen der bisher berechneten Folge aus, und berechnet sie nicht unnötig neu.
+
+Die logischsten Basisausdrücke sind die natürlichen Zahlen und der Zugriff auf die früheren Elemente der Folge, die logischsten Operatoren sind die normalen Grundrechenarten. Hierbei habe ich mich entschlossen, als Zahl nur die 1 zu verwenden, da man ja durch die Anwendung der Operatoren alle Zahlen aus ihr erhalten kann. \n
+Außerdem beschränke ich den Zugriff auf frühere Elemente auf nur die beiden letzten. Dies ist natürlich eine grobe Einschränkung, allerdings habe ich auch noch nie von einer wichtigen Folge gehört, bei der ein Element durch  drei oder noch mehr vorherige Elemente bestimmt wird.\n% Was dabei natürlich auch nicht berücksichtigt wird, sind Folgen, bei denen der Wert eines Folgenglieds die bestimmt\n
+Weiterhin verwende ich ausschließlich ganze Zahlen, und berücksichtige keine gebrochenen oder irrationalen Zahlen, wie es ja auch das angegebene Vorbild OEIS tut. Man kann aber natürlich den dort beschrieben Trick, Teiler und Zähler als getrennte Folgen zu betrachten, auch bei meinem Programm benutzen, um rationale Zahlen nachzuschlagen.\n
+Damit einher geht, dass die Division nicht besonders sinnvoll ist, da dann schnell Brüche entstehen, die gerundet werden müssten, wodurch die Folge verfälscht würde.\n
+Auch Potenzen sind wenig sinnvoll, da ja bereits die Multiplikation des vorherigen Elements mit einer Zahl zu einer Potenzfolge führt, und die Benutzung der echten Potenz bereits nach wenigen Stellen riesige Zahl produziert (z.B.: 2 4 16 256 65536 4294967296 18446744073709551616).\n
+Die verwendeten Terme sind also $1$, $f(n-1)$, $f(n-2)$, $+$, $-$ und $*$.\n
+Eine andere Frage ist die Wahl der vorgegebenen Anfangsstellen der Folge. Hier habe ich mich einfach für die alle Paare von Zahlen zwischen 0 und 3 entschieden. Das sind zwar ziemlich wenig, sie decken aber die wichtigen Fälle von gleichen, aufsteigenden und absteigenden Anfangswerten ab. Außerdem können Variationen der Anfangswerte auch noch durch die späteren Folgenoperationen erfolgen.
+
+Die grundlegende Berechnung von Folgen mit Folgenoperatoren geht im Grunde genauso mit dem Syntaxbaum, nur sind jetzt die Basiswerte und Operatoren anders.\n
+Die Basiswerte sind alle bisherigen Folgen, bzw. die konstante Folgen 1,2 und 5, wenn noch keine anderen Folgen erzeugt wurden. Ich habe mich für diese drei konstanten Folgen entschieden, weil daraus einerseits die häufig vorkommenden konstanten Folgen ($<10$) mit wenigen Rechenoperationen gewonnen werden können und andererseits es nicht so viele sind, dass das Programm praktisch nur dieselben Folgen mit unterschiedlichen Faktoren ausgeben würde. \\
+Die binären Operatoren sind dieselben, wie bei den Rekursionsformeln, nur werden jetzt eben Zahlen aus zwei Folgen miteinander verknüpft. Außerdem habe ich bei diesen Operatoren noch die Potenzierung zugelassen, da die Folgen nicht ganz so schnell wachsen.\n
+Ganz anders sind natürlich die unären Operatoren, die die bisherigen Elemente einer Folge miteinander verknüpfen. Ich habe hier nur den Summationsoperator P des Aufgabenblattes, der alle bisherigen Zahlen addiert, und den Produktoperator M, der alle bisherigen Zahlen multipliziert, verwendet.\n
+Diese Operationen lassen sich sehr effizient berechnen, weil jedes Element der Folge von nur zwei weiteren abhängt. Bei den binären Operatoren ist dies offensichtlich, bei den unären handelt es sich bei den beiden Elementen, um das Element der einen Basisfolge und dem vorherigen Element der zu berechnenden Folge. \n
+Da diese Elemente ja bereits bekannt sind, kann man den Wert einfach auslesen und es ist somit irrelevant, wie kompliziert der Syntaxbaum ist, man ist immer auf der Wurzelebene.\n
+Es sind allerdings auch noch andere Folgenoperatoren denkbar, bei denen diese effiziente Auswertung nicht möglich ist, weil die Folgenindizes geändert werden. Hierzu zählen beispielsweise Operatoren, die die ersten Elemente der Folge abschneiden oder die indirekte Adressierung der Elemente einer Folge durch die Elemente einer anderen. Ihre Benutzung würde  es aber erfordern häufig Elemente der Folgen zu berechnen, die noch nicht bekannt sind, was den Geschwindigkeitsvorteil der anderen Folgenoperatoren gegenüber den Rekursionsformeln aufheben würde, weshalb ich sie nicht implementiert habe,  obwohl die entstehenden Folgen sicherlich interessant wären.
+%Hierbei ist die Phase der Auswertung von der Phase der Suche 
+
+
+%Probleme kann es durch Folgen geben, die durch mehrere Ausdrücke erzeugt werden können. \n
+%Vereinfachen kann man dies auch noch, indem man die Unterscheidung zwischen Basisausdruck und Operator fallen lässt, und diese als parameterlose Operatoren betrachtet. Dann hat man nur noch Operatoren, allerdings mit drei verschiedenen Parameterzahlen.
+
+%Einen Rekursionsformel kann man ebenfalls in einen 
+
+%Die Frage ist, wie man einen solchen Baum am besten im Speicher darstellt. Die normale Variante wäre es jeden Knoten durch einen Record darzustellen, und mit einem Zeiger auf die beiden Kinder zu verweisen.\n
+%Dabei fällt es aber schwer, die Struktur im Speicher zu verschieben und zu kopieren, was die Kombination von zwei etwas komplizierter macht. \n
+%Eine andere Möglichkeit wäre ein Array in dem die Art des Knotens in einer bestimmten Reihenfolge eingefügt wird. Da die Kinderzahl eines Operators bekannt ist, ist diese Darstellung immer eindeutig.\n
+%Statt eines Arrays kann man auch eine normale Zahl benutzen, wenn die Baumtiefe und Anzahl der Operatoren kleingenug sind.
+
+%Den Syntaxbaum einer Rekursionsformel kann man ebenfalls aus kleineren Teilen zusammensetzen. Man kann allerdings nicht mehr so einfach die vorberechneten Stücke benutzen, sondern muss jedesmal den Ausdruck komplett auswerten.\n
+%Aber diese Folgendarstellung hat den Vorteil, dass sie das ist, was Menschen sich im allgemeinen unter einer logischen Folge vorstellen.
+
+\section{Verwaltung der Folgen}
+
+Wo nun geklärt ist, wie Folgen erzeugt werden können, muss die Frage beantwortet werden, wie diese Folgen denn nun im Programm gespeichert werden.\n
+%Ich beschreibe zuerst die Phase der Generierung, die sich von der Phase der Suche deutlich unterscheidet.
+Ein Problem bei der Generierung ist es, dass eine Folge durchaus von mehreren Ausdrücken erzeugt werden kann. Durch jedes Duplikat einer Folge verliert man nicht nur einen Speicherplatz, den man durch eine wirklich neue Folge füllen könnte, durch die Generierung der neuen Folgen aus den alten werden sogar noch mehr Duplikate erzeugt, wenn die Operatoren unabhängig von einander auf gleiche Folgen angewandt werden.\n
+Die Lösung hierfür ist zum Glück nicht so kompliziert, es wird einfach, während der Generierung der Folgen, jede neue Folge in einen binären Suchbaum eingetragen. Dann kann man mit nur logarithmischem Zeitaufwand von jeder neu berechneten Folge sagen, ob sie bereits vorkam oder nicht. \n
+Ein Trick hierbei ist es, den Anfang der Folge beim Eintragen abzuschneiden. Dann kann man nämlich auch bei neuen Folgen, die nicht mit einer alten identisch sind überprüfen, ob sie nur einen anderen Anfangspunkt gewählt haben, indem man die Folge mit und ohne Anfangselement sucht.\n
+Diese mehrfache Suche bedeutet zwar einen Geschwindigkeitsverlust, aber der Vorteil weniger unnötige Folgen berechnen zu müssen, gleicht dies wieder aus.
+
+Die eigentliche Suche nach einer vom Benutzer eingegebenen Folge könnte im Prinzip genauso laufen, man durchsucht einen binären Suchbaum nach einem passenden, möglicherweise leicht verschobenen Folgenanfang. Problematisch ist dann aber, dass der Benutzer möglicherweise einen anderen Teil der Folge sucht, als den, mit dem die gespeicherte anfängt.\n
+Wie man nun eine Teilfolge einer anderen Folge findet, ist im Grunde das Problem einer Teilstringsuche und es gibt zwei Verfahren, die sehr schnelle Suchen erlauben. Zum einen die Speicherung als Suffixtrie, zum anderen die als Suffixarray.\n
+Ein Suffixtrie für einen String kann bekanntlich in Linearzeit bezüglich der Länge der gesuchten Folge und unabhängig von der Länge der durchsuchten Folge benutzt werden. Hier kann man ihn allerdings nicht verwenden, da das Alphabet der Folgen (die ganzen Zahlen) zu groß ist, so dass in jedem Baumknoten eine riesige Menge von Suffixen starten würde. \n
+Es würde nicht nur sehr lange dauern, sie alle in jedem Schritt zu durchsuchen, es steht auch im allgemeinen noch nicht einmal genug Speicher für die ersten Ebenen zur Verfügung, wie ein Versuch mit einigen 1000 Folgen und 512 MB RAM gezeigt hat.\n  %die Laufzeit auch von der Alphabetlänge abhängt und diese .\n
+Die Alternative ist natürlich das Suffixarray, das nicht nur speichergütig ist, sondern auch  Alphabet-unabhängig.\n
+Bekanntermaßen enthält ein Suffixarray alle Suffixe einer Folge in lexikographischer Reihenfolge, wodurch mittels binärer Suche in logarithmischer Zeit jede Teilfolge gefunden werden kann.\n
+Das Suffixarray für "`bwinf"' sieht beispielsweise so aus: [bwinf,f,inf,nf,winf]. Die Suffixe werden aber nicht als Folge gespeichert, da es bei einer bekannten Folge reicht, den Startindix des Suffix zu speichern, also: [1,5,3,4,2] für "`bwinf"'. \n
+Jetzt gibt es aber natürlich nicht nur eine Folge, sondern ganze $n$ Folgen (mit jeweils $m$ Elementen).  Damit man immer noch ein Suffixarray benutzen kann, setzt man diese Folgen einfach hintereinander zu einer großen Folge mit $nm$-Elementen zusammen. Beim Vergleich zweier Suffixe darf man dann natürlich nicht die ganze, zusammengesetzte Folge vergleichen, sondern muss bei dem Beginn einer anderen Teilfolge, also bei einem durch $m$ teilbaren Index, aufhören. Im Grunde kann man diese Grenzen als implizite Trennzeichen betrachten.
+
+Die Frage ist nun, wie man so ein Suffixarray berechnet.  Ich habe mich für die offensichtliche Methode entschieden, die sich dann auch als schnell genug herausgestellt hat.\n
+Man geht einfach von der lexikographisch unsortierten Suffixfolge $1,..,nm$ aus und sortiert diese, wobei man zwei Suffixe wie oben beschrieben vergleicht.\n
+Die Sortierung läuft dann mit $O(nm\log nm)$ Folgenvergleichen und der Vergleich zweier Folgen kommt mit $O(m)$ Elementvergleichen aus. Insgesamt ergibt sich dann eine Laufzeit von $O(nm^2\log nm)$.\n
+Ich habe zwar auch Berichte über Algorithmen gefunden, die Suffixarrays in $O(nm\log nm)$ berechnen können (mit dem bei großen Alphabeten nicht sinnvollen Radixsort sogar in $O(nm)$), aber im Allgemeinen ist $m$ auch klein genug, dass es sich nicht lohnt, ein soviel komplizierteres Verfahren zu benutzen.
+
+Bei der Suche kann man nun, wie oben erwähnt, einfach eine binäre Suche benutzen, die $O(\log nm)$ Vergleiche benötigt, um eine passende Folge zu finden.\n
+Ein Vergleich von einem Suffix mit einer eingegebenen Folge der Länge $k$ geht trivialerweise mit $O(k)$-Vergleichen, also benötigt die Suche nach einer Teilfolge  $O(k\log nm)$-Schritte, was schnell genug ist.\n
+Bei der Suche sollten immer nur die jeweils wichtigen Stellen der Datei in den Arbeitsspeicher geladen werden, da das Laden aller Elemente natürlich nur in linearer Zeit geht. (wenn auch sehr schnell)
+
+%\section{Speicherung der Folgen}
+%Es gibt drei unterschiedliche Arten von Informationen die bei der Suche nach einer Teilfolge benötigt werden, die Werte der Folge selber \n
+
+\section{Ausgabe einer gefundenen Folge}
+Bei der Ausgabe einer Folge, die eine gesuchte Teilfolge enthält, lasse ich einfach die Werte der Folge und die Art und Weise ihrer Erstellung ausgeben.\n
+Die Folgenwerte sind sinnvoll, weil der Benutzer sicherlich an den weiteren Werten interessiert sein dürfte, sonst hätte er die Folge ja gar nicht suchen müssen. Man könnte natürlich auch nur die weiteren oder vorherigen Glieder ausgeben, allerdings sieht man dann nicht gleich, dass die gesuchte Folge tatsächlich vorhanden ist.\n
+Die Beschreibung ist sinnvoll, weil der Benutzer natürlich wissen will, wie das Programm auf die Folge gekommen ist.\n
+Bei der Ausgabe der Folge habe ich drei Arten implementiert, je nach Zweck der Suche.\n
+Die erste gibt die Formeln als normalen ASCII Text aus, womit sie am stärksten der internen Repräsentation der Folgen ähnelt und sinnvoll ist, wenn man nur mal schnell eine Folge überprüfen will. Die zweite gibt die Formel so aus, dass sie zusammen mit der Berechnungsvorschrift in Derive verwendet werden können. Dies ist nützlich, wenn man die Folge für weitere Berechnungen braucht. Die letzte Ausgabe liefert einen Latexausdruck, was man braucht, um die Formel in einer Dokumentation einzubinden.\n
+Die Folgenglieder werden im Grunde immer gleich ausgegeben, als Komma-separierte Liste. Im Derivemodus werden aber noch eckige Klammern um sie herum gesetzt, weil Derive dies für Listen erfordert.
+
+Die Ausgabe einer Rekursionsformel läuft dann so, dass zuerst die Startbedingungen und dann eben die Definition der weiteren Elemente durch vorherige Elemente (eben die Funktionsvorschrift) ausgegeben wird. Letzteres kann immer gleich ausgegeben werden, sowohl für Derive wie auch für Menschen sind Ausdrücke wie $f(n-1)$ und die binären Operatoren $+$, $-$, $*$ verständlich.\n
+Die Definition der Anfangsbedingung ist jedoch unterschiedlich, für Dokumentationen reichen die klaren Ausdrücke "`f(0) = Startwert"' und "`f(1) = anderer Startwert"`, für Derive dagegen werden die Startbedingungen als if-Anweisung ausgegeben: "`IF(n=0, Startwert, restlicher Ausdruck)"'.
+
+Die Ausgabe von Sequenzoperatoranwendungen ist etwas komplizierter. Die binären Operatoren können wieder wie oben in natürlicher Weise dargestellt werden, die unären dagegen haben in jeder Ausgabeart eine andere Darstellung. \n
+So wird der Summationsopertor P in der normalen Ausgabe als P(Term) dargestellt, in Derive gibt es hierfür den Ausdruck \\
+\verb#sum(Term, Schleifenvariable, Startwert, Endwert)# und in Latex\\ \verb#\sum\limits_{Schleifenvariable=Startwert}^Endwert(Term)#.\n
+Hier muss das Programm die entsprechenden Werte einsetzen, wobei darauf geachtet werden muss, dass der Term in der Summe von einer anderen Variable abhängig ist. \n
+Für den Multiplikationsoperator M gilt dasselbe mit \verb+product+ und \verb+\prod+.\n
+Die Folgenoperatoren können natürlich auch auf rekursiv definierte Folgen angewendet werden, bei so etwas müssen dann die rekursiv definierten Folgen vorher ausgegeben werden. Als Funktionsname wird dann g mit einem Index gewählt, bei der Latexausgabe wird der Index tiefgestellt.
+
+Kann eine Folge sowohl durch eine Rekursionsvorschrift, wie auch durch Folgenoperatoren, erzeugt werden, ist es sinnvoll, beide Wege auszugeben, da für manche Zwecke die eine Darstellungsart besser geeignet ist als die andere.\n
+Damit kann man das Programm auch noch dazu benutzen, eine Folge für die man die eine Darstellungsart per Hand gefunden hat, in die andere umzuwandeln.
+
+%Ein Problem in dieser Situation ist, dass die normalen Algorithmen zur Erzeugung eines Suffixarrays aus einer Folge nicht benutzt werden können, da es ja nicht eine, sondern mehrere Folgen gibt.\n
+
+ %entsteht entweder durch die Anwendung eines unären %werden durch die Vereinigung 
+%man alle kleinen Ausdrücke zu allen großen zusammensetzt.
+%Rekursiv ist es jetzt ziemlich einfach alle möglichen Ausdrücke zu enumerieren.
+%Bei der Berechnung von Folgen geht man am besten von einem normalen Syntaxbaum aus, %aus der Anwendung von Operatoren auf Elementarfolgen kann 
+%$\sum\limits_{i=1}^n\left(\prod\limits_{j=1}^i\left(j\right)\right)$
+
+\section{Untersuchung einer Folge}
+%Es gibt sehr viele Folgen, die sich nur wenig unterscheiden.
+Das Problem bei einem Folgenlexikon ist, das es sehr viele mögliche Folgen gibt, die natürlich nicht alle im Lexikon enthalten sein können, weshalb eine Auswahl der wichtigsten getroffen werden muss.\\
+Dabei ist es natürlich blöd, wenn das Lexikon alle Folgen von 1*n bis 1234*n enthält, und der Benutzer dann ausgerechnet nach 1235*n sucht, was nicht mehr enthalten ist.\\
+Um solche Folgen finden zu können, ist es am besten, wenn man die vom Benutzer eingegebene Folge untersucht und sie auf gespeicherte Folgen zurückführen kann.
+
+Die meisten Folgen lassen sich vereinfachen, wenn man die Differenzen der Folgenglieder betrachtet.\\
+Erhält man dann eine bekannte Folge (im Beispiel oben konstant 1235), kann man die gesuchte Folge als Summe davon und dem ersten Wert der gesuchten Folge schreiben, ohne alle Kombinationen speichern zu müssen. \\
+Den ersten Wert der gesuchten Folge muss man addieren, da es ja sein kann, dass die Summe der Differenzen sich um einen konstanten Summand von der echten Folge unterscheidet. \\
+Da es auch sein kann, dass die Differenzenfolge selbst auch nicht im Lexikon enthalten ist, wendet man das Verfahren einfach nochmal an. (was dann im Beispiel 0 liefert).
+
+Etwas umständlich ist dabei, dass den Präfixsummen der Differenzenfolge das erste Element der gesuchten Folge fehlt. Wenn man Glück hat, ist die eigentliche Differenzenfolge nur ein Teil der im Lexikon gefundenen, dann kann man einfach das Element vor dem ersten Element der Differenzenfolge nehmen.\\
+Wenn nicht, muss man die Elemente der Folge um ein Element verschieben. Bei einer Summe lässt sich dies erledigen, indem man die summierte Folge von der Summe subtrahiert.
+%Wenn man dann aus die Summe bildet, muss 
+
+
+%eine hohe Trefferquote zu erreichen sehr viele Folgen enthalten muss, die sich nur in einigen wenigen Faktoren unterscheiden. 
+\chapter{Programmdokumentation}
+Das Programm ist ein typisches Konsolenprogramm, das seine Eingabe über die Kommandozeile entgegen nimmt und die Ergebnisse über die Standardausgabe ausgibt.\\
+Der Quellcode besteht aus diesen 4 Dateien:
+
+\begin{tabular}{lp{10.3cm}}
+sequences.lpr  & Projektdatei, die die Eingabe an die eigentliche Berechnung weitergibt.\\
+generating.pas & Enthält die Klasse zur Erzeugung eines Folgenlexikons.\\
+searching.pas & Enthält die Klasse zur Durchsuchung eines Folgenlexikons\\
+calculation.pas & Enthält die Klassen zur Repräsentation von Folgen und ihrer Definition
+\end{tabular}
+
+In sequences.lpr findet man nur drei simple Prozeduren namens \procedure{generate}, \procedure{find} und \procedure{view}, die nach Parsen der Kommandozeile aufgerufen werden.
+Jede dieser Prozeduren ruft selbst wiederum nur die entsprechenden Funktionen aus generating.pas und searching.pas auf.
+
+\section{Repräsentation der Folgen}
+Ein Element einer Folge wird durch \type{intnumber} dargestellt, was nichts anderes als ein \type{int64} ist und für alle praktischen Folgen ausreichen sollte. Durch die Definition eines eigenen Typs fällt es trotzdem leicht, später mal einen anderen Zahlenbereich zu benutzen.\\
+Die gesamte Folge besteht einfach aus einem Block von aufeinander folgenden \type{intnumber}s. Während der Generierung sind alle diese Blöcke Teil eines großen Arrays, bei der Suche wird nur für die benötigten Folgen Speicher reserviert.
+\newpage
+Die Definition einer Folge wird in der Klasse \type{TSequenceInfo} verwaltet.\n
+Sie enthält zum einen Zeiger namens \var{values} auf die eigentlichen Folgenwerte und zum anderen ein Objekt namens \var{recursive} von der Klasse \type{TRecursive\-Expression} und ein anderes Objekt namens \var{sequenceOperator} von der Klasse \type{TSequenceOperator}.\\
+Diese beiden Objekte enthalten dann die eigentliche Definition der Folge. \var{recursive} ist nur dann vorhanden, wenn die Folge rekursiv definiert werden kann, \var{sequenceOperator} entsprechend, nur, wenn sie durch Anwendung von Folgenoperatoren erzeugt werden kann. Es können natürlich auch beide Objekte existieren.\\
+Diese Objekte enthalten nun die eigentliche Definition der Folgen. Beide Typen sind von einer anderen Klasse namens \type{TSequenceCreator} abgeleitet, die auch einen Zeiger namens \var{values} auf die Folgenwerte enthält und einige Methodensignaturen definiert.
+
+Die wichtigsten Felder von \type{TSequenceOperator} sind nun die Variable \var{typ} vom Typ \type{TSeqFunction} und die beiden Variablen \var{a} und \var{b}, die auf untergeordnete \type{TSequenceCreator}-Objekte verweisen.\\
+\var{typ} gibt nun den Operator an, der benutzt werden soll. Die Konstantenfolgen werden dabei als parameterlose Operatoren angesehen. Wie oben geschrieben, gibt es hier auch unäre und binäre Operatoren.\\
+Die Berechnung der Folge erfolgt nun in der Methode \procedure{calculate}, indem die Werte von \var{a} und \var{b} benutzt werden.\\
+Zu beachten ist hierbei die Behandlung von Überläufen. Tritt während der Berechnung eines Feldes eine Exception auf, werden die restlichen Elemente auf \const{INT\_NAN} gesetzt. Dies ist definiert als der minimale Wert eines \type{int64}, so dass es unwahrscheinlich ist, dass dieser Wert zufällig entsteht. 
+
+Die andere Folgendefinitionklasse ist \type{TRecursiveExpression}. Diese enthält allerdings die Definition nicht selber wie \type{TSequenceOperator}, sondern verweist auf ein \type{TMathExpressionNode} Objekt namens \var{expr}, das die Wurzel des Syntaxbaum darstellt.\\
+Diese Trennung ist notwendig, da die gleiche rekursive Definition ja je nach Startwerten unterschiedliche Folgen generieren kann.\\
+Bei der Berechnung mittels \procedure{calculate} werden nun zuerst die Anfangswerte aus dem Array \var{valueStart} der Klasse in die eigenliche Folge \var{values} kopiert und dann für jedes Folgenelement mit der rekursiven Methode \procedure{calculate} von \var{expr} sein Wert berechnet. Die Erkennung von Überläufen erfolgt hier auf dieselbe Weise wie in bei \type{TSequenceOperator}.
+
+Zwei Methoden, die  alle diese Klassen besitzen sind \procedure{writeToStream} und \procedure{readFromStream}. Diese schreiben und laden die Objekte aus einer Datei, indem der Typ eines Objekts geschrieben/geladen wird und dann jedes untergeordnete Objekt betrachtet wirden. Da dadurch jede gespeicherte Folgendefinition eine andere Größe hat, wird beim Schreiben die Anzahl der geschriebenen Bytes zurückgegeben, so dass man das Ende einer Definition kennt.
+
+Die Ausgabe einer Folge wird auch von diesen Methoden erledigt. Jede Ausgabe beginnt in der \procedure{print}-Methode der \type{TSequenceInfo}-Klasse. Diese schreibt zuerst die Folge auf der Standardausgabe und ruft dann die \procedure{toString}-Methode der Definitionsklassen auf. Diese rufen dann rekursiv alle \procedure{toString}-Methode der untergeordneten Objekte auf.\n
+Bei der Ausgabe einer Definition durch Folgenoperatoren wird die Konstante \const{VARIABLE\_NAMES} benutzt, die alle möglichen Variablen in einer bevorzugten Reihenfolge
+enthält. Sie begrenzt dadurch die Zahl der möglichen Rekursionstiefen auf 52, was aber für alle praktischen Anwendungen ausreicht.
+
+\section{Erzeugung der Folgen}
+Das Folgenlexikon wird von der Klasse \type{TSequenceGenerator} in der Unit generating.pas erzeugt. \n
+Das Erstellen läuft dann folgendermaßen ab:\n
+Mit den beiden Methoden  \procedure{generateWithRecursion} und \procedure{generateWithSequenceOperators} werden solange Folgen und Folgendefinitionen auf die jeweilige Art erzeugt, bis eine im Parameter angegebene Anzahl erreicht wurde. Dabei wird regelmäßig \procedure{writeSequenceProgress} aufgerufen, um den Benutzer über den Fortschritt zu informieren.\\
+Ein Speicherblock für die Werte einer Folge wird dabei von der Funktion \function{currentSequence} zurückgegeben. Für jede neue Folgendefinition wird dann \procedure{addCreationInfo} aufgerufen, das die entsprechende Folge mitsamt ihrer Definition speichert.\\
+Zuerst wird dort mittels \procedure{treeFind} überprüft, ob die Folge oder eine etwas verschobene bereits im binären Suchbaum vorhanden ist. Wenn ja, wird das Einfügen abgebrochen. Wenn nicht, wird die Folge mittels \procedure{treeInsert} in den binären Suchbaum eingefügt.\n
+Die dabei nötigen Vergleiche von Folgen werden von den Funktionen \function{cmpSuffix} und \function{cmpSuffixIgnoreLen} übernommen.\\
+Nachdem die Folgen nun alle im Baum sind, wird \procedure{close} aufgerufen, die den Erstellungsvorgang abschließt, indem mittels \procedure{sortSuffix} alle Suffixfolgen sortiert werden.\\
+Nun müssen nur noch mittels \procedure{saveToFile} die Folgen gespeichert werden.
+
+Die Erstellung von Folgen mit \procedure{generateWithRecursion} läuft präziser so ab:\\
+Zuerst werden in eine Liste \var{mnodeList} die Basisausdrücke für eine rekursive Definition eingefügt. Solange wie nun neue Basisausdrücke erzeugt wurden und die Schleife nicht zu Ende ist, wird dann für alle Kombinationen von Operatoren und zwei Ausdrücken (mindestens einem neuen) die Unterfunktion \procedure{addSequences} aufgerufen.\\
+Diese überprüft dann zuerst, ob der ganze Ausdruck auch Sinn ergibt. (z.B.: ob nicht nur zwei gleiche Ausdrücke von einander subtrahiert werden). Wenn ja werden die Werte in ein \type{TMathExpressionNode}-Objekt namens \var{mnode} geschrieben.\n
+Dieses Objekt wird nun mit einigen Startwertkombination in ein \var{TRecursive\-Expression}-Objekt namens \var{recex} geschrieben. Sagt \procedure{addCreationInfo} nun, dass die daraus resultierende Folge neu ist, wird beim ersten Mal die Rekursionsformel in \var{mnodeList} gespeichert.\\
+Die Werte aller Folgen werden hintereinander in \var{seqValues} gespeichert, ihre Definitionen in \var{seqInformation}.\\
+\procedure{generateWithSequenceOperators} arbeitet im Grunde genauso. Die zu kombinierenden Ausdrücke werden nun aber nicht mehr in einer lokalen Liste, sondern in dem Feld \var{seqInformation} der Klasse gespeichert. Dieses ist ein Array, das die Definitionen aller jemals erstellten Folgen enthält und bei Erzeugung der Klasse auf die maximale Größe gesetzt wird.
+
+Die Folgendefinitionen werden nun der Methode \procedure{addCreationInfo} in dieses Array eingefügt. Ist die Folge wirklich neu, wird nur das entsprechende Objekt an die nächste freie Stelle im Array geschrieben. Wenn nicht, hat \procedure{treeInsert} den alten Index geliefert, und die neue Definition wird dort eingefügt, wenn es noch nicht eine Definition dieser Art gibt (rekursiv oder folgenoperatormäßig).\\
+Dadurch gibt es am Ende für jede Folge maximal zwei unterschiedliche Definitionen, die die einfachsten ihrer Art sind. (Da kürzere vor längeren erzeugt werden)
+
+\procedure{treeFind} und \procedure{treeInsert} funktionieren im Prinzip gleich. Beide vergleichen einen Knoten des binären Suchbaums mit der aktuellen Folge, wobei \procedure{treeInsert} halt noch die aktuelle Folge in den Baum einfügt.\\
+Ein Unterschied besteht in den Parametern. \procedure{treeInsert} kann den übergebenen Knoten ändern und gibt auch den Knoten zurück,in den die Folge letztendlich eingefügt wurde. Gesucht wird dabei immer die aktuelle Folge \var{seqCount} ohne Anfangselement, bei der Arraynummerierung von 0 bis n-1, also die Folge, nach der letzten Folge, die zur Anzahl gezählt wird.\\
+\procedure{treeFind} dagegen ändert die Knoten nicht und sucht nach einem beliebigen Suffix einer Folge. (Benutzt wird sie um die letzte Folge einmal komplett und einmal ohne die ersten beiden Anfangswerte zu suchen)\\
+Die Wurzel des Suchbaumes ist in \var{seqTree} vom Typ \type{PTreeNode} gespeichert. \type{PTreeNode} ist ein Zeiger auf einen \type{TTreeNode}-Record, der einen Index auf ein Suffix einer Folge und Zeiger auf die Kindbäume enthält.\\
+Von jeder Folge wird aber nur ein Suffix gespeichert, dasjenige, das am zweiten Folgenglied beginnt.
+
+Die nötigen Folgenvergleiche werden, wie schon gesagt, von \function{cmpSuffix} und \function{cmpSuffixIgnoreLen} durchgeführt.\\
+Zuerst wird die Länge der beiden übergebenen Suffixe, der Abstand des Index zur nächsten Stelle, die ein Vielfaches der Länge \var{seqLen} ist, ermittelt und anschließend alle Elemente bis zu dieser Stelle verglichen.\\
+Dabei muss nicht auf die undefinierten Werte \const{INT\_NAN} geachtet werden, denn diese sind als Minimum des \type{int64} automatisch kleiner als alle anderen Werte und landen daher in einem Bereich. Ist der einzigste Unterschied zwischen zwei Folgen allerdings ein undefinierter Bereich, sind diese als gleich zu betrachten, da bei der Erzeugung häufige Folgen entstehen, die, abgesehen von Überläufen in Zwischenergebnissen, gleich sind.\\%Allerdings sind zwei Folgen, deren Anfang bis zu einem Punkt gleich ist, und ab diesem \\
+Sind die ersten beiden Werte allerdings in beiden Suffixen undefiniert, so sind die Suffixe als ganzes undefiniert und man kann zur Optimierung sofort aufhören. 
+
+Diese Vergleichsmethoden werden auch von \procedure{sortSuffix} benutzt, die einen einfachen Quicksortalgorithmus implementiert, der die Suffixe sortiert.\\
+Das einzigst interessante hieran ist die Repräsentation der Suffixe im Array \var{suffixs}, indem für jedes Suffix der Index das Anfangselement im Array \var{seqValues} gespeichert ist.
+
+Letztendlich bleibt noch die Speicherung der Folgen über die Methode \procedure{saveToFile} zu beschreiben.\\
+Diese binäre Datei lässt sich in 5 Bereich unterteilen, die hintereinander geschrieben werden können. \\
+Zuerst kommt der 20 Byte große Header, der eine Versionsnummer, seine Größe, die Größe eines Folgenwertes, die Länge einer Folge und die Zahl der Folgen, jeweils hintereinander als DWord-Wert enthält.\\
+Anschließend kommen alle Werte der Folgen als ein großer Block, wie im Array \var{seqValues}. Mit 8 Byte pro Folgenwert ergibt sich eine Größe von 8*\var{seqCount}*\var{seqLen} Bytes.\\
+Darauf folgen die Startindizes der Suffixe, direkt aus dem Array \var{suffixs}. Dies sind 4*\var{seqCount}*\var{seqLen} Bytes.\\
+Nun müssten nur noch die Folgendefinitionen folgen. Da die Größe einer Definition aber variabel ist, können diese nicht so schön als Block geschrieben werden. Daher folgt nun zuerst eine Auflistung der Startpositionen jeder Defintion in einem Block der Größe 4*\var{seqCount}.\\
+Nach diesem Block kommen nun die eigentlichen Definitionen, wie die Klassen aus calculation.pas sie in den Stream schreiben.\\
+Die Frage ist jetzt natürlich, wie beim Schreiben die Startpositionen berechnet werden können. Dies löse ich einfach, unter der Annahme, es gäbe genügend Speicher, indem ich die Definitionen erst in einen Block im Arbeitsspeicher schreiben lasse und währenddessen die aktuelle Position in die Datei schreiben lasse. Dann wird der Block aus dem Arbeitsspeicher in die Datei geschrieben. 
+
+\section{Finden einer Folge}
+Das Finden von Folgen wird von der Klasse \type{TSequenceSearcher} in searching.pas übernommen.\\
+Diese Suche läuft im Groben so ab:\\
+Nachdem mit \procedure{loadFile} eine Datei als Folgenlexikon ausgewählt wurde, wird an  \procedure{findAll} die zu suchende Folge (bzw. ihr bekannter Teil) übergeben. \procedure{findAll} ruft zuerst \procedure{findStartMatch} auf, die eine einfache binäre Suche auf dem Suffixarray durchführt, wobei \procedure{cmpSuffix} aufgerufen wird, um das Suffix mit der Teilfolge zu vergleichen.\\
+\procedure{cmpSuffix} benutzt nun die Funktionen \procedure{getSuffix} und \procedure{getValues} um auf das Suffix- und Folgenwertearray zuzugreifen.\\
+Im Gegensatz zur Generierungsphase sind bei der Suche diese Arrays nicht im Arbeitsspeicher, sondern jeder Aufruf der beiden Zugriffsfunktionen lädt den benötigten Teil neu aus der Datei. \\
+Dadurch muss nicht immer die gesamte Datei geladen werden und das Programm kann wirklich in logarithmischer Zeit arbeiten.\\
+Wurde nun in \procedure{findAll} durch \procedure{findStartMatch} eine passende Folge gefunden, werden auch die benachbarten Suffixe mit der gesuchten Teilfolge verglichen, da es ja mehrere passende geben kann. Auf Grund der lexiografischen Sortierung, stehen aber alle hintereinander. \\
+Für jede gefundene Folge wird dann \function{getSequenceInfo} aufgerufen, um die Folge mitsamt ihrer Folgendefinition zu laden, was dann in die übergebene Liste eingefügt wird.\\
+Das Untersuchen einer Folge übernimmt die Methode \procedure{extendedFindAll}.
+
+Die Arbeitsweise von \procedure{loadFile} ist relativ simpel. Sie öffnet die Datei unter Benutzung der Dateivariable \var{database}, die eine Klasseneigenschaft von \type{TSequenceSearcher} ist.\\
+Außerdem überprüft sie den Header und setzt die Klassenvariablen, die die Länge und Anzahl der vorhandenen Folgen angeben, sowie diejenigen, die die Startpositionen der einzelnen Blöcke in der Datei angeben. Dazu wird einfach die Größe der Blöcke entsprechend addiert.
+
+Bei den eigentlichen Leseoperationen in \procedure{getSuffix} und \procedure{getValues} wird nun ausgehend von diesen Startpositionen zum entsprechenden Index gesprungen und von dort aus die Datei gelesen.\\
+\procedure{getSequenceInfo} geht genauso vor, nachdem \procedure{getValues} aufgerufen wurde, springt sie zur Positionsangabe der Definition in der Datei und von dort zur eigentlichen Position. Dann wird die Lesemethode aus calculation.pas aufgerufen.
+
+\procedure{cmpSuffix} arbeitet wie die \procedure{cmpSuffixIgnoreLen}-Methode der Generatorklasse, abgesehen davon, dass erst noch für die zu vergleichende Folge Speicher reserviert und  \procedure{getValues} aufgerufen werden muss.\\
+Außerdem ignoriert diese Funktion die Länge der Folge nur, wenn die gespeicherte Folge länger ist. Ist sie nämlich kürzer, ist es unwahrscheinlich, dass sie zur gesuchten passt.
+
+\procedure{findStartMatch} ist nun eine typische binäre Suche, bei der man auch nicht merkt, dass die durchsuchten Werte in einer Datei stehen, weil ja die Vergleichsmethode diese lädt.\\
+\procedure{findAll} ist im Grunde schon beschrieben, es ist nur noch zu sagen, dass sie eine lokale Prozedure \procedure{add} enthält, die eine Folge, von der ein Suffix bekannt ist, in die übergebene Liste einträgt und vorher überprüft, ob diese Folge schon enthalten ist.
+
+Das Untersuchen einer Folge wird, wie schon gesagt, von der Methode \procedure{extendedFindAll} durchgeführt.\\
+Diese überprüft nun zuerst mit \procedure{findAll}, ob die Folge nicht doch schon im Lexikon existiert. Nur wenn nicht, wird die Differenzfolge gebildet und es rekursiv erneut versucht, diese Folge zu verstehen. Die noch mögliche Rekursionstiefe wird dabei im Parameter \var{maxdeep} angegeben, insgesamt habe ich hierfür die 5 gewählt.\\
+Dann muss noch die Definition jeder Folge entsprechend ergänzt werden, was einfach durch das Erzeugen entsprechender \type{TSequenceOperator}-Objekte erfolgt, und die Folge selbst berechnet werden.\\
+Nur die Berechnung der Summe wird mit den Methoden des \type{TSequence\-Operator}-Objektes durchgeführt, das Verschieben und Addieren des Differenzwertes zwischen Summe und gesuchter Folge, erfolgt direkt in der Funktion selbst.\\
+Würde man das Verschieben nämlich auf den Syntaxbaum zurückführen, müsste man eine Folge von ihrer Summe subtrahieren, wozu man die Summe und die Folge gleichzeitig im Speicher bräuchte. Da man aber die Summe ohne zusätzlichen Speicher berechnen kann, ist dies unnötig ineffizient.\\
+Das Addieren des Differenzwert erfolgt aus dem gleichen Grund direkt, die Funktionen erwarten nämlich eine Folge, und es ist umständlich erst den Wert in ein Array einzutragen. 
+
+
+%Ihre Eigenschaften haben diese Bedeutungen:
+
+%\begin{tabular}{lp{10.3cm}}
+%\var{values}  & Zeiger auf die eigentlichen Folgenwerte\\
+%\var{len} & Länge der Folge (bei allen Folgen gleich)\\
+%\var{id} & Nummer der Folge\\
+%\var{recursive} & Ein Objekt der Klasse \type{TRecursiveExpression}, wenn die Folge rekursiv %definiert werden kann\\
+%\var{sequenceOperator} & Ein Objekt der Klasse \type{TSequenceOperator}, wenn die Folge durch Folgenoperatoren definiert werden kann\\
+%\var{standAlone} & Gibt an, ob die Unterelemente ausschließlich von dieser Klasse verwendet werden
+%\end{tabular}
+
+
+
+
+\chapter{Ablaufprotokolle}
+\newcommand{\info}[1]{\hspace{30pt}\emph{#1}}
+\section{Erstellung}
+Die Erstellung eines Folgenlexikons mit 500 000 Folgen mit jeweils 50 Elementen dauert 8 Minuten (auf einem 1.3 Ghz Computer), den größten Zeitaufwand hat dabei die Sortierung der 2 500 000 Suffixfolgen mit 7 Minuten. Die entstehende Datei ist 300 MB groß.\\
+Dies sind die ersten zehn entstandenen Folgen in der Latexausgabe (die kursiven Anmerkungen sind nicht vom Programm erzeugt):
+
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+\newline
+Definition: $1$
+
+
+2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+\newline
+Definition: $2$
+
+
+5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+\newline
+Definition: $5$
+
+
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+\newline
+Definition: $0$\info{entstanden durch 1-1}
+
+
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50
+\newline
+Definition: $n$\info{entstanden durch P(1)}
+
+
+2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100
+\newline
+Definition: $2*n$\info{entstanden durch P(2)}
+
+
+2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, \emph{...} 17592186044416, 35184372088832, 70368744177664, 140737488355328, 281474976710656, 562949953421312, 1125899906842624
+\newline
+Definition: $\prod\limits_{i=1}^n\left(2\right)$ \info{Gekürzt um Platz zu sparen}
+
+
+5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250
+\newline
+Definition: $5*n$
+
+
+5, 25, 125, 625, 3125, 15625, 78125, 390625, 1953125, 9765625, 48828125, 244140625, 1220703125, 6103515625, 30517578125, 152587890625, 762939453125, 3814697265625, 19073486328125, 95367431640625, 476837158203125, 2384185791015625, 11920928955078125, 59604644775390625, 298023223876953125, 1490116119384765625, 7450580596923828125
+\newline
+Definition: $\prod\limits_{i=1}^n\left(5\right)$
+
+Darauf folgen die konstanten Folgen $1+2 = 3$, $1-2 = -1$, $2+2 = 4$, $1+5 = 6$, $1-5 = -4$, $2+5=7$, $2-5=-3$, $5+5=10$, $5^2=25$, $2^5=32$, $5^5=3125$, bevor wieder interessantere Folgen kommen, von denen einige wegen Überläufen abgebrochen wurden.
+
+1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190, 210, 231, 253, 276, 300, 325, 351, 378, 406, 435, 465, 496, 528, 561, 595, 630, 666, 703, 741, 780, 820, 861, 903, 946, 990, 1035, 1081, 1128, 1176, 1225, 1275
+\newline
+$\sum\limits_{i=1}^n\left(i\right)$ \info{$(i)$ bedeutet P(1)}
+
+
+1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 6227020800, \emph{...} 121645100408832000, 2432902008176640000
+\newline
+$\prod\limits_{i=1}^n\left(i\right)$ \info{$(i)$ bedeutet P(1); wegen Überlauf gibt es weniger als 50 Elemente}
+
+\pagebreak
+
+2, 6, 12, 20, 30, 42, 56, 72, 90, 110, \emph{...}, 2162, 2256, 2352, 2450, 2550
+\newline
+$\sum\limits_{i=1}^n\left((2*i)\right)$ 
+
+
+2, 8, 48, 384, 3840, 46080, 645120, 10321920, 185794560, 3715891200, 81749606400, 1961990553600, 51011754393600, 1428329123020800, 42849873690624000, 1371195958099968000
+\newline
+$\prod\limits_{i=1}^n\left((2*i)\right)$ \info{Überlauf}
+
+
+2, 6, 14, 30, 62, 126, 254, 510, 1022, 2046, \emph{...}, 1125899906842622, 2251799813685246
+\newline
+$\sum\limits_{i=1}^n\left(\prod\limits_{j=1}^i\left(2\right)\right)$ \info{kein Überlauf}
+
+
+2, 8, 64, 1024, 32768, 2097152, 268435456, 68719476736, 35184372088832, 36028797018963968
+\newline 
+$\prod\limits_{i=1}^n\left(\prod\limits_{j=1}^i\left(2\right)\right)$ \info{Überlauf}
+
+
+5, 15, 30, 50, 75, 105, 140, 180, 225, \emph{...}, 5405, 5640, 5880, 6125, 6375
+\newline
+$\sum\limits_{i=1}^n\left((5*i)\right)$
+
+Insgesamt gibt es 20000 Folgen, die durch Folgenoperationen definiert sind, bevor die ersten rekursiv definierten kommen, von denen es auch 20000 gibt. Die restlichen 460 000 Folgen entstehen dann durch Folgenoperatoren, die auf diese ersten 40 000 angewandt werden.\\
+Für jede Rekursionsformel gibt es unterschiedliche Startwerte, deshalb zeige ich nur jeweils die erste Folge.
+
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, \emph{...}, 701408733, 1134903170, 1836311903, 2971215073, 4807526976, 7778742049
+\newline
+Definition: $f(0) = 0; f(1) = 1; f(n) = (f(n-2))+(f(n-1))$
+
+
+0, 1, -1, 2, -3, 5, -8, 13, -21, 34, -55, 89, -144, 233, -377, 610, -987, 1597, -2584, 4181, -6765, 10946, -17711, \emph{...}, -701408733, 1134903170, -1836311903, 2971215073, -4807526976, 7778742049
+\newline
+Definition: $f(0) = 0; f(1) = 1; f(n) = (f(n-2))-(f(n-1))$
+
+0, 0, 1, 2, 4, 7, 12, 20, 33, 54, 88, 143, 232, 376, 609, 986, 1596, 2583, 4180, 6764, 10945, 
+\emph{...}, 433494436, 701408732, 1134903169, 1836311902, 2971215072, 4807526975, 7778742048, 12586269024
+\newline
+Definition: $f(0) = 0; f(1) = 0; f(n) = ((f(n-2))+(f(n-1)))+(1)$
+
+0, 1, 2, 5, 12, 29, 70, 169, 408, 985, 2378, 5741, 13860, 33461, 80782, 195025, 470832, 1136689, 2744210, 6625109, 15994428, 38613965, 93222358, 225058681, 543339720, 1311738121,\emph{...} 143263821649299118, 345869461223138161, 835002744095575440, 2015874949414289041
+\newline
+Definition: $f(0) = 0; f(1) = 1; f(n) = ((f(n-2))+(f(n-1)))+(f(n-1))$
+
+0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923, 21845, 43691, 87381, 174763, 349525, 699051, 1398101, 2796203, 5592405, 11184811, 22369621, 44739243, 89478485, \emph{...}, 11728124029611, 23456248059221, 46912496118443, 93824992236885, 187649984473771
+\newline
+Definition: $f(0) = 0; f(1) = 1; f(n) = ((f(n-2))+(f(n-1)))+(f(n-2))$
+
+0, 1, 2, 6, 16, 44, 120, 328, 896, 2448, 6688, 18272, 49920, 136384, 372608, 1017984, 2781184, 7598336, 20759040, 56714752, 154947584, 423324672, 1156544512, 3159738368, 8632565760, \emph{...}, 30441879976280064, 83168762773110784, 227221285498781696, 620780096543784960, 1696002764085133312, 4633565721257836544
+\newline
+Definition: $f(0) = 0; f(1) = 1; f(n) = ((f(n-2))+(f(n-1)))+((f(n-2))+(f(n-1)))$
+
+\section{Besondere Folgen}
+Um die Folge der Kubikzahlen zu finden, reicht es bei diesem Folgenlexikon das Programm mit der Teilfolge 125 216 343 zu starten:\\
+1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375, 4096,
+ 4913, 5832, \emph{...}, 103823, 110592, 117649, 125000
+\newline
+Definition: $n^{3}$
+
+Auch das zehnfache, also 1250 2160 3430, wird schnell gefunden, allerdings ist die Definition nicht minimiert:\\
+10, 80, 270, 640, 1250, 2160, 3430, 5120, 7290, 10000, 13310, 17280, 21970, 2744
+0, \emph{...}, 740880, 795070, 851840, 9112
+50, 973360, 1038230, 1105920, 1176490, 1250000
+\newline
+Definition: $(n^{2}*(10*n))$
+
+Nicht gefunden wird jedoch das 77ig-fache mit der Teilfolge 9625 16632 26411. und auch die  Suche mit Differenzuntersuchung hilft hierbei nicht.\\
+Gibt man aber noch mehr Glieder vor, nämlich 9625 16632 26411 39424 56133, ergibt die untersuchende Suche, die korrekte Folge:\\
+616, 2079, 4928, 9625, 16632, 26411, 39424, 56133, 77000, 102487, 133056, 169169, 211288, 259875, ..., 7994371, 8515584, 9058973, 9625000, 10214127
+\newline
+Definition: $(\sum\limits_{i=1}^n\left((\sum\limits_{j=1}^i\left((33*(7*(2*j)))\right)+77)\right)+77)$
+
+Die Definition ist natürlich etwas seltsam, aber man kann leicht überprüfen, ob sie stimmt. Benutzt man nämlich das Ausgabeformat Derive, so ergibt sich \verb%(sum((sum((33*(7*(2*j))),j,1,i)+77),i,1,n)+77)%, und gibt man dies eben in Derive ein, erfährt man, dass dies $77(n^3 + 3n^2 + 3n + 1)$ ist und tatsächlich die gesucht Folge ergibt. \\
+Wer jetzt die binomischen Formeln vergessen hat, wird sich wundern, warum dies die richtige Folge ist, obwohl doch $77n^3$ gesucht war. Die Erklärung ist ganz einfach, dass der entstandene Ausdruck $77(n+1)^3$ ist und somit nur das erste Element weggefallen ist.
+
+Die untersuchende Suche kann natürlich auch die ganze Folge, beginnend mit 77 finden, dann allerdings wird die Definition noch kruser:\\
+$(\sum\limits_{i=1}^n\left((\sum\limits_{j=1}^i\left((33*(7*(2*j)))\right)+77)\right)+(77-(\sum\limits_{i=1}^n\left((33*(7*(2*i)))\right)+77)))$
+
+Was allerdings nicht gefunden wird, ist die Summe dieser Folge und der Fibonaccifolge, genauso wenig wie die Summe der Fibonnaccifolge mit der einfach Kubikzahlenreihe oder der Quadratzahlenfolge.\\
+Mit der untersuchenden Suche wird jedoch die einfachere Summe der Fibonaccifolge und der simplen Folge 1 2 3 4 gefunden, auch wenn wieder eine seltsame Definiton gewählt wurde:\\
+1, 3, 4, 6, 8, 11, 15, 21, 30, 44, 66, 101, 157, 247,..., 4807527025, 7778742099
+\newline
+\hspace*{20mm}$g_{1}(0) = 0; g_{1}(1) = 2; g_{1}(n) = ((g_{1}(n-2))+(g_{1}(n-1))
+)-(1)$\\
+Definition: $(\sum\limits_{i=1}^n\left(g_{1}(n)\right)+1)$
+
+Eine weitere Folge, die mit der untersuchenden Suche auch gefunden werden kann, ist 3 2 4 1 5 0, wo eine immer größere Zahl abwechselnd subtrahiert oder addiert wird.\\
+Hierbei wurde zusätzlich noch eine weniger passende Folge gefunden, die aber auch richtig ist.
+
+3, 2, 4, 1, 5, 0, 6, -1, 7, -2, 8, -3, 9... -21, 27, -22\newline
+Definition: $(\sum\limits_{i=1}^n\left((\prod\limits_{j=1}^i\left(-1\right)*i)\right)+(3-(\prod\limits_{i=1}^n\left(-1\right)*n)))$
+
+3, 3, 2, 4, 1, 5, 0, 6, -1, 7, -2, 8, -3, 9,..., -21, 27
+\newline
+\hspace*{20mm}$g_{1}(0) = 1; g_{1}(1) = 0; g_{1}(n) = ((((g_{1}(n-2))-(g_{1}(n-1
+)))-(1))-(((g_{1}(n-2))+(g_{1}(n-1)))+(g_{1}(n-2))))+(1)$\newline
+Definition: $(\sum\limits_{i=1}^n\left(g_{1}(n)\right)+2)$
+
+Durch die Einschränkung auf den Zugriff auf zwei vorherige Elemente in einer Rekursionsdarstellung können auch nur solche Folgen berechnet werden. Was also nicht geht, ist 1 1 1 3 5 9 17 21 ...
+
+Das Programm ist jedoch nur in der Lage, Folgen zu berechnen, die explizit dargestellt werden können. Was also niemals geht, sind Folgen die auf besonderen Eigenschaften ihrer Elemente beruhen, wie die Folge aller Primzahlen 2 3 5 7 11 13 17...
+
+Es gibt auch noch Folgen, die kein Programm automatisch generieren kann, und meines daher natürlich auch nicht. \\
+Dazu zählen zum einen die unberechenbaren Folgen, wie zum Beispiel "`1, 6, 21, 107"', die Zahl der Schritte die eine terminierende Turingmaschine mit einer bestimmten Anzahl von Zuständen maximal durchführen kann.  (Busy-Beaver-Problem)\\
+Andere Folgen sind diejenigen, die auf physikalischen/kulturellen Dingen basieren, wie beispielsweise "`Die Verwandlung"' von Kafka im ASCII Code, was ein Programm natürlich nicht von selbst herleiten kann.\\
+Und letztendlich gibt es noch die willkürlichen Folgen. Z.B.: Eine Folge, bei der die ersten 5 Elemente  1,2,3,4,5 sind, alle weiteren jedoch 42.\\
+
+\chapter{Quellcode}
+\section{sequences.lpr}
+\begin{small}
+  \lgrindfile{../sequences.lpr.lg}
+\end{small} 
+\newpage
+\section{calculation.pas}
+\begin{small}
+  \lgrindfile{../calculation.pas.lg}
+\end{small} 
+\newpage
+\section{generating.pas}
+\begin{small}
+  \lgrindfile{../generating.pas.lg}
+\end{small} 
+\newpage
+\section{searching.pas}
+\begin{small}
+  \lgrindfile{../searching.pas.lg}
+\end{small} 
+\end{document}

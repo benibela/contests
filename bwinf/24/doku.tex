@@ -1,0 +1,234 @@
+\documentclass [12pt] {report}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\usepackage{fancyhdr}
+\usepackage{lgrind} %nice code
+\setlength{\headheight}{28pt}
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+\newcommand{\function}[1]{\textbf{\textrm{#1}}}
+%\newcommand{\function}[1]{\K{#1}}
+\newcommand{\variable}[1]{\texttt{#1}}
+\newcommand{\type}{\variable}
+\newcommand{\component}{\variable}
+
+
+%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {BWInf 24.2.2 }
+\pagestyle{fancyplain}
+\lhead{BWInf 24.2.2 Trimm-Dich-Pfade\n Benito van der Zander}
+\rhead{\thepage}
+\fancyfoot{}
+
+
+\begin{document}
+
+
+\setlength{\parindent}{0pt} 
+
+%
+\chapter{Lösungsidee}
+Mein Algorithmus zum Zählen der Übungen basiert auf einem interessanten Effekt, der entsteht wenn man zu einer Folge von Übungen eine weitere hinzufügt. Dann nimmt nämlich die Anzahl der Möglichkeiten Übungen durchzuführen um genau die Anzahl der bisherigen Möglichkeiten zu, abzüglich der Anzahl der Möglichkeiten, die sich ergeben, wenn man nur die Übungen vor dem letzten Auftreten der neuen Übung benutzt.\n
+Ist es eine neue Übung, die bisher nicht vorkam, gibt es logischerweise kein letztes Auftreten dieser Übung, weshalb die Anzahl der Möglichkeiten um sich selbst zu nimmt, bzw. sie verdoppelt sich.\n
+Das kann man gut an einem Beispiel sehen:
+\begin{table*}[h]
+	\begin{tabular}{lrlr}
+	   Folge   & Möglichkeiten & Teilfolge & Änderung \\
+     \textit{leere Folge} &  1 & -    &       \\
+     \b{a}       &  2 & -    &     \\
+     a\b{b}      &  4 & -    &     \\
+     \b{a}b\b{a}     &  7 &      & +4 -1 \\
+     aba\b{c}    & 14 & -    &       \\
+     \u{ab}\b{a}c\b{a}   & 24 & ab   & +14 -4 \\
+     \u{a}\b{b}aca\b{b}  & 46 & a    & +24 -2 \\
+     \u{abac}\b{a}b\b{a} & 78 & abac & +46-14\\
+	\end{tabular}
+\end{table*}
+\n
+Auf diese Weise kann man nun aus einer gegebenen Folge von Übungen, die Anzahl der Möglichkeiten berechnen, indem man einfach immer eine Übung hinzufügt und wie im Beispiel die Anzahl der Möglichkeiten mit dynamischer Programmierung neuberechnet.
+
+
+\ \n Das Komplizierte ist nun zu beweisen, dass dieses Verfahren auch wirklich funktioniert.\n
+Als ersten Test kann man das Verfahren für verschiedene Folgen durchführen, und die damit berechnete Anzahl von Möglichkeiten mit einer Anzahl vergleichen, die man auf andere Art (z.B.: durch Aufzählen aller Folgen) ermittelt hat.\n
+Damit kann man zwar nicht sicherstellen, dass das Verfahren fehlerfrei ist, da man ja möglicherweise gerade die Folge nicht getestet hat, bei der das Verfahren versagen würde.\n
+Deshalb nimmt man besser einen anderen Weg um die Korrektheit des Algorithmus zu zeigen, und zwar in der Art eines mathematischen Beweises. (was allerdings wesentlich länger dauert, als einfaches ausprobieren)\n
+Dabei muss man beweisen, dass der gleich am Anfang beschriebene Effekt beim Hinzufügen einer Übung wirklich auftritt und man auf diese Weise auch tatsächlich die Anzahl der neuen Möglichkeiten erhält.
+
+
+Um diesen Beweis übersichtlicher zu gestalten, verwende ich folgende Notationen:\n
+Um eine Folge von Übungen anzugeben, schreibe ich die Übungen direkt hintereinander. Eine Folge, die direkt von einer Übung gefolgt wird, bedeutet die Folge die entsteht, wenn man an die alte Folge, die neue Übung anhängt. Ist $v$ eine Übung, so ist $v^i$ mit $i \in \mN$ die Folge die ensteht, wenn man i-mal hintereinander die Übung $v$ schreibt. (Also $v^0 = $, $v^1 = v$, $v^2 = vv$, $\ldots$). Ist $F$ eine Folge, so meint $F^*$ die Menge aller Teilfolgen von $F$ und $F^{*v}$ die Menge aller Teilfolgen von $F$, die mit $v$ enden. Ist M eine Menge, so ist $|M|$ wie normal die Anzahl ihrer Elemente.
+
+
+Sei $F=u_{1}u_{2}u_{3} \ldots u_{n-1}u_{n}$ eine Folge von Übungen und $v$ eine neue Übung.\n
+Offenbar gilt $|Fv^*| = |F^*| + |Fv^{*v}| - |F^{*v}|$, also die Anzahl aller Teilfolgen von $Fv$ ist genau so groß wie die Anzahl der Teilfolgen von $F$ plus die Anzahl der Teilfolgen von $Fv$, die keine Teilfolgen von $F$ sind. Da diese Teilfolgen mit $v$ enden müssen, ist ihre Anzahl natürlich so groß, wie die Zahl der Teilfolgen von $Fv$, die mit $v$ enden, abzüglich der Teilfolgen von $F$, die ebenfalls mit $v$ enden.\n
+Um den oben erwähnten Effekt zu beweisen, ist also nur die Zahl $|Fv^{*v}| - |F^{*v}|$ zu bestimmen.\n
+Zuerst zeige ich, dass $|Fv^{*v}| = |F^*|$, also dass es eine bijektive Funktion zwischen $F^*$ und $Fv^{*v}$ gibt, nämlich $f: Fv^{*v} \rightarrow F^*$ mit $Tv \mapsto T$.\n
+Diese Funktion existiert wirklich, da jede Teilfolge in $Fv^{*v}$ mit $v$ enden muss, und die Teilfolge vor dem letzten $v$ eine Teilfolge in $F^*$ sein muss.\n
+Zu zeigen ist daher nur noch, dass f bijektiv ist:
+\begin{itemize}
+	 \item f ist injektiv:\n
+	 Sind $S, S' \in Fv^{*v}$ mit $S \neq S'$, so kann man sie als $S = Tv$ und $S' = T'v$ mit $T, T' \in F^*$ schreiben, wobei $T \neq T'$ gilt.\n
+	 Dann folgt $f(S) = f(Tv) = T \neq T' = f(T'v) = f(S')$.
+	 \item f ist surjektiv:\n
+	 Für jedes $T \in F^*$ gilt nach Definition von f, dass $f(Tv) = T$.
+\end{itemize}
+Der Fall, dass die neue Übung $v$ noch nicht der Folge $F$ vorkommt ist damit bereits bewiesen, da dann natürlich $|F^{*v}| = 0$ gilt und daraus folgt, dass $|Fv^*| = |F^*| + |Fv^{*v}| - |F^{*v}| = 2*|F^*|$.\n
+Die Anzahl der möglichen unterschiedlichen Teilfolgen verdoppelt sich also.
+
+
+Daher ist nur noch der Fall zu betrachten, dass die Übung $v$ bereits vorkommt. Das heißt es gibt ein $i \in \mN$, so dass $u_i = v$.\n
+Sei $F' = u_1u_2 \ldots u_{i-2}u_{i-1}$, wobei $i \in \mN$ das größte $i$ mit $u_i = v$ sei. (Es gilt also $F = F'vu_{i+1}u_{i+2} \ldots u_{n-1}u_n$, wobei $u_j \neq v$ für alle $j > i$).\n
+Zu zeigen ist nun, dass $|F^{*v}| = |F'^*|$ gilt.\n
+Weiter oben habe ich bereits bewiesen, dass $|Fv^{*v}| = |F^*|$ für alle Folgen $F$. Daraus folgt, dass gilt $|F'v^{*v}| = |F'^*|$. Deshalb muss jetzt nur noch gezeigt werden, dass $|F'v^{*v}| = |F^{*v}|$ bzw. dass sogar $F'v^{*v} = F^{*v}$ gilt.
+\begin{itemize}
+  \item $F'v^{*v} \subseteq F^{*v}$:\n
+  Da $F'v$ eine Teilfolge von $F$ ist, ist auch jede Teilfolge von $F'v$ eine Teilfolge von $F$. 
+  \item $F'v^{*v} \supseteq F^{*v}$:\n
+  Sei $T \in F^{*v}$. Dann endet $T$ mit $v$, das heißt, dass in $T$ keine Übung $u_j$ mit $j  > i$ vorkommt. Das wiederum bedeutet, dass $T$ aus den Übungen $u_1$ bis $u_i$ besteht, und damit eine Teilfolge von $F'v$ ist.
+\end{itemize}
+
+Es ist nun gezeigt, das gilt $|F^{*v}| = |F'^*|$, daraus folgt $|Fv^*| = 2|F^*| - |F'^*|$.
+
+Zusammenfassend kann man nun sagen, dass $|Fv^*| = 2|F^*|$ ist, falls $v$ nicht in $F$ vorkommt, und dass $|Fv^*| = 2|F^*| - |F'^*|$, falls $v$ schon vorkommt und man mit $F'$ die Teilfolge von $F$ bezeichnet, die entsteht, wenn man von $F$ nur den Teil bis zum letzten Vorkommen von $v$ (exklusive) betrachtet.\n
+Das ist nun genau dann der am Anfang beschriebene Effekt, dass die Anzahl der Teilfolgen von $Fv$ genau um die Anzahl der Teilfolgen von $F$ abzüglich der Teilfolgen der Teilfolge von F vor dem letzten Auftreten von $v$ zu nimmt.
+
+\chapter{Programmdokumentation}
+Das Programm implementiert den im letzten Kapitel beschriebenen Algorithmus über dynamische Programmierung.\n
+Eine Folge von Übungen wird dabei als ASCII-String gespeichert, in dem jedes Zeichen für eine Übung steht. und der an die Funktion \function{countParts} übergeben wird.
+Dort wird berechnet, wie die Anzahl der Möglichkeiten ist, wenn man nur das erste  Zeichen benutzt, dann wie viele es gibt, wenn man nur die ersten beiden benutzt, dann wie viele es bei drei Zeichen gibt, usw. ..., bis berechnet wurde, wie viele Möglichkeiten insgesamt existieren.\n
+Die bisher betrachtete Folge wird also um ein Zeichen erweitert. Dazu muss bei jedem Zeichen festgestellt werden, ob es schon einmal vorkam. Wenn es sich um eine Wiederholung handelt, muss die Anzahl der Möglichkeiten vor dem letzten Auftreten des Zeichen ermittelt werden und vom doppelten der Anzahl der bisherigen Möglichkeiten subtrahiert werden. Ansonsten kann die Anzahl der Möglichkeiten einfach verdoppelt werden. \n
+Damit möglichst schnell ermittelt werden kann, wie viele Möglichkeiten es bei dem letzten Vorkommen gab, wird für jedes mögliche Zeichen die Anzahl der Möglichkeiten bei eben diesem letzten Vorkommmen in einem Array namens \variable{lastParts} gespeichert, wo sie einfach gefunden und ausgelesen werde können.
+
+Im Prinzip reicht das schon aus, um die Anzahl der Möglichkeiten zu berechnen, allerdings werden die entstehenden Zahlen zu groß, um sie in einem normalen Datentyp zu speichern, weshalb ich einen eigenen namens \type{BigNumber} programmiert habe. \n
+Dieser speichert die Zahlen im $10^9$-System in einem dynamischen Array von integer, wobei jedes Element des Arrays eine Zahl zwischen 0 und 999999999 enthält und das erste Element das höchstwertige ist.\n
+Eine Alternative zu diesem Verfahren, wäre es eine auf dem binären statt auf dezimalen System basierende Basis zu wählen, z.B.: $2^32$, wodurch das Arrays für eine Zahl nur ein Viertel von dem für eines mit dem $10^9$-System benötigten Speicherplatz belegt hätte und die Addition und Subtraktion fast viermal so schnell gewesen wäre.\n
+Das hätte aber den Nachteil, dass man die Zahl zur Ausgabe in das dezimale Zahlensystem umwandeln müsste, was im Vergleich zur einfachen Ausgabe bei einem dezimalen System sehr viel umständlicher erscheint. Außerdem wäre der Beweis für die Korrektheit der Ausgabefunktion unübersichtlicher geworden.\n
+Durch die Verwendung eines nicht nativen Datentyps kann man natürlich nicht mehr die normalen Rechenoperationen gebrauchen, weshalb ich diese auch neu programmiert habe.\n
+Die Addition wird von der Procedure \function{add} erledigt, die zwei \type{BigNumber}s \variable{n1} und \variable{n2} als Parameter entgegen nimmt. Die berechnete Summe wird dabei in dem Array von \variable{n1} gespeichert.\n
+Die Berechnung läuft, wie bei dem alltäglichen schriftlichen Rechenverfahren. Es werden immer je zwei Ziffern, beginnend mit der am niedrigstwertigen, addieren, und bei einem Überlauf - der wegen dem $10^9$-ner System zum Glück noch in den integer passt - die nächst höhere Stelle inkrementiert. Dabei gibt es nur noch ein Problem, wenn der Überlauf in der höchstwertigsten Stelle auftritt (wie z.B. bei $9 + 8$ im Dezimalsystem). Dann nämlich müsste die Zahl um eine Stelle verlängert werden. Da das relativ langsam ist (auf jeden Fall im Vergleich zum gleich lang lassen), gehe ich einfach davon aus, dass die Zahl immer genügend führende Nullen hat. 	Damit diese Annahme berechtigt ist, berechne ich die Anzahl der Stellen bei der maximalen Anzahl von Möglichkeiten, also $log_{10^9} 2^n$ bei einer n-langen Folge und setzt die Länge jeder verwendeten Zahl auf diese Stellenanzahl.\n
+Die Subtraktionsroutine \function{sub} arbeitet in äquivalenter Weise, nur werden die Ziffern halt subtrahiert, statt addiert, und der Überlauf tritt auf, wenn das Ergebnis bei einer Ziffer kleiner als 0 ist, und nicht wenn es größer gleich $10^9$ ist. Dank \type{integer} passt auch dieser Überlauf noch in den Speicher und kann wie oben behandelt werden.\n
+Andere Rechenoperationen auf dem \type{BigNumber} werden nicht benötigt, da ja nur Verdopplungen (erledigt die Additíonsroutine) und Subtraktionen vorkommen.
+Die Umwandlung der \type{BigNumber} in einen String wird von der \function{toStr} übernommen, die die umzuwandelte \type{BigNumber} als Parameter entgegen nimmt und den Ergebnisstring als Rückgabewert zurückgibt. (Was könnte man auch sonst mit einem Rückgabewert machen?)\n
+Dank der Verwendung eines $10^9$-Systems geht die Ausgabe relativ simpel, es reicht einen leeren (bzw. mit Nullen gefüllten) String mit der neunfachen Länge der \type{BigNumber} zu erzeugen, jede Stelle der \type{BigNumber} mit den Standardfunktionen in einen String umzuwandeln und diesen in den Ergebnisstring zu kopieren. \n
+Man muss dabei nur auf führende Nullen achten, das erstemal, wenn man die in einen String umgewandelten Stellen in den Ergebnisstring kopiert (da sie nicht unbedingt 9 Stellen haben und man sie nach rechts ausrichten muss) und das zweitemal, wenn man alle Stellen der \type{BigNumber} kopiert hat. (dann muss man nämlich die führenden Nullen löschen).
+
+Aufgerufen wird die am Anfang beschriebene Funktion \function{countParts} von der Methode \function{countClick}, die beim Klick auf den Button \component{count} aufgerufen wird.\n
+Diese liest den String mit den Übungen entweder aus dem Editfeld \component{folge} aus, oder aus einer Datei deren Name in dem eben erwähnten Editfeld eingegeben wird. (welcher Fall konkret eintritt hängt von der Markierung des Radiobuttons \component{direct} ab).\n
+Das Ergebnis wird über das Editfeld \component{calculatedCount} ausgegeben, und während der  Berechnung zeigt der Fortschrittsbalken \component{ProgressBar1} an, wie weit die Rechnung ist (was auch sonst). Die Position des Balkens wird in der Funktion \function{countParts} gesteuert.
+
+
+
+
+Das Programm kann die Möglichkeiten zusätzlich zum Zählen auch noch auflisten (allerdings natürlich nur bei kurzen Strings), wofür die Methode \function{listClick} zuständig ist.\n
+Zuerst werden alle möglichen Teilfolgen berechnet und danach alle mehrfach vorkommenden herausgefiltert.\n
+Da die Reihenfolge der Übungen in einem Teilstring dieselbe ist, wie in der Ausgangsfolge kann jede Teilfolge vollständig dadurch beschrieben werden, welche Übungen vorkommen. \function{listClick} kann also  alle Teilfolgen eines Strings mit Länge n dadurch erzeugen, dass alle Zahlen von 0 bis $2^n-1$ berechnet, sie als Bitfolge betrachtet und nur die durch Einsen markierten Übungen für die Teilfolge nimmmt.\n
+Diese werden dann in einer Stringlist \variable{sl} gespeichert, die dann sortiert wird, um jede Teilfolge nur einmal zu haben. Nach der Sortierung kann man die Liste nämlich einfach durchlaufen, und jede Teilfolge, die gleich zu der vorherigen ist löschen. (bzw. alle für die das nicht zutrifft, in eine Extraliste kopieren).
+
+Um sicher zu stellen, dass das Programm fehlerfrei arbeitet, habe ich bei den fürs Zählen der Möglichkeiten zuständigen Teilen jede wichtige Anweisung mit einem mathematischen Beweis für ihrer Korrektheit versehen, die man im Quellcodeausdruck sehen kann. (die dabei verwendeten Summenzeichen sind natürlich nachträglich eingefügt worden).\n
+Theoretisch müssten die so bewiesenen Programmzeilen fehlerfrei sein. Praktisch kommt es aber häufig vor, dass man bei einer Analyse einige Aspekte übersieht, wie zum Beispiel Datentyp oder Arraygrenzen. Bei diesem Programm ist es mir sogar manchmal passiert, dass eine Funktion, nachdem ich bewiesen hatte, dass sie fehlerfrei ist, nicht mehr funktioniert hat, weil ich írgendwo einen falschen Wert eingesetzt habe, um den Beweis zu erleichtern. \n
+Gegen solche Unaufmerksamkeiten kann man eigentlich nichts machen, außer es nochmals zu überprüfen (lassen) und mit Beispielswerten zu testen. \n
+Außerdem muss man bei solchen Beweisen immer davon ausgehen, dass der Compiler und die Hardware korrekt arbeiten.
+
+\chapter{Ablaufprotokoll}
+\paragraph{RTRT}
+$\n
+\begin{array}{ll}
+    R: & 2 * 1\\
+    RT: & 2 * 2\\
+    RTR: & 2 * 4 - 1\\
+    RTRT: & 2 * 7 - 2\\
+\end{array}$\n
+$\Rightarrow 12$ Möglichkeiten\n
+Die möglichen Teilfolgen sind: \n
+$\ \ $(leere Menge),R,RR,RRT,RT,RTR,RTRT,RTT,TTR,TRT,TT
+
+
+\paragraph{RTRBRTBTTRRBTR}
+$\n
+\begin{array}{ll}
+R: & 2 * 1\\
+RT: & 2 * 2\\
+RTR: & 2 * 4 - 1\\
+RTRB: & 2 * 7\\
+RTRBR: & 2 * 14 - 4\\
+RTRBRT: & 2 * 24 - 2\\
+RTRBRTB: & 2 * 46 - 7\\
+RTRBRTBT: & 2 * 85 - 24\\
+RTRBRTBTT: & 2 * 146 - 85\\
+RTRBRTBTTR: & 2 * 207 - 14\\
+RTRBRTBTTRR: & 2 * 400 - 207\\
+RTRBRTBTTRRB: & 2 * 593 - 46\\
+RTRBRTBTTRRBT: & 2 * 1140 - 146\\
+RTRBRTBTTRRBTR: & 2 * 2134 - 400\\
+\end{array}$\n
+$\Rightarrow 3868 $ Möglichkeiten\n
+Die ersten 25 Teilfolgen sind:\n
+$\ \ $ (l.M.), B, BB, BBB, BBBR, BBBT, BBBTR, BBR, BBRB, BBRBR, \n BBRBT, BBRBTR, BBRR, BBRRB, BBRRBR, BBRRBT, BBRRBTR, BBRRR, BB, RT, BBRRTR, BBRT, BBRTR, BBT, BBTB, BBTBR
+
+\paragraph{RTBRSTBTRBTRRTS$^5$RRTTSTRTTSBBRTBRSBRRBBBSRBRBB}%RTBRSTBTRBTRRTSS [...] BBRTBRSBRRBBBSRBRBB}
+$\n\begin{array}{ll}
+R: & 2 * 1\\
+RT: & 2 * 2\\
+RTB: & 2 * 4\\
+RTBR: & 2 * 8 - 1\\
+RTBRS: & 2 * 15\\
+RTBRST: & 2 * 30 - 2\\
+RTBRSTB: & 2 * 58 - 4\\
+RTBRSTBT: & 2 * 112 - 30\\
+RTBRSTBTR: & 2 * 194 - 8\\
+RTBRSTBTRB: & 2 * 380 - 58\\
+RTBRSTBTRBT: & 2 * 702 - 112\\
+RTBRSTBTRBTR: & 2 * 1292 - 194\\
+RTBRSTBTRBTRR: & 2 * 2390 - 1292\\
+RTBRSTBTRBTRRT: & 2 * 3488 - 702\\
+RTBRSTBTRBTRRTS: & 2 * 6274 - 15\\
+RTBRSTBTRBTRRTSS: & 2 * 12533 - 6274\\
+RTBRSTBTRBTRRTSSS: & 2 * 18792 - 12533\\
+RTBRSTBTRBTRRTS^4: & 2 * 25051 - 18792\\
+RTBRSTBTRBTRRTS^5: & 2 * 31310 - 25051\\
+RTBRSTBTRBTRRTS^5R: & 2 * 37569 - 2390\\
+\left[\ldots\right] & \\
+RTBRST\left[\ldots\right]RBBBS: & 2 * 11435237950 - 337683843\\
+RTBRST\left[\ldots\right]RBBBSR: & 2 * 22532792057 - 2301944226\\
+RTBRST\left[\ldots\right]RBBBSRB: & 2 * 42763639888 - 8744137744\\
+RTBRST\left[\ldots\right]RBBBSRBR: & 2 * 76783142032 - 22532792057\\
+RTBRST\left[\ldots\right]RBBBSRBRB: & 2 * 131033492007 - 42763639888\\
+RTBRST\left[\ldots\right]RBBBSRBRBB: & 2 * 219303344126 - 131033492007\\
+\end{array}$\n
+$\Rightarrow 307573196245 $ Möglichkeiten\n
+
+\paragraph{Die Verwandlung}
+$\n\begin{array}{ll}
+A: & 2 * 1\\
+AL: & 2 * 2\\
+ALS: & 2 * 4\\
+ALSG: & 2 * 8\\
+ALSGR: & 2 * 16\\
+ALSGRE: & 2 * 32\\
+ALSGREG: & 2 * 64 - 8\\
+ALSGREGO: & 2 * 120\\
+ALSGREGOR: & 2 * 240 - 16\\
+ALSGREGORS: & 2 * 464 - 4\\
+ALSGREGORSA: & 2 * 924 - 1\\
+ALSGREGORSAM: & 2 * 1847\\
+ALSGREGORSAMS: & 2 * 3694 - 464\\
+\end{array}$\n
+$\Rightarrow 213265550539852359962451036087185836707067840195010873078\n 1721380951824775328974801331486029415505979 \left[\ldots\right] 887617112250\n27 63681633799298087432904777424971909750583386754043415721\n536620121367007419693193866488 $ Möglichkeiten
+
+
+\chapter{Quellcode}
+\begin{small}
+  \lgrindfile{a2_u.pas.lg}
+\end{small} 
+\end{document}
+ 

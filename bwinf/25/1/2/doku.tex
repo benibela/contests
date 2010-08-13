@@ -1,0 +1,382 @@
+\documentclass [12pt] {report}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\usepackage{fancyhdr}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {BWInf 25.1.2 }
+\pagestyle{fancyplain}
+\lhead{BWInf 25.1.2 Robot Dressing\n Benito van der Zander}
+\rhead{\thepage}
+\fancyfoot{}
+
+
+\begin{document}
+
+
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{15pt} 
+
+%
+\chapter{Lösungsidee}
+Als Eingabeformat kann man die einzelnen Namen der Kleidungstücke einfach durch Leerzeichen voneinander trennen und in der ersten Zeile alle Namen aufzählen, und in den darauffolgenden jeweils zwei, deren Reihenfolge angibt, welches zuerst angezogen werden muss.
+
+Die Ermittlung einer Gesamtreihenfolge ist ein traditionelles Problem, für das es einen einfachen Algorithmus gibt. Man erzeugt einen gerichteten Graphen, bei dem die Knoten die Kleidungsstücke darstellen und eine Kante von a nach b angibt, dass b vor a angezogen werden muss (Wer wissen will, wie man einen solchen Graphen am schönsten darstellt, sollte die Folien zu den Vorträgen bei der letzten Endrunde lesen).\n
+Dann traversiert man diesen mit einer Tiefensuche und schreibt den Namen des Knotens in ein Array, sobald man ihn verlässt. \n
+Man könnte natürlich auch einfach alle generieren und eine beliebige davon auswählen, aber das dauert unnötig lange.
+
+Bei der Berechnung aller Reihenfolgen gehe ich so vor, dass ich für eine vorläufige Reihenfolge ermittele, welche Kleidungsstücke angezogen werden können, wenn die in der Reihenfolge enthaltenen Stücke bereits angezogen worden sind; für jedes dieser Kleidungsstück wird dann eine neue Reihenfolge erstellt, die aus der alten Reihenfolge plus dem neuen Kleidungsstück besteht. \n
+Diese neuen Reihenfolgen kann man nach demselben Verfahren erweitern und erhält damit schließlich alle Reihenfolgen, die mit einer bestimmten beginnen. Wählt man beim Start die leere Reihenfolge, erhält man dadurch jede mögliche.\n
+Ein etwas einfacherer Algorithmus wäre es, jede mögliche Permutation der Kleidungsstücke zu erstellen und zu überprüfen, ob sie die Bedingungen erfüllt. Im Normalfall (=viele Bedingungen) ist das allerdings deutlich langsamer, im schlimmsten Fall (=keine Bedingungen) gibt es aber keine großen Geschwindigkeitsunterschiede, da ja sowieso alle Permutationen zurückgegeben werden müssen.
+
+\chapter{Programmdokumentation}
+Das Programm ist ein einfaches Pascalprogramm mit 3 Abschnitten, das die Eingabedaten über die Standardeingabe einliest und das Ergebnis über die Standardausgabe ausgibt. Damit kann man in der Konsole sowohl Dateien übergeben, wie auch "`interaktiv"' die Kleidungsstücke eingeben.\n
+Man kann auch zwei Parameter übergeben, "'--only-one"' oder "'--only-all"', um nur eine einzige oder nur alle zu berechnen, da es ziemlich sinnlos ist, erst eine Reihenfolge zu berechnen und anschließend noch alle möglichen aufzuzählen.
+
+Im ersten Abschnitt des Programms (Zeile 40 bis 75, vorher kommen Variablen/Funktionsdeklarationen) werden die an die Reihenfolge gestellten Bedingungen eingelesen und als Graph in den Variablen \variable{adjListNeed} und \variable{adjListAllow} gespeichert.\n
+Zuerst aber werden die Namen der vorhandenen Kleidungsstücke aus der ersten Zeile gelesen, indem immer der Anfang der Zeile bis zum ersten Leerzeichen kopiert und in die \type{TStringList} \variable{names} eingefügt wird. Dieser Teil wird dann abgeschnitten und es geht mit dem Rest weiter.\n
+Dann wird der Speicher für die Arrays des Graphens reserviert und die Bedingungen eingelesen. Dazu wird jeweils eine Zeile gelesen und in einen Teil vor dem Leerzeichen und einen Teil dahinter getrennt, nach denen dann in der \variable{names} gesucht wird. Die dabei gefundenen Indizes werden anschließend in die Arrays eingetragen. Diese Speicherung erfolgt in Form einer Adjazenzliste, die in einer 2-dimensionalen Matrix gespeichert wird. In \variable{adjListNeed} gibt der erste Index eine Liste der Indizes der benötigten Kleidungsstücke an, wobei der erste Eintrag die Anzahl dieser Kleidungsstücke angibt. Also für jeden Index \variable{i} eines Kleidungsstücks werden die Kleidungsstücke zum Anziehen benötigt, deren Indizes durch \variable{adjListNeed[i][1]} bis \variable{adjListNeed[i][n]} gegeben sind, wobei n = \variable{adjListNeed[i][0]} ist.\n
+\variable{adjListAllow} speichert den Graph in derselben Weise, allerdings rückwärts.
+
+Die Suche nach einer beliebigen gültigen Reihenfolge verläuft relativ einfach (siehe Zeile 20 bis 30, und 75 bis 80). Für jedes Kleidungsstück wird die Prozedur \procedure{generateSingleSequence} aufgerufen. Zuerst wird dann das Array \variable{singleSequenceReaded} überprüft, um sicherzustellen, dass die Prozedur mit jedem Kleidungsstück nur einmal aufgerufen wird.\n
+Anschließend ruft sie sich selbst für jeden Eintrag aus \variable{adjListNeed[i]} auf, also für jedes Kleidungsstück, was nötig ist, um das im Paramter angegebene anzuziehen. Nachdem diese Aufrufe erfolgreich durchgeführt wurden, schreibt die Prozedur dieses Stück in das Array \variable{singleSequence}. \n
+Da die rekursiven Aufrufe dasselbe tun, ist sichergestellt, dass die Indizes aller benötigten Kleidungsstücke bereits gespeichert wurden. \n
+Das \variable{singleSequence}-Array muss dann nur noch ausgegeben werden.
+
+Der restliche Teil der Quellcodes in Sektion 3 (circa. 50\% des gesamten, ab Zeile 96) dient zur Berechnung aller möglichen Reihenfolgen.\n
+Die Speicherung dieser Reihenfolgen erfolgt in dem Array \variable{sequences}, wobei jeder Eintrag eine Reihenfolge beschreibt und drei Unterarray enthält:
+\begin{tabular}{ll}
+	\variable{seq} & Speichert den Beginn der Sequenz \\
+	\variable{next} & alle Kleidungsstücke, die als nächstes genommen werden können. \\
+	\variable{used} & alle bisher benutzten Kleidungsstücke als "`Hash"'-Array. \\
+\end{tabular}\n 
+Zuerst wird eine leere Reihenfolge erzeugt, indem das \variable{next}-Array mit allen Kleidungsstücken gefüllt wird, an die keine Bedingungen gestellt sind und die anderen beiden Arrays geleert werden.\n
+Dann werden die Reihenfolgen stückweise erweitert, indem die alte Liste der Reihenfolge durchlaufen wird (mit der Schleifenvariable \variable{j}) und für jeden Eintrag des \variable{next}-Arrays eine neue Reihenfolge zum \variable{sequences}-Array hinzugefügt wird.\n Diese neue entspricht exakt \variable{sequences[j]} der alten, abgesehen davon, dass ans Ende der bisherigen Sequenz \variable{seq} der jeweilige Eintrag des \variable{next}-Arrays angehängt wird und dafür aus dem \variable{next}-Array gelöscht wird.\n
+Als triviale Optimierung wird die Reihenfolge für den letzten Eintrags des \variable{next}-Arrays nicht kopiert, sondern dieser Eintrag wird in das alte \variable{seq}-Array eingefügt. 
+
+Nachdem nun die \variable{seq}-Arrays aktualisiert wurden, ist es noch nötig, für jede bisherige Reihenfolge zu berechnen, welche Kleidungsstücke als nächstes angezogen werden dürfen. \n
+Dazu wird erneut die Liste der vorhandenen Reihenfolgen durchlaufen und jeweils der letzte Eintrag der Sequenz betrachtet. Ein Kleidungsstück, das erst nach dem Hinzufügen dieses letzten Eintrags angezogen werden könnte, ist logischerweise unter denjenigen, die erst nach diesem Eintrag angezogen werden können, also denjenigen, die im Array \variable{adjListAllow} unter der Nummer des letzten Eintrags gespeichert sind.\n
+Diese müssen nun alle daraufhin getestet werden, ob sie wirklich angezogen werden können (also ob alle Bedingungen erfüllt sind), indem für jeden potentiellen Kandidaten die Einträge von \variable{adjListNeed} mit denen im Unterarray \variable{used} verglichen werden.\n
+Sind alle nötigen Kleidungsstücke im \variable{used}-Array eingetragen, wird das Kleidungsstück ins \variable{next}-Array eingetragen, ansonsten nicht.\n
+Ist dies für alle momentan bekannten Reihenfolgen durchgeführt worden, kann man als nächstes wieder alle Sequenzen um ein Element erweitern, dann wieder das neue \variable{next}-Array berechnen, wieder erweitern, usw .... Bis schließlich alle \variable{next}-Arrays leer sind, bzw. alle Sequenzen die maximale Länge (=Anzahl der Kleidungsstücke) erreicht haben.\n
+Diese Sequenzen kann man nun der Reihe nach ausgeben, und ist somit fertig.
+	
+
+\chapter{Ablaufprotokolle}
+\section{Beispiel 1 (mit Debuginfos)}
+\begin{scriptsize} %%size=10pt
+==== Eingabe ====\n
+1 2 3 4 5 6 \n
+1 3\n
+2 5\n
+3 4\n
+4 6\n
+5 6
+
+==== Ausgabe ====\n
+  generateSingleSequence: 
+  (id, name, already visited)
+    0:1 visited: FALSE\n
+    1:2 visited: FALSE\n
+    2:3 visited: FALSE\n
+    0:1 visited: TRUE\n
+    3:4 visited: FALSE\n
+    2:3 visited: TRUE\n
+    4:5 visited: FALSE\n
+    1:2 visited: TRUE\n
+    5:6 visited: FALSE\n
+    3:4 visited: TRUE\n
+    4:5 visited: TRUE\n
+1 2 3 4 5 6 
+
+loop: 0\n
+  current sequences and next arrays: \n
+ + 1 2 \n
+loop: 1\n
+  current sequences and next arrays: \n
+2  + 1 5 \n
+1  + 2 3 \n
+loop: 2\n
+  current sequences and next arrays: \n
+2 5  + 1 \n
+1 3  + 2 4 \n
+2 1  + 5 3 \n
+1 2  + 3 5 \n
+loop: 3\n
+  current sequences and next arrays: \n
+2 5 1  + 3 \n
+1 3 4  + 2 \n
+2 1 3  + 5 4 \n
+1 2 5  + 3 \n
+1 3 2  + 4 5 \n
+2 1 5  + 3 \n
+1 2 3  + 5 4 \n
+loop: 4\n
+  current sequences and next arrays: \n
+2 5 1 3  + 4 \n
+1 3 4 2  + 5 \n
+2 1 3 4  + 5 \n
+1 2 5 3  + 4 \n
+1 3 2 5  + 4 \n
+2 1 5 3  + 4 \n
+1 2 3 4  + 5 \n
+2 1 3 5  + 4 \n
+1 3 2 4  + 5 \n
+1 2 3 5  + 4 \n
+loop: 5\n
+  current sequences and next arrays: \n
+2 5 1 3 4  + 6 \n
+1 3 4 2 5  + 6 \n
+2 1 3 4 5  + 6 \n
+1 2 5 3 4  + 6 \n
+1 3 2 5 4  + 6 \n
+2 1 5 3 4  + 6 \n
+1 2 3 4 5  + 6 \n
+2 1 3 5 4  + 6 \n
+1 3 2 4 5  + 6 \n
+1 2 3 5 4  + 6 \n
+2 5 1 3 4 6 \n
+1 3 4 2 5 6 \n
+2 1 3 4 5 6 \n
+1 2 5 3 4 6 \n
+1 3 2 5 4 6 \n
+2 1 5 3 4 6 \n
+1 2 3 4 5 6 \n
+2 1 3 5 4 6 \n
+1 3 2 4 5 6 \n
+1 2 3 5 4 6 
+\end{scriptsize}
+
+
+\section{Beispiel 2}
+\begin{scriptsize}
+==== Eingabe ====\n
+Garten Keller Erdgeschoss 1.Etage Dach Garage Elektrik \n
+Keller Erdgeschoss\n
+Erdgeschoss 1.Etage\n
+1.Etage Dach\n
+Keller Elektrik\n
+Erdgeschoss Elektrik\n
+1.Etage Elektrik\n
+Garten Keller
+
+==== Ausgabe ====\n
+    gen.single.seq.:0:Garten visited: FALSE\n
+    gen.single.seq.:1:Keller visited: FALSE\n
+    gen.single.seq.:0:Garten visited: TRUE\n
+    gen.single.seq.:2:Erdgeschoss visited: FALSE\n
+    gen.single.seq.:1:Keller visited: TRUE\n
+    gen.single.seq.:3:1.Etage visited: FALSE\n
+    gen.single.seq.:2:Erdgeschoss visited: TRUE\n
+    gen.single.seq.:4:Dach visited: FALSE\n
+    gen.single.seq.:3:1.Etage visited: TRUE\n
+    gen.single.seq.:5:Garage visited: FALSE\n
+    gen.single.seq.:6:Elektrik visited: FALSE\n
+    gen.single.seq.:1:Keller visited: TRUE\n
+    gen.single.seq.:2:Erdgeschoss visited: TRUE\n
+    gen.single.seq.:3:1.Etage visited: TRUE\n
+Garten Keller Erdgeschoss 1.Etage Dach Garage Elektrik 
+
+loop: 0\n
+  current sequences and next arrays: \n
+ + Garten Garage \n
+loop: 1\n
+  current sequences and next arrays: \n
+Garage  + Garten \n
+Garten  + Garage Keller \n
+loop: 2\n
+  current sequences and next arrays: \n
+Garage Garten  + Keller \n
+Garten Keller  + Garage Erdgeschoss \n
+Garten Garage  + Keller \n
+loop: 3\n
+  current sequences and next arrays: \n
+Garage Garten Keller  + Erdgeschoss \n
+Garten Keller Erdgeschoss  + Garage 1.Etage \n
+Garten Garage Keller  + Erdgeschoss \n
+Garten Keller Garage  + Erdgeschoss \n
+loop: 4\n
+  current sequences and next arrays: \n
+Garage Garten Keller Erdgeschoss  + 1.Etage \n
+Garten Keller Erdgeschoss 1.Etage  + Garage Dach Elektrik \n
+Garten Garage Keller Erdgeschoss  + 1.Etage \n
+Garten Keller Garage Erdgeschoss  + 1.Etage \n
+Garten Keller Erdgeschoss Garage  + 1.Etage \n
+loop: 5\n
+  current sequences and next arrays: \n
+Garage Garten Keller Erdgeschoss 1.Etage  + Dach Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Elektrik  + Garage Dach \n
+Garten Garage Keller Erdgeschoss 1.Etage  + Dach Elektrik \n
+Garten Keller Garage Erdgeschoss 1.Etage  + Dach Elektrik \n
+Garten Keller Erdgeschoss Garage 1.Etage  + Dach Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Garage  + Elektrik Dach \n
+Garten Keller Erdgeschoss 1.Etage Dach  + Garage Elektrik \n
+loop: 6\n
+  current sequences and next arrays: \n
+Garage Garten Keller Erdgeschoss 1.Etage Elektrik  + Dach \n
+Garten Keller Erdgeschoss 1.Etage Elektrik Dach  + Garage \n
+Garten Garage Keller Erdgeschoss 1.Etage Elektrik  + Dach \n
+Garten Keller Garage Erdgeschoss 1.Etage Elektrik  + Dach \n
+Garten Keller Erdgeschoss Garage 1.Etage Elektrik  + Dach \n
+Garten Keller Erdgeschoss 1.Etage Garage Dach  + Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Dach Elektrik  + Garage \n
+Garage Garten Keller Erdgeschoss 1.Etage Dach  + Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Elektrik Garage  + Dach \n
+Garten Garage Keller Erdgeschoss 1.Etage Dach  + Elektrik \n
+Garten Keller Garage Erdgeschoss 1.Etage Dach  + Elektrik \n
+Garten Keller Erdgeschoss Garage 1.Etage Dach  + Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Garage Elektrik  + Dach \n
+Garten Keller Erdgeschoss 1.Etage Dach Garage  + Elektrik \n
+Garage Garten Keller Erdgeschoss 1.Etage Elektrik Dach \n
+Garten Keller Erdgeschoss 1.Etage Elektrik Dach Garage \n
+Garten Garage Keller Erdgeschoss 1.Etage Elektrik Dach \n
+Garten Keller Garage Erdgeschoss 1.Etage Elektrik Dach \n
+Garten Keller Erdgeschoss Garage 1.Etage Elektrik Dach \n
+Garten Keller Erdgeschoss 1.Etage Garage Dach Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Dach Elektrik Garage \n
+Garage Garten Keller Erdgeschoss 1.Etage Dach Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Elektrik Garage Dach \n
+Garten Garage Keller Erdgeschoss 1.Etage Dach Elektrik \n
+Garten Keller Garage Erdgeschoss 1.Etage Dach Elektrik \n
+Garten Keller Erdgeschoss Garage 1.Etage Dach Elektrik \n
+Garten Keller Erdgeschoss 1.Etage Garage Elektrik Dach \n
+Garten Keller Erdgeschoss 1.Etage Dach Garage Elektrik 
+\end{scriptsize}
+
+\section{Beispieldaten}
+\begin{scriptsize}
+==== Eingabe ====\n
+Bluse Handschuhe Hose Jacke Mütze Pullover Schal Schuhe Strümpfe\n
+Strümpfe Schuhe\n
+Strümpfe Hose\n
+Hose Schuhe\n	
+Hose Pullover\n
+Bluse Hose\n
+Bluse Pullover\n
+Pullover Jacke\n
+Hose Jacke\n
+Schal Jacke\n
+Jacke Handschuhe\n
+Pullover Schal
+
+
+==== Ausgabe ====\n
+Bluse Strümpfe Hose Pullover Schal Jacke Handschuhe Mütze Schuhe 
+
+Strümpfe Mütze Bluse Hose Pullover Schal Jacke Handschuhe Schuhe \n
+Bluse Mütze Strümpfe Hose Pullover Schal Jacke Handschuhe Schuhe \n
+Mütze Strümpfe Bluse Hose Pullover Schal Jacke Handschuhe Schuhe \n
+Strümpfe Bluse Hose Pullover Schal Jacke Handschuhe Schuhe Mütze \n
+Bluse Strümpfe Hose Pullover Schal Jacke Handschuhe Schuhe Mütze \n
+Mütze Bluse Strümpfe Hose Pullover Schal Jacke Handschuhe Schuhe \n
+Strümpfe Bluse Mütze Hose Pullover Schal Jacke Handschuhe Schuhe \n
+Bluse Strümpfe Mütze Hose Pullover Schal Jacke Handschuhe Schuhe \n
+Strümpfe Bluse Hose Mütze Schuhe Pullover Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Schuhe Pullover Schal Jacke Handschuhe Mütze \n
+Bluse Strümpfe Hose Mütze Schuhe Pullover Schal Jacke Handschuhe \n
+Bluse Strümpfe Hose Schuhe Pullover Schal Jacke Handschuhe Mütze \n
+Strümpfe Mütze Bluse Hose Schuhe Pullover Schal Jacke Handschuhe \n
+Bluse Mütze Strümpfe Hose Schuhe Pullover Schal Jacke Handschuhe \n
+Mütze Strümpfe Bluse Hose Schuhe Pullover Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Mütze Schuhe Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Schuhe Schal Jacke Handschuhe Mütze \n
+Bluse Strümpfe Hose Pullover Mütze Schuhe Schal Jacke Handschuhe \n
+Bluse Strümpfe Hose Pullover Schuhe Schal Jacke Handschuhe Mütze \n
+Mütze Bluse Strümpfe Hose Schuhe Pullover Schal Jacke Handschuhe \n
+Strümpfe Bluse Mütze Hose Schuhe Pullover Schal Jacke Handschuhe \n
+Bluse Strümpfe Mütze Hose Schuhe Pullover Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Mütze Pullover Schal Jacke Handschuhe Schuhe \n
+Strümpfe Bluse Hose Schuhe Mütze Pullover Schal Jacke Handschuhe \n
+Bluse Strümpfe Hose Mütze Pullover Schal Jacke Handschuhe Schuhe \n
+Bluse Strümpfe Hose Schuhe Mütze Pullover Schal Jacke Handschuhe \n
+Strümpfe Mütze Bluse Hose Pullover Schuhe Schal Jacke Handschuhe \n
+Bluse Mütze Strümpfe Hose Pullover Schuhe Schal Jacke Handschuhe \n
+Mütze Strümpfe Bluse Hose Pullover Schuhe Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Mütze Schuhe Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Schuhe Jacke Handschuhe Mütze \n
+Bluse Strümpfe Hose Pullover Schal Mütze Schuhe Jacke Handschuhe \n
+Bluse Strümpfe Hose Pullover Schal Schuhe Jacke Handschuhe Mütze \n
+Mütze Bluse Strümpfe Hose Pullover Schuhe Schal Jacke Handschuhe \n
+Strümpfe Bluse Mütze Hose Pullover Schuhe Schal Jacke Handschuhe \n
+Bluse Strümpfe Mütze Hose Pullover Schuhe Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Schuhe Pullover Mütze Schal Jacke Handschuhe \n
+Bluse Strümpfe Hose Schuhe Pullover Mütze Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Mütze Schal Jacke Handschuhe Schuhe \n
+Strümpfe Bluse Hose Pullover Schuhe Mütze Schal Jacke Handschuhe \n
+Bluse Strümpfe Hose Pullover Mütze Schal Jacke Handschuhe Schuhe \n
+Bluse Strümpfe Hose Pullover Schuhe Mütze Schal Jacke Handschuhe \n
+Strümpfe Bluse Hose Mütze Pullover Schuhe Schal Jacke Handschuhe \n
+Bluse Strümpfe Hose Mütze Pullover Schuhe Schal Jacke Handschuhe \n
+Strümpfe Mütze Bluse Hose Pullover Schal Schuhe Jacke Handschuhe \n
+Bluse Mütze Strümpfe Hose Pullover Schal Schuhe Jacke Handschuhe \n
+Mütze Strümpfe Bluse Hose Pullover Schal Schuhe Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Jacke Mütze Schuhe Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Jacke Schuhe Handschuhe Mütze \n
+Bluse Strümpfe Hose Pullover Schal Jacke Mütze Schuhe Handschuhe \n
+Bluse Strümpfe Hose Pullover Schal Jacke Schuhe Handschuhe Mütze \n
+Mütze Bluse Strümpfe Hose Pullover Schal Schuhe Jacke Handschuhe \n
+Strümpfe Bluse Mütze Hose Pullover Schal Schuhe Jacke Handschuhe \n
+Bluse Strümpfe Mütze Hose Pullover Schal Schuhe Jacke Handschuhe \n
+Strümpfe Bluse Hose Schuhe Pullover Schal Mütze Jacke Handschuhe \n
+Bluse Strümpfe Hose Schuhe Pullover Schal Mütze Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Schuhe Schal Mütze Jacke Handschuhe \n
+Bluse Strümpfe Hose Pullover Schuhe Schal Mütze Jacke Handschuhe \n
+Strümpfe Bluse Hose Mütze Pullover Schal Schuhe Jacke Handschuhe \n
+Bluse Strümpfe Hose Mütze Pullover Schal Schuhe Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Mütze Jacke Handschuhe Schuhe \n
+Strümpfe Bluse Hose Pullover Schal Schuhe Mütze Jacke Handschuhe \n
+Bluse Strümpfe Hose Pullover Schal Mütze Jacke Handschuhe Schuhe \n
+Bluse Strümpfe Hose Pullover Schal Schuhe Mütze Jacke Handschuhe \n
+Strümpfe Bluse Hose Pullover Mütze Schal Schuhe Jacke Handschuhe \n
+Bluse Strümpfe Hose Pullover Mütze Schal Schuhe Jacke Handschuhe \n
+Strümpfe Mütze Bluse Hose Pullover Schal Jacke Schuhe Handschuhe \n
+Bluse Mütze Strümpfe Hose Pullover Schal Jacke Schuhe Handschuhe \n
+Mütze Strümpfe Bluse Hose Pullover Schal Jacke Schuhe Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Jacke Handschuhe Mütze Schuhe \n
+Bluse Strümpfe Hose Pullover Schal Jacke Handschuhe Mütze Schuhe \n
+Mütze Bluse Strümpfe Hose Pullover Schal Jacke Schuhe Handschuhe \n
+Strümpfe Bluse Mütze Hose Pullover Schal Jacke Schuhe Handschuhe \n
+Bluse Strümpfe Mütze Hose Pullover Schal Jacke Schuhe Handschuhe \n
+Strümpfe Bluse Hose Schuhe Pullover Schal Jacke Mütze Handschuhe \n
+Bluse Strümpfe Hose Schuhe Pullover Schal Jacke Mütze Handschuhe \n
+Strümpfe Bluse Hose Pullover Schuhe Schal Jacke Mütze Handschuhe \n
+Bluse Strümpfe Hose Pullover Schuhe Schal Jacke Mütze Handschuhe \n
+Strümpfe Bluse Hose Mütze Pullover Schal Jacke Schuhe Handschuhe \n
+Bluse Strümpfe Hose Mütze Pullover Schal Jacke Schuhe Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Schuhe Jacke Mütze Handschuhe \n
+Bluse Strümpfe Hose Pullover Schal Schuhe Jacke Mütze Handschuhe \n
+Strümpfe Bluse Hose Pullover Mütze Schal Jacke Schuhe Handschuhe \n
+Bluse Strümpfe Hose Pullover Mütze Schal Jacke Schuhe Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Jacke Mütze Handschuhe Schuhe \n
+Strümpfe Bluse Hose Pullover Schal Jacke Schuhe Mütze Handschuhe \n
+Bluse Strümpfe Hose Pullover Schal Jacke Mütze Handschuhe Schuhe \n
+Bluse Strümpfe Hose Pullover Schal Jacke Schuhe Mütze Handschuhe \n
+Strümpfe Bluse Hose Pullover Schal Mütze Jacke Schuhe Handschuhe \n
+Bluse Strümpfe Hose Pullover Schal Mütze Jacke Schuhe Handschuhe 
+\end{scriptsize} 
+
+
+\chapter{Quellcode}
+\begin{small}
+  \lgrindfile{dressing.pas.lg}
+\end{small} 
+\end{document}
+ 

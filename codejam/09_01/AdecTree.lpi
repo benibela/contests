@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="7"/>
+    <General>
+      <Flags>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <TargetFileExt Value=".exe"/>
+      <Title Value="AdecTree"/>
+      <Icon Value="0"/>
+      <UseXPManifest Value="True"/>
+      <ActiveEditorIndexAtStart Value="0"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+      <Language Value=""/>
+      <CharSet Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <Units Count="4">
+      <Unit0>
+        <Filename Value="AdecTree.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="AdecTree"/>
+        <CursorPos X="34" Y="90"/>
+        <TopLine Value="73"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="P:\programming\lazarus\fpc\2.2.4\source\rtl\inc\varianth.inc"/>
+        <CursorPos X="10" Y="457"/>
+        <TopLine Value="444"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="A-large.out"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="None"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="A-large.in"/>
+        <CursorPos X="2" Y="59"/>
+        <TopLine Value="53"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="None"/>
+      </Unit3>
+    </Units>
+    <JumpHistory Count="18" HistoryIndex="17">
+      <Position1>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="10" Column="21" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="11" Column="14" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="43" Column="26" TopLine="17"/>
+      </Position3>
+      <Position4>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="77" Column="7" TopLine="52"/>
+      </Position4>
+      <Position5>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="7" Column="54" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="23" Column="10" TopLine="21"/>
+      </Position6>
+      <Position7>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="78" Column="14" TopLine="54"/>
+      </Position7>
+      <Position8>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="24" Column="26" TopLine="24"/>
+      </Position8>
+      <Position9>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="79" Column="16" TopLine="57"/>
+      </Position9>
+      <Position10>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="25" Column="14" TopLine="25"/>
+      </Position10>
+      <Position11>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="26" Column="18" TopLine="21"/>
+      </Position11>
+      <Position12>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="29" Column="1" TopLine="26"/>
+      </Position12>
+      <Position13>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="89" Column="8" TopLine="71"/>
+      </Position13>
+      <Position14>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="88" Column="8" TopLine="71"/>
+      </Position14>
+      <Position15>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="25" Column="11" TopLine="12"/>
+      </Position15>
+      <Position16>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="96" Column="22" TopLine="71"/>
+      </Position16>
+      <Position17>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="89" Column="11" TopLine="75"/>
+      </Position17>
+      <Position18>
+        <Filename Value="AdecTree.pas"/>
+        <Caret Line="27" Column="17" TopLine="27"/>
+      </Position18>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="8"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <OtherUnitFiles Value="U:\components\pascal\data\;U:\components\pascal\internet\;U:\components\pascal\import\regexpr\Source\;U:\components\pascal\system\"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

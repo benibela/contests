@@ -1,0 +1,197 @@
+object CreateParamsDialog: TCreateParamsDialog
+  Left = 345
+  Height = 242
+  Top = 244
+  Width = 267
+  HorzScrollBar.Page = 266
+  VertScrollBar.Page = 241
+  ActiveControl = difficulty
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Erzeugungseinstellungen'
+  object Label1: TLabel
+    Left = 13
+    Height = 14
+    Top = 45
+    Width = 67
+    Caption = 'Schwierigkeit:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 14
+    Height = 14
+    Top = 14
+    Width = 34
+    Caption = 'Größe:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 13
+    Height = 14
+    Top = 81
+    Width = 88
+    Caption = 'Spiegelsymmetrie:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 20
+    Height = 14
+    Top = 109
+    Width = 52
+    Caption = 'horizontal:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label6: TLabel
+    Left = 25
+    Height = 14
+    Top = 132
+    Width = 70
+    Caption = 'Nebenachsen:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 20
+    Height = 14
+    Top = 157
+    Width = 40
+    Caption = 'vertikal:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label7: TLabel
+    Left = 25
+    Height = 14
+    Top = 180
+    Width = 70
+    Caption = 'Nebenachsen:'
+    Color = clNone
+    ParentColor = False
+  end
+  object difficulty: TComboBox
+    Left = 96
+    Height = 21
+    Top = 40
+    Width = 160
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    ItemIndex = 1
+    Items.Strings = (
+      'leicht'
+      'normal'
+      'schwer'
+    )
+    MaxLength = 0
+    Style = csDropDownList
+    TabOrder = 0
+    Text = 'normal'
+  end
+  object size: TComboBox
+    Left = 96
+    Height = 21
+    Top = 9
+    Width = 160
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    ItemIndex = 1
+    Items.Strings = (
+      '2'
+      '4'
+      '6'
+      ''
+    )
+    MaxLength = 0
+    TabOrder = 1
+    Text = '4'
+  end
+  object horizontal: TComboBox
+    Left = 96
+    Height = 21
+    Top = 104
+    Width = 160
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    ItemIndex = 0
+    Items.Strings = (
+      'keine'
+      'einfach gespiegelt'
+      'gespiegelt und invertiert'
+    )
+    MaxLength = 0
+    Style = csDropDownList
+    TabOrder = 2
+    Text = 'keine'
+  end
+  object vertical: TComboBox
+    Left = 96
+    Height = 21
+    Top = 152
+    Width = 160
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    ItemIndex = 0
+    Items.Strings = (
+      'keine'
+      'einfach gespiegelt'
+      'gespiegelt und invertiert'
+    )
+    MaxLength = 0
+    Style = csDropDownList
+    TabOrder = 3
+    Text = 'keine'
+  end
+  object Button1: TButton
+    Left = 48
+    Height = 25
+    Top = 208
+    Width = 75
+    BorderSpacing.InnerBorder = 4
+    Caption = 'OK'
+    OnClick = Button1Click
+    TabOrder = 4
+  end
+  object subhorizontal: TComboBox
+    Left = 96
+    Height = 21
+    Top = 127
+    Width = 160
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    ItemIndex = 0
+    Items.Strings = (
+      'keine'
+      'einfach gespiegelt'
+      'gespiegelt und invertiert'
+    )
+    MaxLength = 0
+    Style = csDropDownList
+    TabOrder = 5
+    Text = 'keine'
+  end
+  object subvertical: TComboBox
+    Left = 96
+    Height = 21
+    Top = 175
+    Width = 160
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    ItemIndex = 0
+    Items.Strings = (
+      'keine'
+      'einfach gespiegelt'
+      'gespiegelt und invertiert'
+    )
+    MaxLength = 0
+    Style = csDropDownList
+    TabOrder = 6
+    Text = 'keine'
+  end
+  object Button2: TButton
+    Left = 152
+    Height = 25
+    Top = 208
+    Width = 75
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Abbrechen'
+    OnClick = Button2Click
+    TabOrder = 7
+  end
+end

@@ -1,0 +1,80 @@
+\documentclass [12pt] {article}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\DeclareGraphicsExtensions{.eps, .png, .jpg}
+%\DeclareGraphicsRule{.png}{eps}{}{convert #1 eps:-}
+%\usepackage{pgf}
+\usepackage{fancyhdr}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+\usepackage{verbatim}
+
+%\usepackage[paper=a4paper,left=35mm,right=35mm,top=35mm,bottom=35mm]{geometry} 
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {Allgemeines}
+\pagestyle{fancyplain}
+\lhead{Benito van der Zander, 25.834.01}
+\rhead{}
+\fancyfoot{}
+
+\begin{document}
+
+\section*{}
+\section*{Allgemeines}
+\section*{}
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{17pt} 
+
+Ich habe die Aufgabe 2 "`Bidoku"' und die Aufgabe 3 "`Folgen"' bearbeitet.
+
+Alle Programme sind in FreePascal geschrieben. Die compilierten Versionen auf der CD laufen unter Windows, es sollte aber auch möglich sein, den Quellcode unter Linux zu compilern und die Programme dort zu benutzen.
+
+Die Einsendung enthält:
+
+\begin{enumerate}
+\item 1 Seite Allgemeines (diese hier)
+\item 1 Briefumschlag (außen)
+\item 62 Seiten zur Aufgabe 2 "`Bidoku"'
+\item 56 Seiten zur Aufgabe 3 "`Folgen"'
+\item 1 Seite zum MCI-Sonderpreis
+\item 1 CD
+\end{enumerate}
+
+
+
+\newpage
+\section*{}
+\section*{MCI-Sonderpreis}
+\section*{}
+
+Hiermit möchte ich mein Programm zum Bidoku für den MCI-Sonderpreis anmelden.
+
+Bei dem Design habe ich mich auf das Wesentliche konzentriert und so besteht das Fenster im Wesentlichen aus einem Bidokufeld.
+
+Die Funktionen lassen sich alle über eine klassische Windowsmenüleiste erreichen und sind thematisch in Funktionen, die zur Verwaltung mehrerer Bidokus (also Erzeugung, Speicherung, und ähnliches) dienen, und in Funktionen, die das aktuelle Bidoku verändern (z.B.: lösen) oder analysieren (z.B.:entschlüsseln) unterteilt.
+
+Alle häufig benötigten Befehle lassen sich mittels Tastenkombinationen schnell erreichen, wodurch das Programm effizient zu benutzen ist.\\
+Die seltener benutzten Befehle sind trotzdem noch einigermaßen schnell, über die Menüs zu erreichen, da diese nicht verschachtelt sind.
+
+Die Verwendung mehrere Bidokus wird dadurch übersichtlicher, dass die Liste der vorhandenen Bidokus automatisch ein- und ausgeblendet wird.
+
+
+Durch die Möglichkeit alle Schritte, die zur Erzeugung eines Bidokus geführt haben, anzuzeigen, kann man auch gut den internen Ablauf des Programmes erkennen.
+
+\end{document}

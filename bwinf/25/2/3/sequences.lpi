@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="5"/>
+    <General>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="2"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+      <Language Value=""/>
+      <CharSet Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <CommandLineParams Value="--generate 10"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="sequences.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="sequences"/>
+        <CursorPos X="1" Y="84"/>
+        <TopLine Value="59"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="119"/>
+        <Bookmarks Count="1">
+          <Item0 X="18" Y="10" ID="8"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="generating.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="generating"/>
+        <CursorPos X="1" Y="471"/>
+        <TopLine Value="444"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="115"/>
+        <Bookmarks Count="1">
+          <Item0 X="57" Y="300" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="calculation.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="calculation"/>
+        <CursorPos X="16" Y="726"/>
+        <TopLine Value="714"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="115"/>
+        <Bookmarks Count="3">
+          <Item0 X="25" Y="429" ID="6"/>
+          <Item1 X="34" Y="615" ID="7"/>
+          <Item2 X="28" Y="727" ID="9"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <CursorPos X="3" Y="58"/>
+        <TopLine Value="43"/>
+        <UsageCount Value="5"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\streams.inc"/>
+        <CursorPos X="68" Y="403"/>
+        <TopLine Value="403"/>
+        <UsageCount Value="5"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\math.pp"/>
+        <UnitName Value="math"/>
+        <CursorPos X="16" Y="31"/>
+        <TopLine Value="17"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="46"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="searching.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="searching"/>
+        <CursorPos X="51" Y="251"/>
+        <TopLine Value="233"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="54"/>
+        <Bookmarks Count="1">
+          <Item0 X="15" Y="258" ID="5"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit6>
+    </Units>
+    <JumpHistory Count="10" HistoryIndex="9">
+      <Position1>
+        <Filename Value="generating.pas"/>
+        <Caret Line="42" Column="60" TopLine="35"/>
+      </Position1>
+      <Position2>
+        <Filename Value="calculation.pas"/>
+        <Caret Line="578" Column="41" TopLine="552"/>
+      </Position2>
+      <Position3>
+        <Filename Value="calculation.pas"/>
+        <Caret Line="592" Column="72" TopLine="735"/>
+      </Position3>
+      <Position4>
+        <Filename Value="sequences.lpr"/>
+        <Caret Line="10" Column="39" TopLine="50"/>
+      </Position4>
+      <Position5>
+        <Filename Value="generating.pas"/>
+        <Caret Line="339" Column="13" TopLine="455"/>
+      </Position5>
+      <Position6>
+        <Filename Value="calculation.pas"/>
+        <Caret Line="708" Column="1" TopLine="681"/>
+      </Position6>
+      <Position7>
+        <Filename Value="generating.pas"/>
+        <Caret Line="211" Column="1" TopLine="203"/>
+      </Position7>
+      <Position8>
+        <Filename Value="searching.pas"/>
+        <Caret Line="202" Column="36" TopLine="183"/>
+      </Position8>
+      <Position9>
+        <Filename Value="searching.pas"/>
+        <Caret Line="160" Column="1" TopLine="145"/>
+      </Position9>
+      <Position10>
+        <Filename Value="searching.pas"/>
+        <Caret Line="211" Column="7" TopLine="190"/>
+      </Position10>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <PathDelim Value="\"/>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Source Value="sequencestoring.pas"/>
+        <Line Value="288"/>
+      </Item1>
+    </BreakPoints>
+    <Watches Count="8">
+      <Item1>
+        <Expression Value="i"/>
+      </Item1>
+      <Item2>
+        <Expression Value="j"/>
+      </Item2>
+      <Item3>
+        <Expression Value="rows[1]"/>
+      </Item3>
+      <Item4>
+        <Expression Value="c"/>
+      </Item4>
+      <Item5>
+        <Expression Value="x"/>
+      </Item5>
+      <Item6>
+        <Expression Value="y"/>
+      </Item6>
+      <Item7>
+        <Expression Value="result"/>
+      </Item7>
+      <Item8>
+        <Expression Value="node^"/>
+      </Item8>
+    </Watches>
+  </Debugging>
+</CONFIG>

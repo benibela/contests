@@ -1,0 +1,45 @@
+\documentclass [12pt] {article}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\usepackage{fancyhdr}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {BWInf 25.1.2 }
+\pagestyle{fancyplain}
+\lhead{BWInf 25.1.2 Robot Dressing\n Benito van der Zander}
+\rhead{\thepage}
+\fancyfoot{}
+
+
+\begin{document}
+
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{15pt} 
+
+\chapter{Lösungsidee}
+\chapter{Programmdokumentation}
+\chapter{Ablaufprotokolle}
+\chapter{Quellcode}
+\begin{small}
+  \lgrindfile{dressing.pas.lg}
+\end{small} 
+\end{document}
+ 

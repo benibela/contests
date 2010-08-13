@@ -1,0 +1,2375 @@
+\documentclass [12pt] {report}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\DeclareGraphicsExtensions{.eps, .png, .jpg}
+%\DeclareGraphicsRule{.png}{eps}{}{convert #1 eps:-}
+%\usepackage{pgf}
+\usepackage{fancyhdr}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+\usepackage{verbatim}
+
+\usepackage[paper=a4paper,left=35mm,right=35mm,top=35mm,bottom=35mm]{geometry} 
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {BWInf 25.2.2 Bidoku}
+\pagestyle{fancyplain}
+\lhead{BWInf 25.2.2 Bidoku\n Benito van der Zander, 25.834.01}
+\rhead{\thepage}
+\fancyfoot{}
+
+%\newcommand{\bidoku}[1]{\begin{verbatim}#1\end{verbatim}}
+%\bidoku{
+%\textwidth
+%\linespread{0.5}
+%\linespread{2}
+\newenvironment{biexam}[1][5cm]{%
+  \minipage{#1}
+  \renewcommand{\baselinestretch}{0.5}
+  \footnotesize
+  \verbatim
+  }{
+  \endverbatim
+  \renewcommand{\baselinestretch}{2}
+  \normalsize
+  \endminipage
+  } 
+
+\newcommand{\includeeps}[3][5cm]{
+  \begin{minipage}{#1}
+  \includegraphics[width=#1,height=#1]{img/#2}
+  \center{#3}
+  \end{minipage}
+}
+
+\begin{document}
+\tableofcontents
+\newpage
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{15pt} 
+
+\chapter{Lösungsidee}
+\section{Erzeugen}
+Mein Algorithmus zum Bidoku-Erzeugen besteht aus zwei Phasen, zuerst werden die meisten Felder rein zufällig belegt, anschließend werden alle gültigen Bidokus berechnet, die die eventuell vorhandenen Lücken füllen können und eines davon ausgewählt.\n
+Die erste Phase ist im Prinzip simpel, es können einfach solange zufällig Ziffern zum Bidoku hinzugefügt werden, bis eine ausreichende Anzahl vorliegt.\n
+Das offensichlichste Problem hierbei ist, dass eine Ziffer das Rätsel unlösbar werden lassen kann. Dies kann aber beispielsweise dadurch behoben werden, indem nach jedem Einfügen eine Lösung des Rätsels berechnet wird. (siehe "`1.4 Lösen"'). Kann keine Lösung gefunden werden, muss diese Ziffer wieder entfernt werden.\n
+Ein ähnliches Problem ist, dass auch Ziffern gelegt werden können, die überflüssig sind und das Bidoku unnötig vereinfachen. Dies ist im aber Grunde wieder das gleiche Problem wie oben, nur wird die umgekehrte Zahl verwendet. Man könnte dies lösen, indem man nun einfach die andere Ziffer einsetzt und versucht dann die Lösung zu finden.\n
+Diese beiden Problemlösungen benötigen allerdings pro Ziffer zwei Lösungsberechnungen, was recht ineffizient ist. Es würde schneller gehen, wenn man im voraus wüsste, bei welchen Feldern dieses Problem auftreten kann. Das ist sogar möglich, man kann nämlich eine Lösung berechnen und dabei aufzeichnen, welches Feld frei wählbar war und welches nicht. Letztere können dann beim Erzeugen getrost ignoriert werden.\n
+Dies löst zwar beide Probleme, allerdings muss man immer noch nach jedem Einfügen eine Lösung berechnen, was im Grunde die von Anfang an beschriebene Lösung des Unmöglichkeitsproblem ist.\n
+Die gesamte Lösung für beide Probleme sieht also so aus, dass man vor dem Einfügen überprüft, ob die Stelle in einer möglichen Lösung logisch erschlossen wurde, und anschließend, ob das Bidoku noch immer lösbar ist, indem %nach dem Einfügen überprüft ob das Bidoku lösbar ist, indem 
+man eben diese Lösung berechnet.\n
+Der letzte Test scheint unsinnig zu sein, allerdings ist es bei einer Lösungsberechnung nicht immer ganz klar, welche Felder eindeutig sind und welche nicht, wenn nicht alle Lösungen berechnet werden (Zum Beispiel könnte ein Feld nicht logisch hergeleitet werden können und es nötig machen, eine Zahl zu raten. Wenn diese Zahl zu einer Lösung führt, weiß man nicht, ob es die umgekehrte auch getan hätte oder nicht).\n
+Das zweite Problem ist also in meinem letztendlich verwendeten Algorithmus nicht vollständig  gelöst, außerdem kann es passieren, dass der Wert eines Feldes zwar nicht unnötig war, als dieses gefüllt wurde, aber durch das weitere Einfügen von Ziffern überflüssig wird.\n
+Allerdings scheinen die so entstandene Bidokus auch ohne das Löschen dieser Felder noch genügend Leerstellen zu enthalten, so dass der Algorithmus nur für den schweren Schwierigkeitsgrad diese Felder überprüft. (siehe "`1.3 Minimieren"').
+
+Wie nun abschließend alle möglichen Lösungen berechnet werden ist in "`1.4 Lösen"' beschrieben, hier wird nur beschrieben, was mit diesen Lösungen getan wird.\n
+Jeder Lösung wird eine Zahl zugeordnet, die ihren Schwierigkeitsgrad angibt, indem die Summe der Schwierigkeitswerte für jedes unbelegte Feld gebildet wird. Ein solcher Schwierigkeitswert gibt an, wie kompliziert die Berechnung eines solchen Feldes ist und hängt von der bei der Berechnung angewandten Methode ab.\n
+Felder, die durch das Vervollständigen einer Reihe(o. Quadrat), bei der alle anderen Ziffern schon zugewiesen wurden, gefüllt werden, sind am einfachsten und bekommen eine 1. Die indirekt gefüllten sind schwieriger und bekommen eine 5. Schlussendlich gibt es noch, allerdings nur sehr selten, die Felder deren Lösungsmethode unbekannt ist, diese bekommen eine 50, da sie so selten und ungefähr zehnmal so schwer zu lösen sind.\n
+Es wird allerdings nicht dieser Wert verwendet, sondern dessen Abweichung zum Optimum des gewünschten Schwierigkeitswerts. Bei hoher Schwierigkeit ist dies das Maximum, bei leichter das Minimum und bei normaler der Mittelwert.\n
+Desweitern wird jedem Bidoku ein Wert zugewiesen, der die Abweichung von der gewünschten Symmetrie angibt, indem alle Fehler in allen Gruppen addiert werden.\n
+Die Summe dieser beiden Werte wird dann minimiert, wodurch die am besten geeignete Lösung ausgewählt werden sollte.
+
+\section{Muster}
+Im Normalfall kann man die mit Ziffern zu füllenden Felder relativ einfach auswählen, man erstellt eine Liste aller Felder und nimmt zufällig welche heraus.\n%Jetzt beschreibe ich erstmal die Auswahl der Felder, die mit Ziffern gefüllt werden. Im Normalfall ist das einfach, man erstellt eine Liste aller Felder und nimmt zufällig welche raus.\n
+Soll das entstandene Bidoku aber bestimmte Muster enthalten, beispielsweise Symmetrie, ist dies ein bisschen komplizierter. Hierzu werden in die Liste die Felder nicht einzeln, sondern in Gruppen gespeichert, wobei in jeder Gruppe die Werte aller enthaltenen Felder von dem Wert eines enthaltenen Feldes abhängen. Bei einer einfachen Spiegelsymmetrie, enthalten zum Beispiel alle Gruppen zwei Felder, eines auf der einen Seite der Spiegelgeraden und eines auf der anderen (eben das gespiegelte).\n
+Man kann den Feldern in den Gruppen auch einen Wert zuweisen, wodurch feststeht, welche Felder den gleichen Wert und welche genau den entgegengesetzten haben sollen.  \n %dabei auch speichern, ob ein Feld normal oder invertiert sein soll, was .\n
+Beim Einfügen wird nun die ganze Gruppe wie ein Feld betrachtet, das ganz gefüllt wird.\n 
+Zuerst wird überprüft, ob die Felder der Gruppe, die bereits belegt sind, den richtigen Wert haben, also ob die jeweils richtigen Felder gleich und ungleich sind. Und außerdem, ob die Gruppe überflüssig ist, also ob alle Felder belegt sind.\n
+Wenn die Gruppe nun überflüssig oder falsch ist, wird sie ignoriert, ansonsten werden die übrigen Felder gefüllt. (zufällig, wenn alle unbekannt sind).\n
+Liefert das Einfügen ein ungültiges Bidoku, so wird die ganze Gruppe entfernt. %Allerdings wird, bei der Entdeckung der Unmöglichkeit, die Gruppe nochmal invertiert getestet, da die Symmetrie wichtiger ist, als überflüssig belegte Felder, die nur die Schwierigkeit ändern. (zumal symmetrische Felder ja immer einfacher sind, wenn man die Symmetrie erkannt hat)
+
+Zu diesen Gruppen ist anzumerken, dass sie distinkt sein müssen, also je zwei unterschiedliche Gruppen enthalten keine gemeinsamen Felder. Sonst würde nämlich der Wert des gemeinsamen Feldes durch ein beliebiges Feld der Gruppe festgelegt und darüber die Werte der anderen Gruppe.\n
+%Außerdem kann man zwei Muster vereinigen, indem man 
+Daher kann man zwei Listen von Gruppen relativ einfach vereinigen, indem man für jede Gruppe der einen Liste alle Gruppen der anderen Liste sucht, die ein gemeinsames Feld haben und diese verbindet und danach alle Gruppen mit gemeinsamen Feldern vereinigt, bis es keine mehr gibt.\n
+Diese Einteilung in Gruppen erlaubt also sehr komplexe Muster und Symmetrien, insbesondere durch die Möglichkeit, mehrere Muster zu verbinden.\n
+Eine einfachere Möglichkeit, die ich aber nicht implementiert habe, ist es, das Bidoku einfach in kleine Teilbereiche, die selbst eine Art Bidoku darstellen, zu unterteilen.\n
+Dann kann man diese Bereiche, vielleicht vorher noch gedreht/gespiegelt, kombinieren, was sich schneller berechnen lässt.\n
+Beispielsweise kann man ein oberes Viertel, mit 4 Werten pro Farbe und Reihe berechnen und dann entsprechend gespiegelt nebeneinander setzen, wodurch man ein vertikal und horizontal spiegelsymmetrisches Bidoku erhält.
+
+\section{Minimieren}
+%ist diese Gruppeneinteilung ermöglicht sehr allgemeine 
+%Diese Aufteilung in Gruppen ermöglicht sehr komplexe Muster, 
+%Da man somit aber noch immer jeweils eine Lösung berechnen muss,
+Der Algorithmus zur Berechnung eines Bidokus ohne überflüssig belegte Felder ist relativ einfach, es wird nur jedes Feld, das überflüssig ist, gelöscht. \n%Minimierung eines Bidokus ohne  relativ einfach, man 
+Dazu wird jeweils ein Feld ausgewählt und invertiert. Kann nun eine Lösung gefunden werden, so war der Wert des Feldes nötig, um die tatsächliche Lösung auszuwählen. Gibt es aber nun keine mehr, kann der Wert einfach gelöscht werden.\n
+Damit sich die belegten Felder nicht in einem Bereich konzentrieren, müssen dabei die betrachteten Felder zufällig ausgewählt werden.\n
+Ob man das so entstandene Bidoku als minimal bezeichnen kann, hängt von der Definition dieses Wortes ab. Zweifellos ist das Bidoku in dem Sinne minimal, dass keines der Felder des Bidokus gelöscht werden kann, ohne die Eindeutigkeit zu verlieren. Es ist aber nicht sichergestellt, ob es nicht eine komplett andere Auswahl von Feldern gibt, die dasselbe Bidoku als Lösung haben.\n
+Hieraus folgt übrigens auch, dass die Invertierung eines Feldes eines minimalen, eindeutig lösbaren Bidokus immer ein anderes lösbares Bidoku erzeugt, woraus man eventuell auch einen Generierungsalgorithmus entwickeln könnte, wenn man das Problem löst, dass das Ergebnisbidoku weder eindeutig noch minimal sein muss.\n
+Und was auch erwähnt werden muss, ist, dass das Bidoku der Aufgabenstellung nicht minimal ist, denn man kann noch mindestens 37 Felder leeren, ohne die Eindeutigkeit zu verlieren.
+
+
+
+\section{Lösen}
+Der Lösungsalgorithmus entspricht dem auf dem Aufgabenblatt angedeuteten Verfahren.\n
+Zuerst werden alle Reihen und Quadrate, die bereits die maximale Anzahl von einer Zifferart enthalten, mit der jeweils anderen aufgefüllt.\n
+Da dadurch die kritische Anzahl in anderen Reihen und Quadraten erreicht werden kann, muss dies solange wiederholt werden, bis es keine Änderung mehr gibt.\n
+Nach dieser trivialen Suche wird eine Reihe gesucht, in die nur eine geringe Anzahl  eines Zifferntyps eingefügt werden kann und deshalb in jedem Abschnitt, der mehr Felder enthält, eine Mindestanzahl vom anderen Zifferntyp eingefügt werden muss. Zusätzlich wird ein fast volles Quadrat gesucht, dass so geschnitten wird, dass dort aus diesen Gründen so viele Ziffern eingefügt werden müssen, dass es nach diesem Einfügen die maximal mögliche Zahl von diesen Ziffern enthält. Dann weiß man, dass der Rest des Quadrates mit der jeweils anderen Ziffernart gefüllt werden muss, was der Algorithmus natürlich auch tut.\n
+Dann muss auch der umgekehrte Fall berücksichtigt werden, nämlich das ein Quadrat so voll ist, dass man mehrere Ziffern von einem Typ einfügen muss und dadurch eine Reihe füllt.
+
+Das wiederholte Anwenden dieser Regeln hat beim Testen die meisten auftretenden normalen Bidokus gelöst (genauer gesagt alle außer einem Fall), deshalb kann man davon ausgehen, dass alle Bidokus zum größten Teil gelöst werden können.\n
+Man kann daher dieses logische Lösungsverfahren durch einen einfachen Back-Tracking-Algorithmus (also Bruto-Force) erweitern, der für die wenigen noch unbesetzten Felder alle Möglichkeiten durchprobiert, womit man in der Lage ist, wirklich alle Bidokus zu lösen.\n
+Man könnte natürlich auch die logische Lösungsweise verbessern, so könnte man versuchen, nicht nur den Schnitt einer Reihe mit einem Quadrat zu berücksichtigen, sondern auch den Schnitt von zwei oder noch mehr Reihen mit einem Quadrat. Ich habe allerdings kein 4-Bidoku gefunden, bei dem dies nötig wäre, bei größeren sollte man es aber noch berücksichtigen, wenn man eine schnelle Lösung braucht.\n
+%so ließe sich zum Beispiel der erwähnte Fall leicht durch die Berücksichtigung der Symmetrie lösen. 
+Ein anderer Ansatz ist die Berücksichtigung von Symmetrie, was auch den oben erwähnten Fall lösen würde. Allerdings glaube ich nicht, dass man im Allgemeinen erkennen kann, ob ein Bidoku symmetrisch ist, solange es noch ungelöst ist. Wenn natürlich die bekannten Felder symmetrisch angeordnet sind und das Bidoku eindeutig ist, muss die Lösung symmetrisch sein. Da das Verfahren aber vor allem dazu benutzt wird, Eindeutigkeit zu erkennen, kann man diese nicht vorraussetzen.\n
+Letztendlich wird ein zusätzlicher Bruto-Force-Einsatz auch durch die Suche nach allen Lösungen eines Bidokus gerechtfertigt, da man diese eben nur finden kann, indem man alle Möglichkeiten an Lösungen durchprobiert.
+
+
+%Es ist aber auch möglich, dass es Bidokus gibt, bei denen sie nicht ausreichen, beispielsweise wenn zwei oder drei Reihen ein Quadrat so schneiden, dass es gefüllt werden muss, und dies der einzigste Weg zur weiteren Lösung ist.\n
+%Deshalb folgt, wenn das Bidoku ausnahmsweise mal nicht gelöst wurde ein weiterer Schritt, 
+%in dem für ein Feld alle Möglichkeiten (also 0 oder 1) durchprobiert werden und der Rest des Bidokus dann gelöst wird.\n
+%Dies ist natürlich sehr ineffizient und hat eine exponentielle Laufzeit, allerdings sollte dieser Fall bei einer normalen Lösung sowieso nicht auftreten. \n
+%Ein Vorteil ist aber, dass damit auch alle Lösungen eines Bidokus gefunden werden, das nicht eindeutig ist, was auch der eigentliche Sinn davon ist.
+
+\section{Sonstiges}
+Man kann Bidokus auch zum Verstecken von geheimen Botschaften benutzen. Ein trivialer Weg ist es, einfach mehrere Bidokus ungelöst zu benutzen, die gelöst wie Buchstaben aussehen. Wer nicht weiß, dass es Bidokus sind, könnte einige Zeit brauchen, um dies zu entschlüsseln.\n
+Sinnvoller ist es das Bidoku als stenographisches Versteck zu benutzen, indem man jedem möglichen Bidoku einen String zuordnet, so dass man bei einem Bidoku nicht weiß, ob es nun eine Botschaft enthält oder nicht. (Am besten, indem man beide in eine Zahl verwandelt)\n
+Das Problem hierbei ist natürlich, dass durch den gegenseitigen Ausschluss von Reihen und Quadraten schwer ist, das Ganze mathematisch zu beschreiben.\n
+Eine Lösung hierfür wäre es, nur kleine Teilbereiche zu benutzen, beispielsweise 4 Reihen in unterschiedlichen Quadraten. Da dabei scheinbar jede in einer Reihe mögliche Kombination zu einem gültigen Bidoku führt, hat man dadurch $\binom{16}{8}^4 = 12870^4 \approx 27^2$ Möglichkeiten. Wie man sieht, reichen diese aber bloß für einen 2 Zeichen langen String.\n %Ich bin mir sicher, dass dabei jede Kombination ein gültiges Bidoku erzeugt, so dass dann die Zahl der Kombinationen $\left(\frac{16!}{8!}\right)^4=518918500^4\approx 27^{24}$ ist. Man kann damit also einen 24 Buchstaben langen String speichern.\n
+Allerdings haben mehrere Minimierungen mit dem Programm gezeigt, dass ein durchschnittliches, minimiertes Bidoku 80 belegte Felder hat, womit man $2^{80} \approx 27^{16}$ Möglichkeiten hat, was schon für einen 16 Zeichen langen Text reicht.\n %2^110\approx 27^23
+Diese Möglichkeiten kann man nutzen, indem man die Felder in einer bestimmten  Reihenfolge durchgeht und jedes Feld, dessen Wert noch nicht feststeht als Speicherbit benutzt, um den String 1 zu 1 aus seiner Repräsentation als Binärzahl einzufügen.
+
+
+Eine Möglichkeit Leute, die sich weniger für Mathematik und Logikspiele interessieren, dazu zu bringen, auch Bidokus zu lösen, wäre es, eine Art Belohnungsspiel zu aktivieren.\n
+Beispielsweise könnte man einige Felder löschen, um einen Bereich einer durch\-gängigen Ziffer zu erzeugen, diesen dann als Hintergrund nehmen und die anderen Ziffern als Wände, um eine Art Labyrinth aus dem gelösten Bidoku zu erstellen. Darin könnte man dann ein anderes Spiel durchführen, wie z.B.: Pacman, Bomberman oder Wolfenstein.\n
+Oder man könnte das Bidoku in einzelne Stücke zerlegen und nacheinander herunterfallen lassen. Damit hätte man dann Tetris.\n
+Sowas habe ich aber nicht implementiert, weil es umständlich ist und eigentlich keinen Erkenntnisgewinn bringt.
+
+Was auch interessant wäre, aber was ich auch nicht eingebaut habe, sind Tridokus, Quadradokus oder ähnliches, also die Verwendung von weiteren Zahlen außer 0 und 1.\n
+Hierbei könnte man dann für eine gültige Lösung eine Summe fordern, oder eine bestimmte Anzahl von Zahlen, was nur beim Bidoku dasselbe ist.
+
+\chapter{Programmdokumentation}
+Das in Lazarus für FreePascal entwickelte Programm besteht aus zwei Teilen, der eine regelt die Interaktion mit dem Benutzer über zwei LCL-Dialoge (in gui.pas und createparams.pas), der andere enthält die Logik (in logic.pas).
+
+Ein Bidoku wird im Programm durch eine Klasse \typeF{TBidoku} repräsentiert, die alle Felder in einem zwei-dimensionalen Array namens \var{data} vom Aufzählungstyp \type{trilean} speichert, einem Typ der die drei Werte \const{triUnset}, \const{tri0} und \const{tri1} annehmen kann.\n
+Außerdem gibt es drei weitere Arrays, \var{rows}, \var{cols} und \var{quadrates}, bei denen jeder Eintrag wieder ein kleines Array ist, das für jeden möglichen Wert von \type{trilean} speichert, wie oft dieser vorkommt. Ohne Berücksichtigung dieser Drei-Elemente-Arrays ist \var{rows} und \var{cols} eindimensional, \var{quadrates} dagegen ist in offensichlicher Weise zwei-dimensional.\n
+Es gibt noch ein letztes Array namens \var{solutionMethod} von gleicher Größe wie \var{data}, das wie der Name schon sagt, die Lösungsmethode speichert. Diese Methode wird wieder durch einen Aufzählungstypen \type{TSolutionMethod} dargestellt. \n
+Alle Arrays haben eine variable Größe, weshalb das Programm auch größere und kleinere Bidokus behandeln kann. Ich bin allerdings davon ausgegangen, dass das Bidoku quadratisch ist und dass die Zahl der Quadrate pro Reihe und die Zahl der Felder in einer Reihe eines Quadrates gleich sind. 
+Gespeichert wird die Zahl, die diese Größe angibt, in \var{n}, es gibt also insgesamt $n^4$ Einträge im \var{data}-Array. %Somit kann diese Zahl alleinig zur Beschreibung der Bidokugröße benutzt werden,    
+\n
+Alle Einträge werden durch die Methode \procedureF{put} gesetzt, die als Parameter die Feldkoordinaten und die neuen Werte für \var{data} und \var{solutionMethod} entgegen nimmt. Sie verringert dann auch automatisch die gespeicherte Anzahl der alten Zahl und vergrößert die der neuen. Außerdem setzt sie die Variable \var{changed} auf \const{true}, wenn sich die eingefügte und die alte Zahl unterscheiden, wodurch eben festgestellt werden kann, dass etwas geändert wurde.\n
+Außerdem gibt es eine Membervariable \var{time}, die bei jedem Aufruf von put inkrementiert wird, an der man also die Zahl der Aufrufe ablesen kann. Der aktuelle Wert wird beim Verändern des \var{data}-Arrays in das Array \var{putTimes} geschrieben, so dass für jedes Feld bekannt ist, wann es geändert wurde. Daraus kann man dann die Reihenfolge der Erstellung ablesen.\n
+Eine ähnliche Funktion wie \procedure{put} hat die Methode \procedure{tryput}, sie überprüft allerdings noch vorher, ob das Feld wirklich frei ist.
+
+%Die und \procedureF{solve} implementiert. \n
+\section{Lösen}
+Der eigentliche Lösungsalgorithmus ist in den Methoden \procedure{\_solve} und \procedure{logicalSolve} implementiert.\n
+\procedureF{logicalSolve} wendet, wie der Name schon sagt, die logischen Regeln an, solange es geht und schreibt die gefundenen Werte gleich ins Bidoku selbst. Die relevanten Anweisungen befinden sich also in einer Schleife, die solange wiederholt wird, bis die Variable \var{changed}, die von \procedure{put} gesetzt wird, in einem Durchlauf nicht mehr gesetzt wurde.% nicht mehr  %bis ihr Lösungspotenzial erschöpft ist, also bis
+\n
+Weil die Vervollständigung einer Reihe/Quadrat am einfachsten ist, werden in jedem Durchlauf zuerst  alle Reihen vervollständigt, und zwar solange, bis dadurch auch keine neuen Gebiete, die vervollständigt werden können, entstehen. Es gibt also eine zweite Schleife in der äußeren Schleife.\n
+Die eigentliche Vervollständigung ist mit den Hilfsarrays, die die Anahl der bereits gesetzten Ziffern speichern, relativ trivial. Es wird einfach jeder Eintrag (der ja für ein ganzes Gebiet steht) daraufhin überprüft, ob die Summe einer der Ziffern maximal ist und die der anderen nicht. Wenn ja, wird das Gebiet vollständig durchlaufen und jedes Feld mit \procedure{tryput} gefüllt.\n
+Damit dies für beide Arten von Ziffern durchgeführt wird, befinden sich diese Anweisungen nochmals in einer dritten Schleife, die von 0 bis 1 läuft, und diese Ziffer in \var{num} speichert und die Alternativziffer in \var{num2}. 
+
+Die gleiche (aber nicht dieselbe) Schleife wird für die Suche nach den indirekt durch Schnittüberlegungen gegebenen Feldern verwendet, allerdings wird diese nicht in noch einer Extraschleife solange wiederholt, bis es keine Änderungen mehr gegeben hat, sondern danach beginnt gleich ein neuer Durchlauf der äußersten.\n
+Zuerst wird jede Spalte in \var{cols} darauf überprüft, ob sie für solche Schnittüberlegungen benutzt werden kann, also ob sie einerseits genügenden Ziffern einer Sorte enthält, um in einem Ausschnitt von \var{n}-Feldern immer eine bestimmte Anzahl der anderen Ziffern garantieren zu können, und andererseits, ob sie noch nicht voll ist, da sie sonst ja sowieso schon bekannt ist.\n
+Im Programm wird $\frac{1}{2}\var{n}^4$, die maximale Anzahl von Ziffern pro Gebiet, in \var{maxcount} gespeichert. Subtrahiert man hiervon die tatsächliche Anzahl der Ziffern im Gebiet, erhält man logischerweise die maximale Anzahl, die sich dort noch einfügen lässt. Subtrahiert man dies wiederum von \var{n}, so erhält man die Zahl der Ziffern der anderen Sorte, die in \var{n} freien Feldern mindestens eingefügt wird, was gleichzeitig die maximale Anzahl von Ziffern in dem Schnitt der Reihe mit einem Quadrat ist. \n
+Nun wird entlang dieser Spalte ein Quadrat aus \var{quadrates} gesucht, dass auch noch nicht voll ist und das durch das Einfügen dieser maximalen Anzahl von Ziffern die maximale im Quadrat mögliche Zahl von diesen Ziffern erreichen oder überschreiten würde.\n
+Ein solches Quadrat ist prinzipiell dafür geeignet durch den Schnitt bekannt zu werden, es muss aber noch überprüft werden, ob die Zahl der ungefüllten Felder in dem Schnittbereich tatsächlich groß genug ist.\n
+Dafür werden einfach die freien Felder gezählt und dann nochmals die Bedingung mit der tatsächlichen Zahl überprüft. Dieser doppelte Test ist schneller, als immer gleich die leeren Felder zu berechnen und verbraucht weniger Speicher als noch ein paar Arrays einzuführen, die die Zahl aller Ziffern in allen möglichen Schnittbereichen speichern und beim "`putten"' aktualisiert werden.\n
+Ist die Bedingung nun immer noch erfüllt, kann der Bereich links und rechts vom Schnitt über \procedure{tryput} einfach mit der Ziffer gefüllt werden.
+
+Als nächsten wird das gleiche mit den Zeilen und Quadraten überprüft.\n
+Der Ablauf bei den Zeilen ist derselbe wie oben, nur wird jetzt statt \var{cols} \var{rows} verwendet und die Schleifen laufen über die x statt über die y Koordinate.\n
+Bei den Quadraten dagegen ändern sich die Schleifen stärker. Die äußere Schleife, die das Ausgangsgebiet auswählt, muss nun über zwei Koordinaten laufen, während beim Füllen nur noch über eine Koordinate gelaufen werden muss.%und für ein Quadrat müssen sowohl Zeilen wie auch Spalten überprüft werden.
+\n
+Dagegen sind die zu überprüfenden Bedingungen, abgesehen von den Variablenumbenennungen und Koordinatenvertauschungen, gleich geblieben, da der Schnittbereich ja noch immer eine kleine Reihe ist. 
+
+Damit ist \procedure{logicalSolve} fertig, die Berechnungen müssen nur noch solange wiederholt werden, bis es keine Änderungen mehr gibt, und das Rätsel ist soweit gelöst, wie logisch möglich.\n
+\functionF{\_solve} führt nun den Backtrackingalgorithmus aus.\n
+Hierbei werden drei Parameter entgegengenommen. \var{allSolutions} gibt an, ob alle Lösungen berechnet werden sollen, oder nur eine. \var{deep} gibt die Rekursionstiefe an und in die Liste \var{solutions} werden die gefundenen Lösungen als \type{TBidoku}-Objekte eingetragen. Zurück gegeben wird die Anzahl der Lösungen.\n
+Wenn nur eine Lösung gesucht wird, werden alle gefundenen Werte direkt ins Bidoku selbst geschrieben, ansonsten nur die logisch begründeten. \var{solutions} kann auch \const{nil} sein, wenn nicht alle Lösungen gebraucht werden.
+
+Zuerst wird nun \procedure{logicalSolve} aufgerufen, um soviel wie möglich direkt zu lösen, anschließend wird mit der Funktion \procedure{solved} überprüft, ob das Bidoku nun ganz, teilweise oder falsch gelöst ist.\n
+Nur wenn es teilweise gelöst ist, macht es Sinn fortzufahren, ansonsten wird abgebrochen und entweder eine Lösung (das Bidoku selbst \var{self}) in der Liste \var{solutions} gespeichert oder eben nicht.\n
+\functionF{solved} selbst ist relativ trivial. Die Funktion durchläuft einfach alle Gebiete und inkrementiert für jede Ziffer einen Eintrag in einem Array names \var{count}, dessen Indizes die Werte von \type{trilean} sind. Ist ein Eintrag größer als der maximal erlaubte Wert wird \const{ssWrong} zurück gegeben, ist ansonsten einer kleiner \const{ssPartly} und ist er gleich \const{ssSolved}.\n
+Es würde natürlich schneller gehen, die \var{rows}, \var{cols} und \var{quadrates}-Arrays zu überprüfen, aber auf diese Weise hat man noch eine Nebenkontrolle. \n
+Wenn es in \function{\_solve} weiter geht, muss nun ein Feld ausgewählt werden, dessen Werte durchprobiert werden sollen. Ich habe mich dafür entschieden, zuerst in \var{rows} die meistgefüllte Zeile zu suchen, die noch nicht voll ist. Dann wird die Zeile durchlaufen und das Feld gesucht, das noch frei ist und in einer möglichst vollen Spalte liegt. Auf diese Weise ist die Wahrscheinlichkeit, dass das Feld den Rest der Zeile und Spalte festlegen kann, relativ hoch.\n
+Es gibt nur ein Problem, wenn es mehrere Reihen mit gleichhohem Belegungsgrad gibt. Die einfache Idee, dann die zuerst oder zuletzt angetroffene zu wählen, ergibt nämlich einen seltsamen Effekt beim Erzeugungsalgorithmus. Da alle Felder auf einer Seite geraten werden, sind die auf der anderen logisch herleitbar und das zu lösende Bidoku enthält auf einer Seite viel mehr Zahlen als auf der anderen.\n
+Meine Lösung hierfür ist abwechselnd die erste und letzte Zeile zu bevorzugen, abhängig von der aktuellen Rekursionstiefe und die Spaltenreihenfolge nach jedem "`Zeilenwechsel"' zu wechseln. Das ist ein winziges bisschen schneller und einfacher, als eine zufällige Reihenfolge zu wählen und funktioniert genauso gut.\n
+Mit einer Schleife über \var{tri} werden nun die beiden möglichen Werte durchlaufen.\n
+Dann wird - grob gesagt - für jeden Wert das Bidoku in die Variable \var{temp} "`geklont"', der entsprechende Wert in \var{temp} geschrieben, \function{\_solve} für dieses neue Bidoku aufgerufen und der Rückgabewert dieses Aufrufs zum eigenen addiert. \n
+Es wird dadurch etwas komplizierter, dass Felder, deren Wert völlig frei gewählt werden kann von Feldern, deren Wert zwar nicht logisch hergeleitet wird, aber trotzdem fest ist, unterschieden werden sollen.\n
+Bei dem einfachen Fall ist so, dass der erste Wert unmöglich war, also im zweiten Durchlauf noch keine Lösung gefunden wurde, dann kann einfach als Lösungsmethode \const{smBacktracking1}, statt \const{smBacktracking2} angegeben werden. (Die Zahlen geben logischerweise die Zahl der Lösungen an). Der umgekehrte Fall ist aber leider nur im zweiten Schleifendurchlauf erkennbar, wenn alle Lösungen gesucht werden. Dann steht aber schon in den gespeicherten Lösungen, dass es dort zwei Möglichkeiten gab. Die Lösung ist es, einfach alle im ersten Durchlauf in \var{solutions} eingefügten Bidokus zu durchlaufen und dort die Lösungsmethode zu korrigieren, wofür die alte Anzahl der Lösungen \var{oldCount} verwendet wird.\n
+Das Speichern in der Liste führt allerdings noch zu einem Problem beim Freigeben von \var{temp}. Wird dieses nämlich direkt logisch gelöst, wird es (wenn vorhanden) in \var{solutions} als Lösung gespeichert sein. Deshalb muss vor dem Löschen noch überprüft werden, ob es in der Liste ist. Da es aber immer als Letztes eingefügt worden sein muss, ist dies relativ einfach.\n
+Soll nur eine Lösung gefunden werden, muss die gefundene Lösung noch in das Bidoku selber eingetragen werden. Hierfür werden einfach alle Felder durchlaufen und kopiert.
+
+Da der Aufruf von \function{\_solve} etwas unhandlich ist, gibt es die Funktion \functionF{solve}. Sie nimmt zwei Parameter entgegen \var{allSolutions} und \var{list}, die angeben, ob alle Lösungen gesucht werden sollen und ob eine Liste der Lösungen berechnet werden soll. Der Rückgabewert ist ein record, der enthält, ob eine Lösung gefunden wurde, die Anzahl der Lösungen und die Liste der Lösungen.\n
+Der interne Ablauf ist relativ trivial: Zuerst wird, falls benötigt, eine Liste erzeugt. Dann wird die Lösungsmethode aller bekannten Felder auf \const{smFixed} gesetzt, damit klar ist, welche vorgegeben waren.\n
+Nun muss nur noch \function{\_solve} aufgerufen und der Rückgabewert gespeichert werden. Desweiteren wird überprüft, ob das Bidoku selbst in der Liste gespeichert ist. Wenn ja, wird es dort durch einen Klon ersetzt, damit man die Rückgabeliste immer ohne Tests freigeben kann.
+
+Noch eine triviale Funktion ist \functionF{isSolvable}. Diese klont einfach das Bidoku und ruft dann \function{\_solve} auf, um es zulösen. Gibt es eine Lösung wird \const{true} und sonst \const{false} zurückgegeben.
+
+\section{Minimieren}
+
+Benutzt wird \function{isSolvable} von der Methode \functionF{minimize}, die das Bidoku minimiert.\n
+Sie schreibt zuerst alle möglichen Positionen von Feldern in ein Array namens \var{positions}.\n
+Dann werden die Positionen in zufälliger Reihenfolge durchlaufen, indem immer eine Position zufällig gewählt und anschließend durch das letzte Element ersetzt wird, wodurch sie gelöscht wird.\n
+Ist das Feld nicht leer, wird es invertiert und mit \function{isSolvable} auf Lösbarkeit getestet. Ist das Rätsel nicht mehr lösbar, ist der Wert im Feld sinnlos, und wird gelöscht. Wenn doch, wird der Wert erneut invertiert und somit wiederhergestellt.
+
+\section{Erzeugen}
+Die Erzeugung wird von der Methode \procedureF{generate} erledigt, die zwei Parameter entgegen nimmt und das erzeugte Bidoku in das aktuelle TBidoko-Objekt schreibt. \n
+Der erste Parameter ist ein \type{TDifficulty}-Aufzählungswert, der die selbsterklärenden Werte \const{dEasy}, \const{dNormal} und \const{dHard} annehmen kann. Der zweite (der auch nil sein kann) \var{positions} ist ein Array von Array von records, die Feldkoordinaten und einen boolean-Wert namens \var{negate} enthalten. Dies sind logischerweise die Gruppeninformationen für die Symmetrie. Jedes der Arrays von Records ist eine Gruppe und jeder Record repräsentiert ein Feld. Alle Felder einer Gruppe mit demselben \var{negate}-Wert sollen auch denselben Wert haben, alle mit ungleichem auch ungleiche Werte.\n
+Die Methode beginnt damit, den Zufallsgenerator zu initialisieren und das bisherige Bidoku zu löschen. Dann wird überprüft, ob eine Symmetrie angegeben wurde und wenn nicht, wird ein \var{positions}-Array erstellt, indem jedes Feld eine eigene Gruppe ist.\n
+Andere initialisierte Variablen sind eine Kopie des Bidokus \var{twin}, die Zahl der belegten Gruppen \var{c}, die Zahl der verwendeten Felder \var{fieldCount}, die Zahl der maximal verfügbaren Felder \var{maxFieldCount} und der Index der zuletzt verwendeten Gruppe \var{p}.
+
+Die eigentliche Generierung befindet sich nun in einer Schleife. Zuerst wird - wiederum in einer Schleife - eine Gruppe ausgewählt. Dies läuft so ab, dass die zuletzt verwendete Gruppe durch die letzte ersetzt wird, aus den übrig gebliebenen eine zufällige gewählt wird und die Anzahlen \var{c} und \var{fieldCount} vergrößert werden. Erfüllt die Funktion nicht die Bedingungen der Unterfunktion \function{freeFields} wird das Ganze wiederholt.\n
+\functionF{freeFields} ist relativ einfach, sie überprüft, ob noch ein Feld der Gruppe unbelegt ist und ob die restliche Belegung gemäß den Gruppenwünschen gültig ist. Hierfür wird Anzahl der belegten Gruppenfelder ermittelt und beim ersten belegten Feld der Basiswert der Gruppe ermittelt. Dies ist der Wert, den alle Felder mit \var{negate} = false haben sollen, und alle anderen der Gruppe eben nicht. Bei allen darauffolgenden wird überprüft, ob sich derselbe Basiswert ergeben würde. Der Basiswert wird auch für die weitere Berechnung zurückgegeben.\n
+Ist dem nicht so, oder stellt sich am Ende heraus, das alle Felder zu groß sind, wird false zurückgegeben, ansonsten true. Belegt bedeutet hierbei, entweder direkt festgelegt oder in der Lösung von \var{twin} durch Logik oder eindeutiges Backtracking ermittelt.\n
+Ist die Gruppe also ok, wird, wenn kein Basiswert ermittelt werden konnte (weil die Gruppe leer ist), zufällig einer gewählt. Hat man somit einen Basiswert, wird die ganze Gruppe entsprechend gefüllt, abgesehen von den Feldern, bei denen der Wert von \var{twin.solutionMethod} sagt, dass eine eindeutige Lösung bekannt ist.\n
+Dann wird \var{twin} aktualisiert und mit \procedure{\_solve} wieder gelöst. Ist das möglich, ist alles prima und es fängt mit der nächsten Gruppe von vorne an. Wenn nicht, wird die ganze Gruppe wieder gelöscht. \n
+%Wenn ein Muster erzeugt werden muss, kann es aber auch bei noch nicht belegten vorkommen, dass eine Ziffer das Rätsel unlösbar werden lässt, eine andere aber nicht. Deshalb wird noch die Gruppe, wenn ihr Basiswert nicht feststeht, noch mal mit der jeweils anderen Ziffer überprüft, wenn die erste das Rätsel  unlösbar werden lässt. Dadurch nimmt zwar die Zahl der freien Felder ab, aber es wird sichergestellt, dass die Symmetrie vorhanden ist.
+
+Dies wird solange wiederholt, bis \var{maxField} sagt, dass nun alle Felder bekannt sein müssten.\n
+Dann werden mittels \function{\_solve} alle möglichen Lösungen in eine Liste geschrieben und die Beste ausgewählt.\n
+Das Auswählen verläuft so, dass zuerst der beste Schwierigkeitswert der Bidokus in der Liste gesucht und in \var{bestDiff} gespeichert wird. Bei der Berechnung eines einfachen Bidokus ist dies das Minimum, bei einem schweren das Maximum, und bei einem normalen, der durchschnittliche Schwierigkeitswert, also der Mittelwert. Diese Auswahl selbst ist trivial, die Berechnung des Schwierigkeitsgrads ist etwas interessanter.\n
+Diese Berechnung wird von der Funktion \functionF{rateDifficulty} vorgenommen. Sie durchläuft einfach alle verwendeten Lösungsmethoden im \var{solutionMethod}-Array und addiert für jede Lösungsmethode den entsprechenden Schwierigkeitswert für dieses Feld. Wie im Lösungsideeabschnitt gesagt, sind diese Werte 1 für triviale Logik, 5 für indirekte und 50 für Felder die geraten werden mussten.\n
+Dann kann der Wert jedes Bidokus als die Summe der Abweichung des eigenen Schwierigkeitsgrad von dem eben berechneten und der Abweichung vom gewünschten Muster berechnet werden. Diese Zahl muss nur minimiert werden und man erhält das bestmögliche Bidoku in der Liste.\n
+Die Abweichung vom Muster wird von der Methode \function{symmetricErrors}\marginText{\small{symmetricErrors}} berechnet, die der Reihe nach alle Gruppen untersucht und die Abweichungen innerhalb einer Gruppe addiert. Die Abweichungen in einer Gruppe werden berechnet, indem alle Paare von Feldern der Gruppe daraufhin überprüft werden, ob sie durch denselben Basiswert generiert wurden. Wenn nicht, wird der Fehlerwert um 1 erhöht.\n
+Schneller wäre es natürlich, einfach den Basiswert der Gruppe aus einem Feld zu berechnen und die anderen Felder daraufhin zu überprüfen. Dies hat allerdings das Problem, dass man das erste Feld wählen muss. Ist beispielsweise ein Feld falsch und drei sind richtig, so würde mit  dem Basiswertes des einen Feldes, der Fehlerwert 3 folgern, mit dem anderen, aber nur der Fehlerwert 1. \n
+Hat man dann eine ausgewählte Lösung in \var{bidoku}, muss man nur noch alle Felder, die nicht eindeutig waren und geraten wurden, übernehmen, damit sie in Zukunft eindeutig sind. Hierfür wird das \var{solutionMethod}-Array durchlaufen und alle Felder mit \const{smBacktracking2} übernommen. \n
+Zu beachten ist es hierbei, dass die Zahl der möglichen Lösungen manchmal zu groß ist, um effektiv berechnet zu werden, weshalb \procedure{\_solve} nach 10000 Lösungen abbricht. Dann ist aber die Unterscheidung zwischen geraten und nicht eindeutig und geraten, aber doch eindeutigen Feldern, nicht mehr möglich und es müssen auch noch die \const{smBacktracking1}-Felder übernommen werden.\n
+Damit wurde ein eindeutiges Bidoku gefunden.\n
+Jetzt muss nur noch der Schwierigkeitsgrad ein wenig angepasst werden.\n
+Für "`schwer"', wird das Rätsel über \procedure{minimize} minimiert.\n
+Für "`leicht"', wird sichergestellt, dass nur 100 Felder unbekannt sind. Dafür werden die leeren Felder gezählt, und zum dritten Mal (in diesem Text) alle möglichen Feldpositionen in ein Array geschrieben. Dieses Array wird dann wie immer in zufälliger Reihenfolge durchlaufen und jedes Feld, das nicht gefüllt ist, wird mit dem richtigen Wert aus \var{bidoku.data} gefüllt, bis maximal 100 Felder frei sind.\n
+Dann müssen noch die temporären Bidokus, also die Lösungen und die Kopie, gelöscht werden.
+
+\section{Muster}
+ 
+Die Generierung der Arrays für die im Programm eingebauten Spiegelsymmetrien ist relativ simpel.\n
+Die ersten beiden Funktionen sind \function{makeMirrorSymmetryH} und \function{makeMirrorSymmetryV}, die eine Spiegelsymmetrie um die horizontale und vertikale Mittelachse des Bidokus erzeugen, und als Array zurückgeben\n
+Hierfür wird zuerst der Speicher für die Gruppen reserviert, es gibt halb so viele Gruppen wie insgesamt Felder und jede Gruppe enthält zwei Felder. Man kann sich vorstellen, das eine Feld ist das Original und das andere, das Gespiegelte auf der anderen Seite der Symmetrieache.\n
+Dann werden alle Felder auf der einen Seite durchlaufen und für jedes Feld die Koordinaten des dazugehörigen gespiegelten berechnet (indem die Koordinate von der Größe subtrahiert wird) und zusammen in eine Gruppe geschrieben. \n
+Die andere Art von Spiegelsymmetrie wird von \function{makeMirrorSymmetrySubH} und \function{makeMirrorSymmetrySubV} erzeugt. Hierbei wird das Bidoku als in zwei Hälften geteilt betrachtet, die beide bezüglich ihrer Mittelachse spiegelsymmetrisch sind. \n
+Die Berechnung erfolgt wie bei der normalen Spiegelsymmetrie, nur wird auf der einen Hälte die Koordinate nicht von der ganzen Bidokugröße, sondern nur von der halben subtrahiert. In der anderen wird dagegen die halbe Bidokugröße addiert, wodurch ein Feld auf der anderen Hälfte gewählt wird.\n
+Mit der Kombination von horizontaler und vertikaler Spiegelsymmetrie kann man dann auch punktsymmetrische Bidokus erzeugen.
+
+Die Kombination von zwei Symmetrien wird von der Funktion \function{mergeSymmetry} erledigt, die zwei Arrays als Parameter entgegen nimmt, und die Vereinigung als Rückgabewert nun eben zurückgibt.\n
+Hierfür definiert sie erstmal zwei Hilfsfunktionen:
+\function{groupIntersection} überprüft, ob sich zwei Gruppen überschneiden, und ermittelt, ob die zweite Gruppe beim Hinzufügen invertiert werden müsste.\n
+Hierfür werden einfach alle Paare zweier \type{TPositionGroup}-Arrays mit einander verglichen, und bei gemeinsamen Koordinaten true zurückgegeben. Invertiert werden muss das Array genau dann, wenn die beiden sich schneidenden Felder einen unterschiedlichen \var{negate}-Wert haben.\n
+Die andere Hilfsprozedur ist \procedure{addPositionGroup}, die eine Gruppe zu einer anderen hinzufügt. Hierzu wird zuerst für jedes Feld in der zweiten Gruppe überprüft, ob es schon in der ersten ist. Wenn nicht, wird das Feld an die Gruppe angehängt, und wenn der Parameter \var{negate} gesetzt ist, noch invertiert.\n
+Damit fällt es jetzt in \function{mergeSymmetry} leicht, alle Gruppen des zweiten Musters \var{b} mit denen in \var{a} zu vergleichen und bei einer Überschneidung zu vereinigen. Es werden allerdings nicht direkt die Gruppen von \var{a} und \var{b} verglichen, sondern \var{a} wird zuerst in \var{result} kopiert, damit die Vereinigung als Rückgabewert übergeben werden kann.\n
+Anschließend werden alle Paare von Gruppen in \var{result} auf einen Schnitt überprüft. Wird einer gefunden, so wird die eine Gruppe zur anderen hinzugefügt und die letzte gelöscht.\n
+Dies muss solange wiederholt werden, bis es keinen Schnitt mehr gegeben hat, und dann hat man erfolgreich ein Muster, das beide Muster enthält.
+
+\section{Sonstiges}
+Das Bidoku kann auch gespeichert und geladen werden. Zum Speichern wird es zuerst in einen String umgewandelt, indem jede Zeile und Spalte durchlaufen wird und der entsprechende Wert ("`\ "', "`0"' oder "`1"') zum String hinzugefügt wird. Beginnt ein neues Quadrat, werden die entsprechenden Trennzeichen hinzugefügt, beginnt eine neue Zeile, wird ein Zeilenumbruch hinzugefügt. Das Format ist also menschenlesbar und recht hübsch.\n
+Das Einlesen erfolgt fehlertolerant, es werden einfach alle relevanten Zeichen der Reihe nach gelesen und in der Reihenfolge ins Bidoku eingefügt, in der sie normalerweise geschrieben werden.
+
+Außerdem kann, wie erwähnt, ein Bidoku als stenographischer Speicher für einen Buchstabenstring benutzten.\\
+Hierzu dient die Methode \procedure{generateEncryption} die einen String entgegennimmt und die Felder des Bidokus auf die entsprechenden Werte setzt.\\
+Bei dieser Erstellung wird der Buchstabenstring (verlängert um 2 Leerzeichen) zuerst in eine Zahl im 32er System umgewandelt, in der jede Ziffer für einen Buchstaben steht und die durch ein Array namens \var{sAsNumber} dargestellt wird. Dies hat gegenüber dem 27er System, in dem nur Buchstaben und Leerzeichen verwendet werden, den Vorteil, dass die Umwandlung ins binäre System sehr viel leichter ist, und dass man noch einige Sonderzeichen wie ? oder ! verwenden kann. Der Nachteil ist natürlich eine geringere maximale Stringlänge.\\
+Diese Zahl wird dann auf triviale Weise in ein Bitarray \var{sAsBits} geschrieben.\\
+Dann werden die möglichen Felder Spalte für Spalte, Zeile für Zeile durchlaufen, und jeweils die beiden möglichen Belegungen überprüft. Stellt sich heraus, dass sie beide möglich sind, wird die genommen, die durch das aktuelle Bit bestimmt wird. Das Bidoku wird außerdem logisch gelöst, wodurch ein Großteil der bereits festgelegten Felder erkannt wird.\\
+Die Funktion setzt dabei nur die relevanten Felder, will man ein vollständiges Bidoku, muss man es danach noch lösen. Außerdem ist der String nicht verschlüsselt, kann also entdeckt werden, wenn man danach sucht. Dies kann man einfach umgehen, indem man den Text vorher verschlüsselt.
+
+Das Entschlüsseln übernimmt die Funktion \procedure{decode}. \\
+Dazu wird ein anderes, leeres Bidoku erzeugt, dessen Felder wie bei der Erzeugung des zum Verstecken benutzten, der Reihe nach auf ihre freie Belegbarkeit getestet werden. \\
+Wird dort ein frei belegbares Feld gefunden, wird der Wert des Feldes des zu lösenden Bidokus dort und in eine Binärzahl eingetragen.\\
+Aus der Binärzahl wird dann die Zahl im 32er-System erzeugt und daraus, genau umgekehrt wie bei der Erzeugung, der String.\\
+Da man nicht weiß, wann der String endet, kommen nach dem entschlüsselten String noch einige zufällige Zeichen. Um dies zu verhindern, kann man beim Verschlüsseln noch Leerzeichen an den String hängen. Allerdings wird es dadurch natürlich leichter, den String zu entdecken.\\
+Eine andere Möglichkeit wäre, ein oder mehrere Zeichen als Endzeichen zu benutzen, beispielsweise die beiden Leerzeichen. Dadurch verringert man aber die Zahl der möglichen versteckten Texte.
+%Zuerst werden, die bereits vollständig mit einer Zahl gefüllten Reihen und Quadrate gesucht, was mit den Unterstützungsarrays, die die Zahl der Zahlen speichern, relativ trivial ist.\n
+
+\section{GUI}
+
+Im Grunde ist das GUI relativ einfach, es werden nur die entsprechenden Methoden von \type{TBidoku} aufgerufen.\n
+Zu bemerken ist aber, dass das Programm mehrere Bidokus auf einmal geladen haben kann, die dann in \var{bidokuList} (einer Listbox) gespeichert sind.\n
+Vor jeder Berechnung wird daher \procedure{needSingleBidoku} aufgerufen, eine Methode, die alle außer dem aktuell ausgewählten löscht.\n
+Nach der Berechnung wird \procedure{showBidoku} aufgerufen, um das Bidoku in einem \type{TStringGrid} anzuzeigen. Dafür wird zuerst überprüft, ob die Größe stimmt und dann jedes Feld einzeln gesetzt. Außerdem wird die Zahl der Leerfelder gezählt und am Schluss zusammen mit dem Schwierigkeitsgrad ausgegeben.\n
+Bei der Ausgabe im StringGrid ist zu beachten, dass es zwei Anzeigemodi gibt. Im einen werden einfach nur im \type{OnDrawCell}-Ereigniss, die Seitenränder der Felder am Rande eines Quadrates hervorgehoben, so dass man diese unterscheiden kann. Im anderen wird zusätzlich noch das ganze Feld in einer Farbe gefüllt, weiß für 0, schwarz für 1 und grau für leer. Dies eignet sich besonders gut, um die Symmetrie zu erkennen.\n
+Im \type{OnPrepareCanvas}-Ereigniss wird noch die Schriftfarbe je nach Lösungsmethode geändert.
+
+Die Erzeugung wird im \var{OnClick}-Ereignis des Menuitems \var{createBidoku} aufgerufen.\n Hierzu wird zuerst eine \var{CreateParamsDialog}-Form angezeigt, in der der Benutzer seine Wünsche einstellen kann. Dieses Formular enthält einfach nur 6 Comboboxen, in denen man Größe, Schwierigkeit und Symmetrie auswählen kann.\n
+Die entsprechenden Werte werden dann im Klickereignis an \procedure{generate} übergeben, wobei die Symmetrien vorher noch mit \procedure{mergeSymmetry} vereinigt werden müssen.
+
+Es gibt aber noch eine Methode, die  tatsächlich etwas selbst berechnet, nämlich \procedure{showStepsClick}. Diese zerlegt ein Bidoku in mehrere, gemäß den einzelnen Lösungsschritten.\n
+Dabei geht die Methode additiv vor, sie beginnt mit einem leeren Bidoku und fügt nacheinander die belegten Felder in der Reihenfolge ihrer Belegung hinzu und speichert dann jedes einzelne Bidoku in der Liste.\n
+Sind keine leeren Felder vorhanden, also wenn das Bidoku gelöst ist, werden zuerst alle Felder, die vorgegeben waren, in das neue Bidoku \var{current} eingefügt, da man dann wahrscheinlich nur am Lösungsweg interessiert ist.\n
+Dann wird in einer Schleife jeweils das Feld gesucht, das zuerst nach dem zuletzt kopiertem eingefügt wurde und dann zu \var{current} hinzugefügt. \var{current} wird dann in die Bidokuliste eingefügt.\n
+Am Schluss wird das erste Bidoku aus der Liste gewählt und angezeigt.
+%Es gibt allerdings zwei Besonderheiten. So kann das Progra
+
+
+
+\chapter{Ablaufprotokolle}
+
+\section{Lösen}
+
+So läuft das logische Lösungverfahren beim vorgegebenen Bidoku:
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|0 0 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 |  00| 010|
+| 10 |00 0|  0 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 0 |  0 |
+| 011|  0 |1  1| 1 1|
+|01 1|0   | 111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|0 0 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 |  00| 010|
+| 10 |00 0|  0 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1  1| 1 1|
+|01 1|0   | 111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|0 0 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 |  00| 010|
+| 10 |00 0|  0 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   | 111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|0 0 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 |  00| 010|
+| 10 |00 0|  0 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 |  00| 010|
+| 10 |00 0|  0 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0|  0 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+
+Wie man sieht, ist das Programm, nachdem dem auf dem Blatt beschriebenen Quadratfüllen, nicht mit der offensichtlichen Spalte fortgefahren, sondern hat die andere Spalte gewählt.\n
+Dies liegt daran, dass in \procedure{logicalSolve} der indirekt Schluss von Quadrat auf Reihe nach dem Schluss von Reihe auf Quadrat folgt.
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|11  | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 011|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|11  | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+
+Um Platz zu sparen, kommen nun nur noch Bidokus, bei denen ein Bereich zu Ende gefüllt ist.
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 011|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|001 |0 0 |
+|01  |00  |101 | 00 |
+|1 0 |1 10|111 | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 011|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|001 |0 0 |
+|01  |00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 011|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1 00|  0 |
+| 011|  0 |1 01| 1 1|
+|01 1|0   |0111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 0 1|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 011|010 |
+|11 1|11  | 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|01  | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+| 011| 10 |1 01| 1 1|
+|01 1|01  |0111|01  |
+| 1  |01  |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 010| 011|010 |
+|11 1|1100| 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|01  | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+| 011| 10 |1 01| 1 1|
+|01 1|01  |0111|01  |
+| 1  |01  |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 010| 011|010 |
+|11 1|1100| 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|01  | 10 |1 0 |
+|1   |11 0|000 |10  |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |    |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+| 011|110 |1 01| 1 1|
+|01 1|01  |0111|01  |
+| 1  |01  |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+|1000|1010|1011|0101|
+|11 1|1100| 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|01  | 10 |1 0 |
+|1   |11 0|000 |10  |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |    |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+| 011|110 |1 01| 1 1|
+|01 1|01  |0111|01  |
+| 1  |01  |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+|1000|1010|1011|0101|
+|11 1|1100| 01 |   1|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |10  |
+| 011|01  | 10 |1 0 |
+|1   |11 0|000 |10  |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |    |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|01 1|01  |0111|01  |
+| 1  |01  |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+|1000|1010|1011|0101|
+|11 1|1100| 01 |  11|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |101 |
+| 011|01  | 10 |1 0 |
+|1   |11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|01 1|01  |0111|011 |
+| 1  |01  |0 10| 111|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |101 |
+| 011|01  | 10 |1 0 |
+|1   |11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|01 1|01  |0111|011 |
+| 1  |01  |0 10| 111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1  1|001 | 100| 010|
+| 10 |00 0| 10 |101 |
+| 011|01  | 10 |1 0 |
+|1   |11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0   |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+| 1  |01  |0 10| 111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1 11|001 | 100| 010|
+| 10 |00 0| 10 |101 |
+| 011|01  | 10 |1 0 |
+|1 1 |11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0 1 |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+| 11 |01  |0 10| 111|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+| 00 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|001 | 100| 010|
+|0100|00 0| 10 |101 |
+|0011|01  | 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0 1 |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+| 11 |01  |0 10| 111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|001 | 100| 010|
+|0100|00 0| 10 |101 |
+|0011|01  | 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0 1 |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|111 |01  |0 10| 111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|001 | 100| 010|
+|0100|0010|1101|1011|
+|0011|01  | 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0 1 |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|111 |01  |0 10| 111|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|001 | 100| 010|
+|0100|0010|1101|1011|
+|0011|01  | 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0 1 |11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|001 | 100| 010|
+|0100|0010|1101|1011|
+|0011|01  | 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|1 0 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0010|11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|001 | 100| 010|
+|0100|0010|1101|1011|
+|0011|01  | 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00  |101 | 00 |
+|110 |1010|1110|0100|
+|0000|111 |001 |  1 |
+|----|----|----|----|
+|0010|11  |1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011| 100| 010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00 1|101 | 00 |
+|110 |1010|1110|0100|
+|0000|1111|001 |  1 |
+|----|----|----|----|
+|0010|11 1|1 00|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|  01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011| 100| 010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00 1|101 | 00 |
+|110 |1010|1110|0100|
+|0000|1111|001 |  1 |
+|----|----|----|----|
+|0010|11 1|1100|  0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|1 01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011| 100|1010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00 1|101 |100 |
+|110 |1010|1110|0100|
+|0000|1111|001 |1 1 |
+|----|----|----|----|
+|0010|11 1|1100|1 0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|1 01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011| 100|1010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00 1|101 |100 |
+|110 |1010|1110|0100|
+|0000|1111|001 |1 1 |
+|----|----|----|----|
+|0010|1111|1100|1 0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|1 01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011|0100|1010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00 1|101 |100 |
+|110 |1010|1110|0100|
+|0000|1111|001 |1 1 |
+|----|----|----|----|
+|0010|1111|1100|1 0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|1 01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011|0100|1010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00 1|101 |100 |
+|1100|1010|1110|0100|
+|0000|1111|001 |1 1 |
+|----|----|----|----|
+|0010|1111|1100|1 0 |
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|1 01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011|0100|1010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|00 1|001 |0 0 |
+|0111|00 1|101 |100 |
+|1100|1010|1110|0100|
+|0000|1111|001 |1 1 |
+|----|----|----|----|
+|0010|1111|1100|1000|
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|1 01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011|0100|1010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1 0 |
+|1010|11 0|000 |101 |
+|----|----|----|----|
+|1101|0001|001 |0 0 |
+|0111|0001|101 |100 |
+|1100|1010|1110|0100|
+|0000|1111|001 |1 1 |
+|----|----|----|----|
+|0010|1111|1100|1000|
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|011 | 001|010 |0 1 |
+|100 | 011| 101|1 01|
+|1000|1010|1011|0101|
+|1101|1100|0010|0011|
+|----|----|----|----|
+|1011|0011|0100|1010|
+|0100|0010|1101|1011|
+|0011|01 1| 10 |1000|
+|1010|11 0|000 |1010|
+|----|----|----|----|
+|1101|0001|001 |0 0 |
+|0111|0001|101 |100 |
+|1100|1010|1110|0100|
+|0000|1111|001 |1 1 |
+|----|----|----|----|
+|0010|1111|1100|1000|
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+
+usw...
+\newpage
+Ein 4er Bidoku, bei dem das logische Lösen nicht funktioniert, ist dieses:
+
+\begin{biexam}
+|----|----|----|----|
+|1   |    |    |   1|
+|1   |001 | 100|   1|
+|   0|00  |  00|0   |
+|   0| 0  |  0 |0   |
+|----|----|----|----|
+|  1 |1 1 | 1 1| 1  |
+| 00 |    |    | 00 |
+|   0|    |    |0   |
+|   0|  11|11  |0   |
+|----|----|----|----|
+|   0|  11|11  |0   |
+|   0|    |    |0   |
+| 00 |    |    | 00 |
+|  1 |1 1 | 1 1| 1  |
+|----|----|----|----|
+|   0| 0  |  0 |0   |
+|   0|00  |  00|0   | 
+|1   |001 | 100|   1|
+|1   |    |    |   1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1  1| 1  |  1 |1  1|
+|1  1|001 | 100|1  1|
+|   0|00  |  00|0   |
+|   0| 0  |  0 |0   |
+|----|----|----|----|
+|0011|1010|0101|1100|
+| 001| 1  |  1 |100 |
+|   0| 1  |  1 |0   |
+|   0| 111|111 |0   |
+|----|----|----|----|
+|   0| 111|111 |0   |
+|   0| 1  |  1 |0   |
+| 001| 1  |  1 |100 |
+|0011|1010|0101|1100|
+|----|----|----|----|
+|   0| 0  |  0 |0   |
+|   0|00  |  00|0   |
+|1  1|001 | 100|1  1|
+|1  1| 1  |  1 |1  1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1001|1100|0011|1001|
+|1001|0011|1100|1001|
+|0110|0011|1100|0110|
+|0110|1001|1001|0110|
+|----|----|----|----|
+|0011|1010|0101|1100|
+|1001|1100|0011|1001|
+|1110|0100|0010|0111|
+|0100|0111|1110|0010|
+|----|----|----|----|
+|0100|0111|1110|0010|
+|1110|0100|0010|0111|
+|1001|1100|0011|1001|
+|0011|1010|0101|1100|
+|----|----|----|----|
+|0110|1001|1001|0110|
+|0110|0011|1100|0110|
+|1001|0011|1100|1001| 
+|1001|1100|0011|1001|
+|----|----|----|----|
+\end{biexam}
+
+Das erste zeigt die Ausgangslage, das zweite Bidoku ist das Ergebnis der rein logischen Berechnung des Programmes und das letzte das vollständig gelöste.\n
+Für einen Menschen, der die Symmetrie erkennt ist dieses Rätsel nicht weiter schwer, das Programm darf die Symmetrie aber nicht benutzen, da sie nur dann garantiert ist, wenn das Bidoku eindeutig ist, was das Programm ja wie am Anfang beschrieben, nicht voraussetzen darf.\n
+Bei der Lösung nach der Symmetrie sieht man, dass zu den beiden Zeilen mit den sechs Einsen in der Mitte in jeder Hälfte, nur noch eine Eins hinzugefügt werden kann und daher die vier Quadrate in der Mitte links und rechts, abgesehen von dieser Zeile, mit Einsen gefüllt werden müssen.\n
+Das Programm hat dagegen die beiden Nullen über dem Viererblock im oberen linken Quadrat und ihre 6 Spiegelbilder, sowie jeweils die erste Eins der ersten beiden Quadrate in der sechsten Zeile geraten.
+\newpage
+\section{Minimierung}
+Das Bwinf-Bidoku lässt sich zu einem mit 161 leeren Feldern minimieren, das sich im Grunde mit den gleichen Schritten lösen lässt (Original und minimierte Version):
+
+\begin{biexam}[7cm]
+|----|----|----|----|
+|011 | 0 1|0 0 |0 1 |
+| 00 | 011| 101|  01|
+| 000| 01 | 0 1|010 |
+|11 1|1   | 01 |   1|
+|----|----|----|----|
+|1  1|001 |  00| 010|
+| 10 |00 0|  0 |10  |
+| 011|0   | 10 |1 0 |
+|1   | 1 0|000 |10  |
+|----|----|----|----|
+|  0 |00 1|00  |0 0 |
+|01  |00  |10  | 00 |
+|1 0 |1 10|1   | 100|
+|0000| 11 |001 |    |
+|----|----|----|----|
+|0   |1   |1   |  0 |
+| 011|  0 |1  1| 1 1|
+|01 1|0   | 111|01  |
+| 1  |0   |0 10| 1 1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0   | 0 1|0 0 |0   |
+|  0 | 011|  01|  01|
+| 000| 01 | 0  |0 0 |
+|11 1|1   | 0  |   1|
+|----|----|----|----|
+|1  1|001 |  0 |    |
+| 10 |00 0|  0 | 0  |
+|   1|0   |  0 |  0 |
+|1   |   0|000 |    |
+|----|----|----|----|
+|  0 |00  |00  |0 0 |
+|0   |00  | 0  | 00 |
+|  0 |1 1 |1   | 1  |
+|0000|  1 | 0  |    |
+|----|----|----|----|
+|0   |    |1   |  0 |
+|  11|    |1  1| 1 1|
+| 1 1|0   | 111| 1  |
+| 1  |0   |  1 | 1 1|
+|----|----|----|----|
+\end{biexam}
+
+Wird beispielsweise die oberste erste Null in eine Eins verwandelt, findet das Programm 32 andere Lösungen, also ist dieses Feld notwendig.\n
+Wird dagegen die oberste erste Eins durch eine Null ersetzt, so ergeben schon die logischen Lösungsregeln:
+
+\begin{biexam}
+|----|----|----|----|
+|0011|1001|0101|0110|
+|1000|0011|0101|1101|
+|1000|1010|1011|0101|
+|1111|1100|0010|0001|
+|----|----|----|----|
+|1011|0011|1100|0010|
+|0100|0010|1101|1011|
+|0011|0101|1100|1100|
+|1010|1110|0001|1010|
+|----|----|----|----|
+|1101|0001|0011|0101|
+|0111|0001|1010|1001|
+|1100|1010|1110|0100|
+|0000|1111|0010|1110|
+|----|----|----|----|
+|0110|1111|1100|0000|
+|0011|1100|1001|0101|
+|0101|0100|0111|0110|
+|1110|0100|0010|0111|
+|----|----|----|----|
+\end{biexam}
+
+Wie man sieht, enthält das untere linke Quadrat zuviele Einsen und daher ist die Eins überflüssig, da eine Null nur ein unmögliches Ergebnis bringen würde.
+
+\newpage
+\section{Erzeugung}
+Hier sieht man ein durch das Zufallsverfahren erstelltes, uneindeutiges Bidoku, das daraus erzeugte eindeutige (mit vier zusätzlich belegten Feldern und Schwierigkeitsgrad 188) und die Lösung davon:
+
+%
+\begin{biexam}
+|----|----|----|----|
+|  1 |101 |1110|10 0|
+|0 00|0  0|01  |10 0|
+|0100|0   |01 0| 0  |
+|1 11|0   | 1 0| 110|
+|----|----|----|----|
+|   1| 1 1|  10|   1|
+|  10|1 00|1100|01  |
+|1000|0   |    |0101|
+| 111|1  1| 010| 1  |
+|----|----|----|----|
+| 101|    |  1 |1010|
+| 110|0000|110 |  1 |
+|010 |10  |01 0|10  |
+|0  1|111 |  0 |10 1|
+|----|----|----|----|
+|0 0 |  00| 0  |0 00|
+|  10|1  0|    | 111|
+|1   |0010|0 11|  10|
+|  0 | 00 |000 |  0 |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|  1 |101 |1110|10 0|
+|0 00|0  0|01  |10 0|
+|0100|0   |01 0| 0  |
+|1 11|00  | 1 0| 110|*
+|----|----|----|----|
+|   1| 1 1|  10| 0 1|*
+|  10|1 00|1100|01  |
+|1000|0   |    |0101|
+| 111|1  1| 010| 1  |
+|----|----|----|----|
+| 101|    |  1 |1010|
+| 110|0000|110 |  1 |
+|010 |10  |01 0|10  |
+|0 01|111 |  0 |10 1|*
+|----|----|----|----|
+|0 0 |  00| 0  |0 00|
+|  10|1  0|   0| 111|*
+|1   |0010|0 11|  10|
+|  0 | 00 |000 |  0 |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1010|1010|1110|1000|
+|0100|0110|0111|1010|
+|0100|0111|0100|1011|
+|1111|0001|0100|0110|
+|----|----|----|----|
+|0011|0101|1010|1001|
+|1010|1000|1100|0111|
+|1000|0111|1001|0101|
+|0111|1001|1010|0100|
+|----|----|----|----|
+|1101|0100|0011|1010|
+|1110|0000|1101|0110|
+|0100|1011|0110|1001|
+|0001|1111|0001|1001|
+|----|----|----|----|
+|0101|1100|1011|0100|
+|0010|1110|1000|0111|
+|1011|0010|0111|0010|
+|1001|1001|0001|1101|
+|----|----|----|----|
+\end{biexam}
+
+Insgesamt gab es 24 Alternativen, die Grundfelder zu ergänzen, ein wenig zuviel, um sie alle hier abzudrucken. Die ersten drei aber, deren Schwierigkeitgrad zufälligerweise immer mit 287 (die anderen Werte liegen zwischen 184 und 290) eingestuft wurde, sind beispielsweise:
+
+\begin{biexam}
+|----|----|----|----|
+|1010|1010|1110|1000|
+|0100|0110|0111|1010|
+|0100|0111|0100|1011|
+|1111|0001|0100|0110|
+|----|----|----|----|
+|0011|0101|1010|1001|
+|1010|1000|1100|0111|
+|1000|0111|1001|0101|
+|0111|1001|1010|0100|
+|----|----|----|----|
+|1101|0100|0011|1010|
+|1110|0000|1101|0110|
+|0100|1011|0110|1001|
+|0001|1111|0001|1001|
+|----|----|----|----|
+|0101|1100|1011|0100|
+|0010|1110|1000|0111|
+|1011|0010|0111|0010|
+|1001|1001|0001|1101|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1010|1010|1110|1000|
+|0100|0110|0111|1010|
+|0100|0111|0100|1011|
+|1111|0001|0100|0110|
+|----|----|----|----|
+|0011|0101|1010|0101|
+|1010|1000|1100|0111|
+|1000|0111|1001|0101|
+|0111|1001|1010|0100|
+|----|----|----|----|
+|1101|0100|0011|1010|
+|1110|0000|1101|1010|
+|0100|1011|0110|1001|
+|0001|1111|0001|1001|
+|----|----|----|----|
+|0101|1100|1011|0100|
+|0010|1110|1000|0111|
+|1011|0010|0111|0010|
+|1001|1001|0001|1101|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1010|1010|1110|1000|
+|0100|0110|0111|1010|
+|0100|0111|0100|1011|
+|1111|0001|0100|0110|
+|----|----|----|----|
+|1001|0101|1010|1001|
+|1010|1000|1100|0111|
+|1000|0111|1001|0101|
+|0111|1001|1010|0100|
+|----|----|----|----|
+|0101|0101|0011|1010|
+|1110|0000|1101|0110|
+|0100|1011|0110|1001|
+|0011|1110|0001|1001|
+|----|----|----|----|
+|0101|1100|1011|0100|
+|0010|1110|1000|0111|
+|1011|0010|0111|0010|
+|1001|1001|0001|1101|
+|----|----|----|----|
+\end{biexam}
+
+
+
+Hier sieht man ein zufällig generiertes Rätsel und das daraus entstandene Rätsel der Schwierigkeitsklasse "`leicht"' mit Lösung:
+
+\begin{biexam}
+|----|----|----|----|
+|   1|0 11|00 1|1000|
+|111 |  1 | 0 1|   0|
+|0 01|0  0|  0 | 100|
+|10 1| 000| 11 | 011|
+|----|----|----|----|
+|0110|0  1|1101|0  1|
+|1 11| 10 | 11 |0 0 |
+|1010|1  1| 00 |1   |
+| 0  |001 | 111|110 |
+|----|----|----|----|
+|00  |0  0| 101| 111|
+|1 1 |100 |  00|00  |
+|11 1|  0 | 00 | 1  |
+|   0|0 00| 100|1 0 |
+|----|----|----|----|
+|011 | 01 |0 10|0   |
+|0  0|0111| 0  |  00|
+| 111|1  0| 0  | 110|
+|1100|111 | 0 1|0 0 |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|   1|0 11|00 1|1000|
+|111 |  1 | 0 1|   0|
+|0001|0  0|  0 | 100|
+|10 1| 000| 11 | 011|
+|----|----|----|----|
+|0110|0  1|1101|00 1|
+|1 11| 10 | 11 |0 0 |
+|1010|1  1| 000|1   |
+| 0  |001 | 111|110 |
+|----|----|----|----|
+|00  |0 10| 101| 111|
+|1 1 |100 |  00|00  |
+|11 1|  0 |100 | 1  |
+|   0|0 00| 100|1 0 |
+|----|----|----|----|
+|011 | 01 |0 10|0   |
+|0  0|0111| 0  |  00|
+| 111|1  0| 0  | 110|
+|1100|111 | 0 1|0 0 |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0101|0111|0011|1000|
+|1110|1010|0001|1010|
+|0001|0110|1101|1100|
+|1001|1000|0110|1011|
+|----|----|----|----|
+|0110|0001|1101|0011|
+|1011|1101|0110|0000|
+|1010|1001|0000|1111|
+|0001|0011|0111|1100|
+|----|----|----|----|
+|0000|0110|1101|0111|
+|1010|1001|1100|0011|
+|1101|1101|1000|0100|
+|1110|0100|1100|1001|
+|----|----|----|----|
+|0111|0010|0010|0111|
+|0000|0111|1011|1100|
+|0111|1000|1010|0110|
+|1100|1110|0011|0001|
+|----|----|----|----|
+\end{biexam}
+
+Die Schwierigkeitseinstufung ist zuerst 213 und nach der Vereinfachung 148. \n
+Außerdem sieht man, dass das Rätsel danach noch genau 100 leere Felder enthält.
+
+In nächsten Reihe sieht man ein zufällig generiertes Rätsel und das daraus entstandene Rätsel der Schwierigkeitsklasse "`schwer"' mit Lösung:
+
+
+\begin{biexam}
+|----|----|----|----|
+|0  1| 110|011 |0 0 |
+|01  |010 |0 10|11 1|
+|10 0|01  |  10| 0  |
+|10 1|0 1 | 1 1|  11|
+|----|----|----|----|
+| 1  | 001| 0  |0  1|
+|  1 | 1  |  01|0101|
+| 1  |0 10|0 00|0 01|
+|  01|0 00| 1  |    |
+|----|----|----|----|
+|01 1|0 1 |0 01| 101|
+|    |0 0 |0001|100 |
+|  00|011 | 001|01 1|
+|0100| 111| 1  |00  |
+|----|----|----|----|
+| 10 |  00|1  1|0110|
+|00 0|  0 |0 0 |10  |
+|0 01|1000| 10 |1   |
+|00 1|10  |10  |1 0 |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0   | 1 0|0   |0 0 |
+|01  |01  |    | 1 1|
+|    |01  |    |    |
+|   1|  1 | 1 1|  11|
+|----|----|----|----|
+| 1  |  0 |    |0  1|
+|  1 | 1  |   1| 1 1|
+| 1  |0  0|0 00|0 0 |
+|   1|0 00|    |    |
+|----|----|----|----|
+| 1 1|  1 |0 01| 1 1|
+|    |0 0 |000 | 00 |
+|    |011 | 00 |0   |
+| 1  | 111|    |0   |
+|----|----|----|----|
+| 10 |    |1  1| 11 |
+|00 0|  0 |0 0 | 0  |
+|0 0 |  00|  0 |    |
+|0   |    |    |    |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0011|1110|0110|0100|
+|0110|0101|0010|1101|
+|1010|0101|1010|1010|
+|1001|0010|0111|0011|
+|----|----|----|----|
+|1100|1001|1010|0011|
+|0010|1111|0001|0101|
+|1110|0110|0100|0101|
+|1001|0000|1111|1010|
+|----|----|----|----|
+|0101|0010|0101|1101|
+|1111|0001|0001|1001|
+|1000|0110|1001|0111|
+|0100|1111|1110|0000|
+|----|----|----|----|
+|1101|1000|1001|0110|
+|0010|1101|0101|1010|
+|0101|1000|1100|1110|
+|0011|1011|1010|1000|
+|----|----|----|----|
+\end{biexam}
+
+Man kann erkennen, dass das fertige Rätsel sehr viel weniger besetzte Felder enthält als das Ausgangsrätsel, nämlich nur 170 im Gegensatz zu 109.\n
+Auch ist die Schwierigkeitseinstufung viel höher, und zwar 972, vorher war es nur 201.\n
+Leider dauert die Berechnung eines schweren Rätsels viel länger als die eines normalen und leichten, die Berechnung von diesem hat 5 Sekunden gedauert, es können aber durchaus auch mal 30 Sekunden werden.
+
+\newpage
+Drei generierte 2er Bidokus mit Lösung:
+
+\begin{biexam}[2cm]
+|--|--|
+|  | 1|
+|0 |  |
+|--|--|
+|1 |  |
+|0 |0 |
+|--|--|
+\end{biexam}
+\begin{biexam}[3cm]
+|--|--|
+|10|01|
+|01|10|
+|--|--|
+|10|10|
+|01|01|
+|--|--|
+\end{biexam}
+\begin{biexam}[2cm]
+|--|--|
+|01|1 |
+|  |  |
+|--|--|
+|0 |11|
+|  |  |
+|--|--|
+\end{biexam}
+\begin{biexam}[3cm]
+|--|--|
+|01|10|
+|10|01|
+|--|--|
+|00|11|
+|11|00|
+|--|--|
+\end{biexam}
+\begin{biexam}[2cm]
+|--|--|
+|  |  |
+|00|  |
+|--|--|
+|1 |  |
+| 0|1 |
+|--|--|
+\end{biexam}
+\begin{biexam}[3cm]
+|--|--|
+|11|00|
+|00|11|
+|--|--|
+|11|00|
+|00|11|
+|--|--|
+\end{biexam}
+
+
+Ein generiertes 6er Bidoku mit Lösung:
+
+\begin{biexam}[8cm]
+|------|------|------|------|------|------|
+|0 00  |000001| 1 10 |  0000|   0 0| 0 00 |
+|  0   | 0 01 | 00010|0   01|000  0|  0   |
+|1 01  |0011  | 0    |1   00|  0   |   1 0|
+|   0  |0     | 1  0 |11  00|   0 1| 001  |
+|0  0  |001010| 001  |10 0 0|100010| 010 0|
+|0100  |0     |0   00|1  10 |0101  | 0 1  |
+|------|------|------|------|------|------|
+|  1 1 |     0|1 00  |1     | 01  0| 010  |
+|01100 |10 0 0|00000 |  1000|0011 0|11 10 |
+|0  1  |1010 0|000   |00101 | 00000| 0001 |
+|1  1  | 01  0| 00000|   0  |1   1 | 0    |
+| 1    |1     |  1   |  1  1|     0|  01 1|
+|0  0  |      |1   10| 1 01 |1 00  | 00   |
+|------|------|------|------|------|------|
+|0 00  |10 0 1| 00 0 |01 0 1| 00000| 1000 |
+|00 01 |01 000| 00111| 0 010|0 10 0|10 100|
+|1000  |00 0 0|100 1 |01 010|1011 0| 0000 |
+| 0001 |      | 0 00 |00 1  | 0 0 0| 000 0|
+|1 00 0|00 010|00000 |01 001|1 01 1| 0 10 |
+|00 0  |010001|000   | 0 1 0| 00001| 0 0  |
+|------|------|------|------|------|------|
+|011 0 |01 1 0| 0 000|00 000| 001 1| 10001|
+|     0|10    |  1110| 0 11 |      | 0 100|
+|1 0  0|00 0 0|00 000|01 0  |0110  |  000 |
+|  101 |   1 1|0  1 0|    00| 00100|1   00|
+|00 1  |0001 0|10000 |   1  | 10000|10 000|
+|  0   | 1 0 1|  0  0|1 11 0| 0    |01  0 |
+|------|------|------|------|------|------|
+| 0 10 |00 0 1| 1    | 0    |00 0  |  0000|
+|1000  |010010|110   |0110  |00 0 0|00010 |
+|1  011|000010| 10 0 |0 0000|1 00 1|10 00 |
+|0 0   |0101 1| 0   1|101 00| 00  0|  0001|
+|      |  0 1 |   1  |0  100| 1    |    1 |
+|00000 |11 0  |      |  10 0| 001 1| 101  |
+|------|------|------|------|------|------|
+|11 00 |00 0 0|000001|0  000|1  0 0| 1 0  |
+|0010  |     1|  00 1|   1  | 000  | 1    |
+| 0    |00 010| 1000 | 0  00| 00010|  000 |
+|1 0   |     1| 1  1 |   01 |0  0  |  01  |
+|1001  | 1   0| 0 11 |    11|      |  100 |
+|1 1   |1    0|   1 0|   01 |01    | 01 1 |
+|------|------|------|------|------|------|
+\end{biexam}
+\begin{biexam}[8cm]
+|------|------|------|------|------|------|
+|010011|000001|111101|110000|111010|101001|
+|110110|101011|100010|010101|000110|010110|
+|110100|001101|001010|110100|010101|011110|
+|111000|011101|011000|110100|111001|000110|
+|011011|001010|100111|101010|100010|101010|
+|010000|011101|011100|110101|010101|001110|
+|------|------|------|------|------|------|
+|101110|110100|110011|100101|001100|001010|
+|011001|101010|000001|111000|001110|111101|
+|011111|101010|000111|001011|100000|100011|
+|101100|101100|100000|100011|111111|000110|
+|010100|100100|011110|001101|011100|010111|
+|001000|110101|111110|010011|110001|000110|
+|------|------|------|------|------|------|
+|010011|101011|100101|011011|100000|110001|
+|001011|011000|100111|101010|011010|101100|
+|100011|001010|100111|011010|101110|100001|
+|100011|111111|101001|000100|101010|100010|
+|110010|001010|000001|011001|110111|101101|
+|001011|010001|000111|101110|100001|101011|
+|------|------|------|------|------|------|
+|011101|011110|101000|001000|100111|110001|
+|000100|100101|111110|000111|011101|001100|
+|110110|001010|001000|011011|011011|110001|
+|111010|110101|011110|000100|000100|111100|
+|001111|000110|100001|111111|110000|101000|
+|000100|110001|110110|101100|001101|011101|
+|------|------|------|------|------|------|
+|101101|001011|011000|100111|001011|110000|
+|100011|010010|110111|011011|001010|000101|
+|111011|000010|110101|010000|110011|101001|
+|010111|010111|001001|101100|100110|010001|
+|000100|110111|011100|010100|010100|011111|
+|000001|110001|011000|111010|100111|010111|
+|------|------|------|------|------|------|
+|111001|001010|000001|011000|111010|111011|
+|001000|110101|110011|110111|000001|010110|
+|101111|001010|110001|101100|100010|110001|
+|110100|110101|011010|000011|011001|010110|
+|100100|110100|001110|100111|011101|011000|
+|101100|110100|011110|000011|011101|001010|
+|------|------|------|------|------|------|
+\end{biexam}
+
+\newpage
+\section{Symmetrien}
+Hier werden einige der möglichen Symmetrien gezeigt:
+\enlargethispage{\baselineskip}
+
+\begin{biexam}
+|----|----|----|----|
+|   1| 101|101 |1   |
+|  1 |  01|10  | 1  |
+| 11 | 0 1|1 0 | 11 |
+| 001|00 1|1 00|100 |
+|----|----|----|----|
+|1   |10 0|0 01|   1|
+|   0|11  |  11|0   |
+|100 |1010|0101| 001|
+|   0|0 0 | 0 0|0   |
+|----|----|----|----|
+| 0 0|0 0 | 0 0|0 0 |
+|1  1|1 10|01 1|1  1|
+|1  1|0  0|0  0|1  1|
+| 01 | 1 0|0 1 | 10 |
+|----|----|----|----|
+| 001|1 10|01 1|100 |
+|1 11|  10|01  |11 1|
+|0000|1   |   1|0000|
+|0  1| 01 | 10 |1  0|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0101|0101|1010|1010|
+|0110|0101|1010|0110|
+|0110|1001|1001|0110|
+|1001|0011|1100|1001|
+|----|----|----|----|
+|1110|1000|0001|0111|
+|0100|1101|1011|0010|
+|1001|1010|0101|1001|
+|0110|0101|1010|0110|
+|----|----|----|----|
+|1010|0101|1010|0101|
+|1001|1010|0101|1001|
+|1101|0100|0010|1011|
+|0010|1110|0111|0100|
+|----|----|----|----|
+|1001|1010|0101|1001|
+|1011|0010|0100|1101|
+|0000|1111|1111|0000|
+|0111|0010|0100|1110|
+|----|----|----|----|
+\end{biexam}
+\includeeps{hsymexx}{horizontal gespiegelt}
+
+\begin{biexam}
+|----|----|----|----|
+| 0 0|000 |1  0|  00|
+|0011|   0|  11|01  |
+|11  | 111|11  |   1|
+|10 1| 110|10  | 0  |
+|----|----|----|----|
+|101 | 000| 111| 10 |
+| 110|0   |0011|0   |
+|   1| 110|   1|   0|
+|0101|00  |1   |0 0 |
+|----|----|----|----|
+|0101|00  |1   |0 0 |
+|   1| 110|   1|   0|
+| 110|0   |0011|0   |
+|101 | 000| 111| 10 |
+|----|----|----|----|
+|10 1| 110|10  | 0  |
+|11  | 111|11  |   1|
+|0011|   0|  11|01  |
+| 0 0|000 |1  0|  00|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1010|0001|1110|1100|
+|0011|1000|0011|0111|
+|1100|0111|1100|0001|
+|1001|1110|1000|1010|
+|----|----|----|----|
+|1010|1000|0111|1100|
+|0110|0101|0011|0011|
+|0101|1110|0001|1010|
+|0101|0011|1100|0101|
+|----|----|----|----|
+|0101|0011|1100|0101|
+|0101|1110|0001|1010|
+|0110|0101|0011|0011|
+|1010|1000|0111|1100|
+|----|----|----|----|
+|1001|1110|1000|1010|
+|1100|0111|1100|0001|
+|0011|1000|0011|0111|
+|1010|0001|1110|1100|
+|----|----|----|----|
+\end{biexam}
+\includeeps{vsymexx}{vertikal gespiegelt}
+
+\begin{biexam}
+|----|----|----|----|
+| 0 1|1 0 | 0 1|1 0 |
+|    | 000|000 |    |
+|11 0| 0 1|1 0 |0 11|
+|    |1  1|1  1|    |
+|----|----|----|----|
+|0011|01  |  10|1100|
+|   0| 0 1|1 0 |0   |
+|  00|1   |   1|00  |
+|000 | 0  |  0 | 000|
+|----|----|----|----|
+|000 | 0  |  0 | 000|
+|  00|1   |   1|00  |
+|   0| 0 1|1 0 |0   |
+|0011|01  |  10|1100|
+|----|----|----|----|
+|    |1  1|1  1|    |
+|11 0| 0 1|1 0 |0 11|
+|    | 000|000 |    |
+| 0 1|1 0 | 0 1|1 0 |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0011|1100|0011|1100|
+|1111|0000|0000|1111|
+|1100|0011|1100|0011|
+|0000|1111|1111|0000|
+|----|----|----|----|
+|0011|0110|0110|1100|
+|1110|0001|1000|0111|
+|1100|1100|0011|0011|
+|0001|1011|1101|1000|
+|----|----|----|----|
+|0001|1011|1101|1000|
+|1100|1100|0011|0011|
+|1110|0001|1000|0111|
+|0011|0110|0110|1100|
+|----|----|----|----|
+|0000|1111|1111|0000|
+|1100|0011|1100|0011|
+|1111|0000|0000|1111|
+|0011|1100|0011|1100|
+|----|----|----|----|
+\end{biexam}
+\includeeps{hvsymexx}{Horizontal und vertikal gespiegelt}
+
+
+
+\begin{biexam}
+|----|----|----|----|
+|0 0 |10  |  10|01 1|
+|  0 |00 0|1 11| 1  |
+| 010|0 0 | 1 1|1 10|
+|1000| 001|011 |1110|
+|----|----|----|----|
+|1001|0000|11 1|0110|
+|00 1|1 0 | 1 0|0 11|
+| 1 1| 11 |0000|0 0 |
+|11 1|00 1|0011|0 00|
+|----|----|----|----|
+|00 0|11 0|1 00|1 11|
+| 0 0|0000| 111|1 1 |
+|11 0| 01 | 01 |1 00|
+|0110|1111|00 0|1001|
+|----|----|----|----|
+|0111| 110|100 |0001|
+|01 1|1 1 | 0 0|010 |
+|  1 |11 1|0 00| 0  |
+|  1 |01  |  01| 0 0|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0101|1011|0010|0101|
+|1101|0010|1011|0100|
+|1010|0101|0101|1010|
+|1000|1001|0110|1110|
+|----|----|----|----|
+|1001|0000|1111|0110|
+|0001|1100|1100|0111|
+|0101|1111|0000|0101|
+|1101|0011|0011|0100|
+|----|----|----|----|
+|0010|1100|1100|1011|
+|1010|0000|1111|1010|
+|1110|0011|0011|1000|
+|0110|1111|0000|1001|
+|----|----|----|----|
+|0111|0110|1001|0001|
+|0101|1010|1010|0101|
+|0010|1101|0100|1011|
+|1010|0100|1101|1010|
+|----|----|----|----|
+\end{biexam}
+\includeeps{hvisym}{Horizontal und vertikal invertiert gespiegelt}
+
+
+\begin{biexam}
+|----|----|----|----|
+|1 1 | 1 1|1  1|1  1|
+| 1  |  1 |0   |   0|
+|0011|1100| 0 0|0 0 |
+|  11|11  |  10|01  |
+|----|----|----|----|
+|00  |  00|0  0|0  0|
+| 010|010 |0 11|11 0|
+|   1|1   | 11 | 11 |
+|  1 | 1  | 11 | 11 |
+|----|----|----|----|
+|1   |   1| 0  |  0 |
+|1001|1001| 1  |  1 |
+|0 0 | 0 0| 1 0|0 1 |
+|1 11|11 1|01  |  10|
+|----|----|----|----|
+|1   |   1|00 1|1  0|
+|  1 | 1  |    |    |
+| 000|000 |    |    |
+|1001|1001|10  |  01|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1010|0101|1001|1001|
+|0100|0010|0111|1110|
+|0011|1100|1010|0101|
+|0111|1110|0010|0100|
+|----|----|----|----|
+|0011|1100|0110|0110|
+|1010|0101|0011|1100|
+|0101|1010|0110|0110|
+|0110|0110|0110|0110|
+|----|----|----|----|
+|1100|0011|1001|1001|
+|1001|1001|1100|0011|
+|0100|0010|1110|0111|
+|1011|1101|0100|0010|
+|----|----|----|----|
+|1101|1011|0001|1000|
+|0110|0110|1001|1001|
+|1000|0001|1101|1011|
+|1001|1001|1001|1001|
+|----|----|----|----|
+\end{biexam}
+\includeeps{hssym}{Horizontal an den Nebenachsen gespiegelt}
+
+\begin{biexam}
+|----|----|----|----|
+|  11|11  |  11|11  |
+|0  1|1  0|0  1|1  0|
+| 11 | 11 | 11 | 11 |
+| 1 1|1 1 | 1 1|1 1 |
+|----|----|----|----|
+|0 10|01 0|0 10|01 0|
+|   0|0   |   0|0   |
+| 0  |  0 | 0  |  0 |
+|0   |   0|0   |   0|
+|----|----|----|----|
+|0  0|0  0|0  0|0  0|
+| 0 0|0 0 | 0 0|0 0 |
+|1   |   1|1   |   1|
+| 0 0|0 0 | 0 0|0 0 |
+|----|----|----|----|
+| 0 0|0 0 | 0 0|0 0 |
+|  01|10  |  01|10  |
+|   0|0   |   0|0   |
+|00  |  00|00  |  00|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0011|1100|0011|1100|
+|0101|1010|0101|1010|
+|0110|0110|0110|0110|
+|0101|1010|0101|1010|
+|----|----|----|----|
+|0110|0110|0110|0110|
+|1100|0011|1100|0011|
+|1001|1001|1001|1001|
+|0101|1010|0101|1010|
+|----|----|----|----|
+|0110|0110|0110|0110|
+|1010|0101|1010|0101|
+|1001|1001|1001|1001|
+|1010|0101|1010|0101|
+|----|----|----|----|
+|1010|0101|1010|0101|
+|1001|1001|1001|1001|
+|1100|0011|1100|0011|
+|0011|1100|0011|1100|
+|----|----|----|----|
+\end{biexam}
+\includeeps{hhssym}{Horizontal an allen Achsen gespiegelt}
+
+
+\begin{biexam}
+|----|----|----|----|
+| 1  |   0|1111|0 11|
+| 001| 0  | 11 | 01 |
+|1  0|1  1|   0| 0  |
+|1   |  01|1  1|0   |
+|----|----|----|----|
+|1   |  01|1  1|0   |
+|1  0|1  1|   0| 0  |
+| 001| 0  | 11 | 01 |
+| 1  |   0|1111|0 11|
+|----|----|----|----|
+| 1  |   0|1111|0 11|
+| 001| 0  | 11 | 01 |
+|1  0|1  1|   0| 0  |
+|1   |  01|1  1|0   |
+|----|----|----|----|
+|1   |  01|1  1|0   |
+|1  0|1  1|   0| 0  |
+| 001| 0  | 11 | 01 |
+| 1  |   0|1111|0 11|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0100|0000|1111|0111|
+|0001|1010|0110|1011|
+|1110|1111|0000|1000|
+|1011|0101|1001|0100|
+|----|----|----|----|
+|1011|0101|1001|0100|
+|1110|1111|0000|1000|
+|0001|1010|0110|1011|
+|0100|0000|1111|0111|
+|----|----|----|----|
+|0100|0000|1111|0111|
+|0001|1010|0110|1011|
+|1110|1111|0000|1000|
+|1011|0101|1001|0100|
+|----|----|----|----|
+|1011|0101|1001|0100|
+|1110|1111|0000|1000|
+|0001|1010|0110|1011|
+|0100|0000|1111|0111|
+|----|----|----|----|
+\end{biexam}
+\includeeps{vvssym}{Vertikal an allen Achsen gespiegelt}
+
+
+\begin{biexam}
+|----|----|----|----|
+|0  1|1  0|0  1|1  0|
+|1  0|0  1|1  0|0  1|
+|  1 | 1  |  1 | 1  |
+|0 1 | 1 0|0 1 | 1 0|
+|----|----|----|----|
+|0 1 | 1 0|0 1 | 1 0|
+|  1 | 1  |  1 | 1  |
+|1  0|0  1|1  0|0  1|
+|0  1|1  0|0  1|1  0|
+|----|----|----|----|
+|0  1|1  0|0  1|1  0|
+|1  0|0  1|1  0|0  1|
+|  1 | 1  |  1 | 1  |
+|0 1 | 1 0|0 1 | 1 0|
+|----|----|----|----|
+|0 1 | 1 0|0 1 | 1 0|
+|  1 | 1  |  1 | 1  |
+|1  0|0  1|1  0|0  1|
+|0  1|1  0|0  1|1  0|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0101|1010|0101|1010|
+|1100|0011|1100|0011|
+|1010|0101|1010|0101|
+|0011|1100|0011|1100|
+|----|----|----|----|
+|0011|1100|0011|1100|
+|1010|0101|1010|0101|
+|1100|0011|1100|0011|
+|0101|1010|0101|1010|
+|----|----|----|----|
+|0101|1010|0101|1010|
+|1100|0011|1100|0011|
+|1010|0101|1010|0101|
+|0011|1100|0011|1100|
+|----|----|----|----|
+|0011|1100|0011|1100|
+|1010|0101|1010|0101|
+|1100|0011|1100|0011|
+|0101|1010|0101|1010|
+|----|----|----|----|
+\end{biexam}
+\includeeps{asym}{An wirklich allen Achsen gespiegelt}
+
+
+\begin{biexam}
+|----|----|----|----|
+| 0  |  0 | 1  |  1 |
+|0001|1000|1110|0111|
+|1100|0011|0011|1100|
+|010 | 010|101 | 101|
+|----|----|----|----|
+|010 | 010|101 | 101|
+|1100|0011|0011|1100|
+|0001|1000|1110|0111|
+| 0  |  0 | 1  |  1 |
+|----|----|----|----|
+| 1  |  1 | 0  |  0 |
+|1110|0111|0001|1000|
+|0011|1100|1100|0011|
+|101 | 101|010 | 010|
+|----|----|----|----|
+|101 | 101|010 | 010|
+|0011|1100|1100|0011|
+|1110|0111|0001|1000|
+| 1  |  1 | 0  |  0 |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|1011|1101|0100|0010|
+|0001|1000|1110|0111|
+|1100|0011|0011|1100|
+|0101|1010|1010|0101|
+|----|----|----|----|
+|0101|1010|1010|0101|
+|1100|0011|0011|1100|
+|0001|1000|1110|0111|
+|1011|1101|0100|0010|
+|----|----|----|----|
+|0100|0010|1011|1101|
+|1110|0111|0001|1000|
+|0011|1100|1100|0011|
+|1010|0101|0101|1010|
+|----|----|----|----|
+|1010|0101|0101|1010|
+|0011|1100|1100|0011|
+|1110|0111|0001|1000|
+|0100|0010|1011|1101|
+|----|----|----|----|
+\end{biexam}
+\includeeps{aisym}{zusätzlich noch invertiert an den Hauptachsen}
+
+\section{Sonstige}
+Hier sind zwei verschlüsselte Texte zu sehen. Zuerst kommen die bedeutungstragenden Felder, dann ein Bidoku, das nur gelöst den Text enthält und dann eben diese Lösung.
+
+In diesem Bidoku wurde der Text "`BWInf"' versteckt.\\
+Das Entschlüsseln liefert dann "`bwinf  qapz- !lquplppurs?dfyqsbcjrnvnuhj"', was die Probleme bei kurzen Texten zeigt.
+
+\begin{biexam}
+|----|----|----|----|
+|000 |    |    |    |
+|110 |    |    |    |
+|010 |    |    |    |
+|010 |    |    |    |
+|----|----|----|----|
+|000 |    |    |    |
+|100 |    |    |    |
+|110 |    |    |    |
+|11  |    |    |    |
+|----|----|----|----|
+|00  |    |    |    |
+|10  |    |    |    |
+|10  |    |    |    |
+|00  |    |    |    |
+|----|----|----|----|
+|00  |    |    |    |
+|1   |    |    |    |
+|0   |    |    |    |
+|    |    |    |    |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|    |00  | 1 1|  0 |
+|11  |    |1   |   1|
+| 1  |  00|11  |    |
+|  0 |0  0| 1  |  0 |
+|----|----|----|----|
+|    |  00|    |    |
+|1   | 1 0|0   |   1|
+|11 1|11  |1   |11  |
+|1111|1   |  0 |   1|
+|----|----|----|----|
+|    |  0 | 10 |11  |
+|1   |11  |    |1  1|
+| 0 0|0  0|0   |11  |
+|   0|1   |   1|  11|
+|----|----|----|----|
+|00 0| 100| 10 |   1|
+|  00|    | 10 |1 01|
+|0  0|0   |0   |  0 |
+|   0|    |0 0 |   1|
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0001|0011|0111|1100|
+|1101|0011|1000|0011|
+|0101|1100|1100|0110|
+|0101|0110|0110|1100|
+|----|----|----|----|
+|0000|1100|1111|0110|
+|1000|0110|0111|0011|
+|1101|1100|1000|1100|
+|1111|1001|0000|0011|
+|----|----|----|----|
+|0011|1001|1100|1100|
+|1011|1100|0010|1001|
+|1010|0110|0011|1100|
+|0010|1001|1011|0011|
+|----|----|----|----|
+|0010|1100|1101|0011|
+|1100|0011|1100|1001|
+|0110|0011|0011|1100|
+|1110|0011|0001|0011|
+|----|----|----|----|
+\end{biexam}
+
+In dem folgenden Bidoku wurde der Text "`Das geheime Treffen ist um acht in der Hoehle"' versteckt.\\
+Das Lesen des Textes liefert allerdings nur "`das geheime treffen ist um "', offensichlich ist der String zu lang für ein 4x4 Bidoku. 
+
+\begin{biexam}
+|----|----|----|----|
+|0100|010 |1000|    |
+|011 |100 |010 |001 |
+|100 |011 |100 |01  |
+|001 |000 |011 |100 |
+|----|----|----|----|
+|010 |101 |000 |010 |
+|100 |000 |000 |    |
+|00  |001 |101 |1   |
+|00  |100 |110 |000 |
+|----|----|----|----|
+|0001|00  |01 0|    |
+|00  |10  |01 1|010 |
+| 1  |0   |00  |01  |
+| 1  |1   |10  |    |
+|----|----|----|----|
+| 10 |1 0 |101 |00  |
+| 00 |0 1 |0 1 | 1  |
+|  1 |    |    |    |
+|    |    |    |    |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0 00|    |  0 |11 1|
+|0   | 0  |0 0 |    |
+| 00 |0   | 00 |  0 |
+|    |   1| 1 1|1  1|
+|----|----|----|----|
+| 1 1|101 |000 |  01|
+|  0 | 0  |000 |1  1|
+|  11|  11|   1|1   |
+|  11|10  |  0 |   1|
+|----|----|----|----|
+|   1|  1 | 1  |11 1|
+|    | 0 0| 1 1|  01|
+|   0|0  0|    |    |
+|111 |1 1 |1   |  0 |
+|----|----|----|----|
+|  00|  00|    |   1|
+|  00|0  0| 1  |11  |
+|   0|  00|  0 |1 0 |
+|11  |   0|110 |1   |
+|----|----|----|----|
+\end{biexam}
+\begin{biexam}
+|----|----|----|----|
+|0100|0101|1000|1111|
+|0111|1001|0101|0010|
+|1001|0111|1001|0100|
+|0011|0001|0111|1001|
+|----|----|----|----|
+|0101|1011|0001|0101|
+|1001|0001|0001|1111|
+|0011|0011|1011|1000|
+|0011|1001|1101|0001|
+|----|----|----|----|
+|0001|0010|0110|1111|
+|0010|1010|0111|0101|
+|1110|0110|0010|0110|
+|1110|1110|1010|0000|
+|----|----|----|----|
+|1100|1100|1010|0011|
+|1000|0110|0110|1110|
+|1110|1100|1100|1000|
+|1100|1100|1100|1010|
+|----|----|----|----|
+\end{biexam}
+
+\chapter{Quellcode}
+\section{logic.pas}
+\begin{small}
+  \lgrindfile{../logic.pas.lg}
+\end{small} 
+\section{gui.pas}
+\begin{small}
+  \lgrindfile{../gui.pas.lg}
+\end{small} 
+
+\end{document}
+ 

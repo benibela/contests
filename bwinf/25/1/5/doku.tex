@@ -1,0 +1,138 @@
+\documentclass [12pt] {report}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\usepackage{fancyhdr}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {BWInf 25.1.5 }
+\pagestyle{fancyplain}
+\lhead{BWInf 25.1.5 Paderbox\n Benito van der Zander}
+\rhead{\thepage}
+\fancyfoot{}
+
+
+\begin{document}
+
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{15pt} 
+
+\chapter{Lösungsidee}
+Im Prinzip ist die Paderboxaufgabe ziemlich simpel, nur  das Erzeugen der zufälligen Zustände mitsamt ihren Eigenschaften ist ein bisschen trickreich.\n
+Beim Verteilen der Lampen tritt das Problem auf, sicherzustellen, dass jede Lampe wirklich mit exakt zwei Zuständen verbunden ist, und nicht etwa zweimal mit demselben oder mit mehr als zwei. Ebenso muss jeder Zustand mit zwei unterschiedlichen Lampen verbunden sein. \n
+Es gibt daher für einen Zustand nur diese 3 möglichen Lampenkonfigurationen: $\{0,1\}$, $\{0,2\}$ und $\{1,2\}$.\n
+Interessanterweise erfüllen diese Konfigurationen, wenn jede genau einmal auftritt, die an die Lampen gestellte Bedingung, dass jede Lampe mit zwei Zuständen verbunden sein muss. Umgekehrt gilt, dass, wenn eine dieser Konfigurationen doppelt vorkommt, es für den letzten Zustand nur eine Lampe gibt, was zur ungültigen Konfiguration $\{a,b\}$ führt.\n
+Man kann also einfach diese drei Konfigurationen zufällig mischen (echtes Mischen, nicht zu verwechseln mit dem Mischen bei MergeSort) und dann der Reihe nach auf die Zustände aufteilen, um alle gültigen, zufälligen Lampenzustandzuordnungen finden zu können.
+
+Beim Erzeugen der Zustandsübergänge entsteht nun ein ähnliches Problem, nämlich das der unerreichbaren Zustände. Werden die Verbindungen zwischen zwei Zuständen nämlich wirklich rein zufällig gewählt, kann es leicht passieren, dass ein oder sogar zwei Zustände unerreichbar sind.\n
+Ob solche Situationen verhindert werden sollen, ist nicht ganz klar. Einerseits verhält sich dann die Paderbox wie eine Box mit weniger als drei Zuständen, was es einfacher macht, die Zustände zu ermitteln; anderenseits ist es sicherlich interessanter, das Spiel zu spielen, wenn man ab und zu durch einfachere Boxen überrascht wird. Daher werden zuerst die Zustandsübergänge rein zufällig ermittelt und danach, je nach Wunsch des Benutzers, alle noch nicht erreichbaren Zustände zufällig mit Verbindungen versehen.\n
+Wenn nur ein Zustand nicht erreichbar ist, kann man entweder vom Startzustand oder von dem erreichbaren Zustand aus eine Verbindung zu diesem unerreichbaren schaffen. Welchen man davon nimmt, kann man einen (Pseudo-) zufallszahlengenerator entscheiden lassen, allerdings muss man beim Startzustand aufpassen, nicht die Verbindung zum bisher bereits erreichbaren zu kappen, wenn man eine Verbindung durch die neue ersetzt. Man muss also die Verbindung ersetzen, die nicht zu einem anderen Zustand führt, es sei denn der unerreichbare Zustand hat eine Verbindung (von ihm) zu dem erreichbaren oder der Startzustand hat zwei Verbindungen zum bisher erreichbaren.\n
+Sind zwei Zustände unerreichbar, also der Startzustand hat nur Verbindungen zu sich selbst, kann man eine davon durch eine Verbindung zu einem der anderen Zustände ersetzen und hat dann entweder den Fall, dass nur ein Zustand erreichbar ist, oder das sogar beide schon erreichbar sind (letzteres, falls der neue Zustand eine Verbindung zum anderen besitzt).
+
+Die letzten beiden Forderungen, zufällige Konfiguration der Lampen und des Startzustands sind relativ trivial. Da es keinerlei Einschränkungen gibt, welche Lampen beim Start eingeschaltet sein dürfen, kann man einfach drei zufällige Wahrheitswerte erzeugen und entsprechend die Lampen schalten.\n
+Den Startzustand kann man auch einfach zufällig wählen, vorausgesetzt man überprüft anschließend, wie oben beschrieben, die Erreichbarkeit der anderen Zustände. Allerdings gibt es von außen keinerlei Möglichkeit die Zustände voneinander zu unterscheiden, außer deren Verknüpfungen mit den Lampen. Da aber diese Verknüpfungen bereits zufällig sind, ist es sinnlos noch einen zufälligen Startzustand zu wählen.
+
+Bei der Ausgabe der Lösung könnte man nun die Zustände auflisten, ihre Zuordnung zu den Lampen und in welche Zustände die Box beim Drücken der Tasten in diesem Zustand wechselt. Da aber die Zustände von außen sowieso nicht zu erkennen sind, kann es dann mehrere Lösungen geben, die dadurch entstehen, dass man die Zustände entsprechend ändert.\n
+Deshalb orientiert sich meine Paderbox an den Lampen und listet auf, welche Lampen geändert werden, wenn im Schritt vorher bestimmte andere Lampen geändert wurden. Damit man den Startzustand erkennt, wird dieser zuerst angezeigt.
+
+\chapter{Programmdokumentation}
+Beim Starten des Programms wird zuerst die Prozedure \procedure{init} aufgerufen, die eine zufällige Ausgangssituation erzeugt, die dann von der Prozedure \procedure{reset} geladen und angezeigt wird. \n
+Dann beginnt der Hauptteil des Programms, in dem in einer Endlosschleife die gedrückte Taste eingelesen wird und dann darauf reagiert wird. Diese Tasten mitsamt Verhalten sind:
+
+\begin{tabular}{ll}
+	0, 1 & Ruft  \procedure{change} auf, um den Zustand zu wechseln.\\
+	r & Ruft \procedure{reset} auf, um zum Anfangszustand zurückzukehren. \\
+	s & Ruft \procedure{printSolution} auf, um die Lösung anzuzeigen. \\
+	q & Beendet das Program und zeigt vorher die Lösung an.\\
+\end{tabular}
+
+Nun folgt die Beschreibung dieser Funktionen:\n
+Die Prozedure \procedureF{init} initialisiert zuerst zwei temporäre Hilfsarrays mit Namen \variable{visitable}, das die erreichbaren Zustände angibt und  \variable{freeLightConfig}, das die Nummern aller bisher noch nicht zugewiesen Lampenpaare speichert. \n
+Anschließend werden die Zustände erzeugt, indem mehrmals eine zufällige Lampenzuordnung aus \variable{freeLightConfig} gewählt wird und Verknüpfungen zu beliebigen anderen Zuständen geraten werden. Für den Zustand i, wird die Lampenzuordnung in \variable{state[i].lightsID} und die Verknüpfungen in dem zwei elementigen Array \variable{state[i].changes} gespeichert.\n
+Wenn der Zustand, bei dem neue Verknüpfungen eingefügt wurden, erreichbar ist, werden alle neu erreichbaren Zustände im \variable{visitable}-Array markiert. Gäbe es mehr Zustände, müsste man noch überprüfen, ob durch den neu erreichbaren noch andere besucht werden können, aber bei drei funktioniert es auch so.\n
+Anschließend wird überprüft, ob der Kommandozeilenparameter "'--allow-not-visitable-states"' angegeben wurde, und wenn ja, ob es unerreichbare Zustände gibt. Sind beide nicht-Startzustände (also Zustand Nummer 1 und 2) nicht erreichbar, so wird ein zufälliger Übergang vom Startzustand und ein anderer Zustand gewählt und das Ziel des Übergangs auf den neuen Zustand festgelegt, woraufhin noch der Besuchbarkeitsstatus neu ermittelt werden muss.\n
+Ist nur ein Zustand nicht erreichbar, wird die Unterprozedure \procedure{addLink} mit dem alten, bisher erreichbaren nicht-StartZustand und dem neuen Zustand, der nun erreichbar gemacht werden soll, aufgerufen.\n
+Diese Procedure wählt nun zufällig den Startzustand, oder den bisher erreichbaren Zustand \variable{old} aus, um von dort aus einen Übergang zu \variable{new} zu erzeugen, wobei nur beim Überschreiben eines Übergangs vom Startzustand aus die Gefahr besteht, dass der alte Zustand nicht länger erreichbar ist. Es ist ungefährlich, zufällig einen der beiden Übergänge zu wählen, wenn man \variable{old} entweder über \variable{new} erreichen kann (dann gibt es ein i mit \variable{states[new].changes[i] = old}) oder wenn beide Übergänge vom Startzustand zu \variable{old} führen (also \variable{states[0].changes[0] = states[0].changes[1] = old}.\n
+Ist es also ungefährlich, wird zufällig ein Übergang gewählt, ansonsten der, der nicht zu \variable{old} führt.\n
+Damit sind die Zustände erzeugt und es muss nur noch eine zufällige Belegung für das boolean-Array \variable{slights} gefunden werden, das die Startkonfiguration der Lampen speichert.
+
+Die nächste Prozedur ist \procedureF{reset}, die einfach nur den aktuellen Zustand \variable{state} auf 0 setzt, die aktuellen Lampen \variable{lights} auf \variable{slights} und anschließend \procedure{printStatus} aufruft, um die Lampen anzuzeigen.\n
+\procedureF{printStatus} ist ebenso simpel, sie durchläuft einfach das drei elementige \variable{lights}-Array und schreibt '0', wenn sie false liest, und 'X', wenn sie true liest, auf die Konsole.\n
+Die andere Prozedur, die auf die Konsole schreibt, also \procedureF{printSolution}, ist auch nicht sonderlich komplizierter. Sie durchläuft das ebenfalls drei elementige Zustandsarray \variable{LIGHT\_NAMES} und schreibt die Lichter, die beim Aktivieren von diesem Zustand umgeschaltet werden, und die Lichter, die beim Aktivieren der von diesem Zustand aus erreichbaren anderen Zustände, umgeschaltet werden, auf.
+
+Die letzte Prozedur ist \procedureF{change}. Diese nimmt als Parameter die gedrückte Taste (0 oder 1) entgegen, und aktualisiert zuerst die Zustandsvariable \variable{state} auf die Nummer des neuen Zustands. Dann werden die Lampen umgeschaltet, die im konstanten Array \variable{CHANGE\_LIGHTS} als Lampen des Lampenpaars \variable{states[state].lightsID} gespeichert sind (welche Nummer welches Paar hat, ist irrelevant, da man sie ja von außen nicht erkennen kann).\n
+Am Schluß wird noch \procedure{printStatus} aufgerufen, damit der Spieler auch etwas vom Lichtzustandwechsel erfährt.
+
+\chapter{Ablaufprotokoll}
+\section{Normales Beispiel}
+========Die Paderbox========\n
+OXO 0\n
+XXX 0\n
+XOO 0\n
+OXO 0\n
+XXX r\n
+OXO 0\n
+OOX 0\n
+XXX 0\n
+OXO 0\n
+OOX 1\n
+XOO 0\n
+XXX 1\n
+OXO 1\n
+XOO 0\n
+OOX 0\n
+OXO 0\n
+XOO 1\n
+OXO q
+
+Printing solution:\n
+  +\_+:  0$->$\_++ 1$->$++\_\n
+  ++\_:  0$->$+\_+ 1$->$++\_\n
+  \_++:  0$->$++\_ 1$->$+\_+
+
+\section{Seltsames Beispiel}
+\begin{small}
+========Die Paderbox========\n
+XXX 0\n
+OXO 0\n
+XXX 0\n
+OXO 0\n
+XXX 1\n
+OXO 1\n
+XXX r\n
+XXX 1\n
+XOO 1\n
+OOX r\n
+XXX 1\n
+XOO 0\n
+OOX q
+
+Printing solution:\n
+  ++\_:  0$->$+\_+ 1$->$\_++\n
+  +\_+:  0$->$+\_+ 1$->$+\_+\n
+  \_++:  0$->$+\_+ 1$->$+\_+
+\end{small}
+
+\chapter{Quellcode}
+\begin{small}
+  \lgrindfile{paderbox.pas.lg}
+\end{small} 
+\end{document}
+ 

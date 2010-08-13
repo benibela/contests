@@ -1,0 +1,423 @@
+\documentclass [12pt] {report}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[dvips]{graphicx} 
+\usepackage{fancyhdr}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+
+\title {BWInf 25.1.1 }
+\pagestyle{fancyplain}
+\lhead{BWInf 25.1.1 Närrische Wirtschaft\n Benito van der Zander}
+\rhead{\thepage}
+\fancyfoot{}
+
+
+\begin{document}
+
+
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{15pt} 
+
+%
+\chapter{Lösungsidee}
+Der Algorithmus versucht in jedem Monat das teuerst mögliche Objekt zu erwerben, das mit den bereits gekauften Objekten und dem monatlichen Budget möglich ist, ohne dabei ein teureres Objekt gegen ein billigeres einzutauschen. Bleiben dabei noch Objekte oder Geld übrig, wird damit versucht, das entsprechende zweit-teuerste Objekt zu kaufen.\n
+Dies wird solange (mit jeweils neuen, in Besitz befindlichen Objekten) wiederholt, bis jedes Objekt erworben wurde, das gekauft werden kann. Die Anzahl der Wiederholungen entspricht dabei genau der Anzahl der benötigen Monate.
+
+Ich bin nicht sicher, ob das wirklich die kleinstmögliche Anzahl an Monaten erzeugt, aber in den meisten  Fällen dürfte das Ergebnis nicht weit vom Optimum abweichen, da wenn man die Wahl zwischen einem Teuren und einem Billigeren hat, es ja  besser ist, das Teurere zu wählen, um im nächsten Monat mehr zum Verkaufen zu haben. Eventuell ist es besser, mehrere Billige zu besitzen, da man dann eine größere Flexibilität beim Verkaufen hat. Allerdings braucht man  genauso lange um die Billigeren wieder zu kaufen, wie für das Teurere, weshalb es keinen großen Unterschied macht.\n
+Ein Algorithmus, der auf jeden Fall funktioniert ist, zu versuchen, die mit dem schnelleren Verfahren erhaltene Lösung zu verbessern, indem man jede mögliche Kombination von (Ver-)Käufen probiert, was aber ziemlich ineffizient und unelegant ist, weshalb ich es nicht einprogrammiert habe.
+
+Der erstere funktioniert nur, wenn er weiß welche Objekte überhaupt erworben werden können. Dies ist aber nicht sonderlich schwer zu ermitteln. Wenn man eine Liste von erworbenen Objekten hat (am Anfang die leere Liste) ist jedes Objekt erwerbbar, dessen Wert nicht größer ist, als die Summe aller erworbenen plus das monatliche Budget.
+
+\chapter{Programmdokumentation}
+Das Programm ist ein einfaches Pascalprogramm, das die Daten im Format der Beispiele der Bwinfhomepage über die Standardeingabe einliest und über die Standardausgabe das Ergebnis der Berechnungen ausgibt. \n
+Die Einlesephase verläuft ziemlich geradlinig, zuerst wird das Budget in der ersten Zeile gelesen und in der Variable \variable{budget} gespeichert. Dann werden solange Kosten eingelesen und im Array \variable{objects} gespeichert, bis keine mehr verfügbar sind.\n
+Vorher wird aber noch getestet, ob die Kosten nicht größer sind, als die in \variable{maxbudget} gespeicherte, maximal verfügbare Geldmenge. Wenn doch, wird die Zeile, sowie alle später gelesenen (ich gehe davon aus, dass die Eingabe aufsteigend sortiert ist) gleich wieder ausgegeben, mit der Anmerkung "'you can't buy:"'.\n
+Wurde ein Gegenstand dagegen erfolgreich eingelesen, wird \variable{maxbudget} um dessen Wert vergrößert.
+
+Nach dem Einlesen werden die Arrays \variable{owned}, \variable{sell} und \variable{buy} initialisiert (bzw. geleert). Alle drei stellen Listen von Gegenständen dar, wobei der Eintrag \variable{array[i]} genau dann \variable{true} ist, wenn der Gegenstand mit der Nummer \variable{i} im Array enthalten ist. \variable{owned} gibt alle Gegenstände an, die momentan gekauft sind. Eine andere Variable \variable{ownedCount} gibt die Anzahl der auf \variable{true} gesetzten Einträge an. \n
+Die anderen beiden Arrays \variable{sell} und \variable{buy} geben in derselben Weise an, welche Gegenstände in einem Monat ver- oder gekauft werden. Die Anzahl der Gegenstände in \variable{sell} wird in \variable{sellCount} gespeichert.
+
+Der Rest des Programms wird wiederholt, bis alle Gegenstände aus \variable{objects} gekauft wurden.\n
+Am Anfang jedes Schleifendurchlaufes wird das maximal nutzbare Geldvolumen berechnet und in der Variable \variable{maxbudget} gespeichert, indem für alle Gegenstände getestet wird, ob sie schon gekauft sind (Optimierungsmöglichkeit: Diesen Wert beim Ver/kauf von Gegenständen berechnen).\n
+Das tatsächlich verfügbare Geld wird in der Variable \variable{budget} gespeichert. Anfangs ist dies nur das monatliche Budget, der Wert vergrößert sich aber, wenn Gegenstände verkauft werden.
+
+Dann wird das \variable{objects}-Array von teuersten (letzten) bis zum billigsten (ersten) Gegenstand durchlaufen. Ist der Gegenstand bereits im Besitz des Schatzmeisters, wird der Wert von \variable{maxbudget} um den Wert des Gegenstands vermindert, damit dessen Wert nicht in den Test, ob später getestete (also billigere) Gegenstände gekauft werden können, einfliest.\n
+Ist der Gegenstand dagegen noch nicht erworben, aber reicht das potentielle Budget \variable{maxbudget}, wird zuerst getestet, ob auch das tatsächliche Budget \variable{currentbudget} reicht. Wenn nicht, werden solange die billigsten, momentan erworbenen Gegenstände verkauft, bis das Geld reicht (Optimierungsmöglichkeit: Nicht immer beim ersten Element beginnen, da das ja schon verkauft sein müsste). Das Verkaufen verläuft so, dass der Gegenstand aus dem \variable{owned}-Array aus- und in das \variable{sell}-Array eingetragen wird. \n
+Sobald das Geld reicht, wird der Wert des Gegenstandes von den zwei Budgets \variable{maxbudget} und \variable{currentbudget} abgezogen, da er ja nun bezahlt werden muss.\n
+Dann wird er in das \variable{owned}-Array und, falls er nicht schon im \variable{sell}-Array steht, ins \variable{buy}-Array eingetragen, ansonsten aus dem \variable{sell}-Array ausgetragen. Der erwähnte Fall kann in dieser Situation eintreten:\n
+Der Gegenstand war am Anfang des Monats schon im Besitz, wurde aber bei der shopping-tour verkauft, um einen anderen Gegenstand zu erwerben. Später wurde dann aber noch ein anderer Gegenstand gekauft, für dessen Kauf noch ein anderer Gegenstand verkauft wurde, der so wertvoll war, das nun wieder genügend Geld für den Kauf des ersten Gegenstands verfügbar ist.
+
+Am Schluss der Schleife müssen nur noch die im \variable{sell} und \variable{buy}-Array gespeicherten Gegenstände ausgegeben werden, damit der Schatzmeister auch weiß, was er kaufen soll (wobei der Algorithmus so einfach ist, dass er das auch eigentlich auswendig können müsste).\n
+Dazu wird zuerst die Nummer des Monats (gespeichert in \variable{months} und wird in jedem Durchlauf inkrementiert) und dann die Arrays ausgegeben. Deren Ausgabe verläuft so, dass der Name des Arrays in eine neue Zeile geschrieben wird und darauffolgend jede Stelle, an der der Wert im Array \variable{true} ist.\n
+Am Schluss wird noch das übriggebliebene Eisgeld ausgegeben.
+\chapter{Ablaufprotokolle}
+\section{Karneval}
+\begin{small}
+\begin{verbatim}
+==Närrische Wirtschaft==
+Month: 1
+  buy: 790  (210)
+Month: 2
+  sell: 790
+  buy: 340 1320  (130)
+Month: 3
+  sell: 1320
+  buy: 2100  (220)
+Month: 4
+  sell: 340
+  buy: 1320  (20)
+Month: 5
+  buy: 790  (210)
+Month: 6
+  sell: 790 1320 2100
+  buy: 5200  (10)
+Month: 7
+  buy: 790  (210)
+Month: 8
+  sell: 790
+  buy: 340 1320  (130)
+Month: 9
+  sell: 1320
+  buy: 2100  (220)
+Month: 10
+  sell: 340
+  buy: 1320  (20)
+Month: 11
+  buy: 790  (210)
+Month: 12
+  buy: 670  (330)
+Month: 13
+  buy: 340  (660)
+\end{verbatim}
+\end{small}
+\section{Beispiel 1}
+\begin{small}
+\begin{verbatim}
+==Närrische Wirtschaft==
+Month: 1
+  buy: 1
+Month: 2
+  sell: 1
+  buy: 2
+Month: 3
+  buy: 1
+Month: 4
+  sell: 1 2
+  buy: 4
+Month: 5
+  buy: 1
+Month: 6
+  sell: 1
+  buy: 2
+Month: 7
+  buy: 1
+Month: 8
+  sell: 1 2 4
+  buy: 8
+\end{verbatim}
+
+[skipped 327645 lines]\n
+(warum sind diese Beispiele auch nur so lang??)
+
+\begin{verbatim}
+Month: 131067
+  buy: 1
+Month: 131068
+  sell: 1 2
+  buy: 4
+Month: 131069
+  buy: 1
+Month: 131070
+  sell: 1
+  buy: 2
+Month: 131071
+  buy: 1
+\end{verbatim}
+\end{small}
+\section{Beispiel 2}
+\begin{small}
+\begin{verbatim}
+==Närrische Wirtschaft==
+Month: 1
+  buy: 8135  (1865)
+Month: 2
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 3
+  sell: 7567 10211
+  buy: 26530  (1248)
+Month: 4
+  sell: 26530
+  buy: 35886  (644)
+Month: 5
+  sell: 35886
+  buy: 43335  (2551)
+Month: 6
+  sell: 43335
+  buy: 52793  (542)
+Month: 7
+  sell: 52793
+  buy: 61429  (1364)
+Month: 8
+  sell: 61429
+  buy: 70782  (647)
+Month: 9
+  sell: 70782
+  buy: 79067  (1715)
+Month: 10
+  sell: 79067
+  buy: 88426  (641)
+Month: 11
+  sell: 88426
+  buy: 97777  (649)
+Month: 12
+  sell: 97777
+  buy: 102763  (5014)
+Month: 13
+  buy: 8135  (1865)
+Month: 14
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 15
+  sell: 7567 10211
+  buy: 26530  (1248)
+Month: 16
+  sell: 26530
+  buy: 35886  (644)
+Month: 17
+  sell: 35886
+  buy: 43335  (2551)
+Month: 18
+  sell: 43335
+  buy: 52793  (542)
+Month: 19
+  sell: 52793
+  buy: 61429  (1364)
+Month: 20
+  sell: 61429
+  buy: 70782  (647)
+Month: 21
+  sell: 70782
+  buy: 79067  (1715)
+Month: 22
+  sell: 79067
+  buy: 88426  (641)
+Month: 23
+  sell: 88426
+  buy: 97777  (649)
+Month: 24
+  sell: 97777
+  buy: 7362 100368  (47)
+Month: 25
+  sell: 7362
+  buy: 10211  (7151)
+Month: 26
+  sell: 10211
+  buy: 18926  (1285)
+Month: 27
+  sell: 18926
+  buy: 27862  (1064)
+Month: 28
+  sell: 27862
+  buy: 35886  (1976)
+Month: 29
+  sell: 35886
+  buy: 43335  (2551)
+Month: 30
+  sell: 43335
+  buy: 52793  (542)
+Month: 31
+  sell: 52793
+  buy: 61429  (1364)
+Month: 32
+  sell: 61429
+  buy: 70782  (647)
+Month: 33
+  sell: 70782
+  buy: 79067  (1715)
+Month: 34
+  sell: 79067
+  buy: 88426  (641)
+Month: 35
+  sell: 88426
+  buy: 97777  (649)
+Month: 36
+  buy: 8135  (1865)
+Month: 37
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 38
+  sell: 7567 10211
+  buy: 26530  (1248)
+Month: 39
+  sell: 26530
+  buy: 35886  (644)
+Month: 40
+  sell: 35886
+  buy: 43335  (2551)
+Month: 41
+  sell: 43335
+  buy: 52793  (542)
+Month: 42
+  sell: 52793
+  buy: 61429  (1364)
+Month: 43
+  sell: 61429
+  buy: 70782  (647)
+Month: 44
+  sell: 70782
+  buy: 79067  (1715)
+Month: 45
+  sell: 79067
+  buy: 88426  (641)
+Month: 46
+  sell: 88426
+  buy: 95027  (3399)
+Month: 47
+  buy: 8135  (1865)
+Month: 48
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 49
+  sell: 7567 10211
+  buy: 26530  (1248)
+Month: 50
+  sell: 26530
+  buy: 35886  (644)
+\end{verbatim}
+[... 390 Zeilen]
+\begin{verbatim}
+Month: 185
+  sell: 26530
+  buy: 8135 27862  (533)
+Month: 186
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 187
+  sell: 7567 10211
+  buy: 26530  (1248)
+Month: 188
+  buy: 8135  (1865)
+Month: 189
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 190
+  sell: 7567 10211
+  buy: 25059  (2719)
+Month: 191
+  buy: 8135  (1865)
+Month: 192
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 193
+  sell: 7567 10211
+  buy: 21649  (6129)
+Month: 194
+  buy: 8135  (1865)
+Month: 195
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 196
+  sell: 7567 10211
+  buy: 8135 18926  (717)
+Month: 197
+  sell: 8135
+  buy: 7567 10211  (357)
+Month: 198
+  buy: 8135  (1865)
+Month: 199
+  buy: 7362  (2638)
+\end{verbatim}
+\end{small}
+\section{Beispiel 3}
+\begin{small}
+\begin{verbatim}
+==Närrische Wirtschaft==
+Month: 1
+  buy: 50
+Month: 2
+  sell: 50
+  buy: 100
+Month: 3
+  buy: 50
+Month: 4
+  sell: 50
+  buy: 100
+Month: 5
+  buy: 50
+Month: 6
+  sell: 50
+  buy: 100
+Month: 7
+  buy: 50
+Month: 8
+  sell: 50
+  buy: 100
+Month: 9
+  buy: 50
+Month: 10
+  sell: 50
+  buy: 100
+Month: 11
+  buy: 50
+Month: 12
+  sell: 50
+  buy: 100
+\end{verbatim}
+
+[... 3000 lines]
+
+\begin{verbatim}
+Month: 1022
+  sell: 2
+  buy: 1 6 6 6 6 6 7 7 7
+Month: 1023
+  sell: 1
+  buy: 3 6 6 6 6 6 6 6 6
+Month: 1024
+  sell: 3
+  buy: 2 5 5 5 5 5 5 5 5 5 6
+Month: 1025
+  sell: 2
+  buy: 3 4 4 4 4 4 4 5 5 5 5 5
+Month: 1026
+  buy: 1 1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 4 4  (5)
+\end{verbatim}
+\end{small}
+\section{Beispiel 4}
+\begin{small}
+\begin{verbatim}
+==Närrische Wirtschaft==
+you can't buy:
+ 1005 1011 1014 1031 1035 1045 1065 1078
+ \end{verbatim}
+
+[... 0 Zeilen, aber 59000 Zeichen]
+ 
+\begin{verbatim}
+100902 100920 100925 100928 100951 100959 100961 100973 100973
+\end{verbatim}
+\end{small}
+\chapter{Quellcode}
+\begin{small}
+  \lgrindfile{wirtschaft.pas.lg}
+\end{small} 
+\end{document}
+ 

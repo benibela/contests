@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="5"/>
+    <General>
+      <Flags>
+        <AlwaysBuild Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="1"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="19">
+      <Unit0>
+        <Filename Value="bidoku.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="bidoku"/>
+        <CursorPos X="51" Y="15"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="144"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="gui.pas"/>
+        <ComponentName Value="BidokuForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="gui.lrs"/>
+        <UnitName Value="gui"/>
+        <CursorPos X="51" Y="141"/>
+        <TopLine Value="129"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="144"/>
+        <Bookmarks Count="1">
+          <Item0 X="37" Y="239" ID="3"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="logic.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="logic"/>
+        <CursorPos X="43" Y="12"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="144"/>
+        <Bookmarks Count="3">
+          <Item0 X="3" Y="583" ID="1"/>
+          <Item1 X="12" Y="684" ID="2"/>
+          <Item2 X="15" Y="648" ID="4"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="D:\programming\lazarus\lcl\grids.pas"/>
+        <UnitName Value="Grids"/>
+        <CursorPos X="1" Y="1747"/>
+        <TopLine Value="1732"/>
+        <UsageCount Value="43"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="D:\programming\lazarus\lcl\dynamicarray.pas"/>
+        <UnitName Value="DynamicArray"/>
+        <CursorPos X="1" Y="69"/>
+        <TopLine Value="51"/>
+        <UsageCount Value="13"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="gui.lrs"/>
+        <CursorPos X="1" Y="3"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="4"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <CursorPos X="14" Y="614"/>
+        <TopLine Value="596"/>
+        <UsageCount Value="41"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\lists.inc"/>
+        <CursorPos X="3" Y="87"/>
+        <TopLine Value="85"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="56"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="P:\programming\lazarus\fpc\2.0.4\source\rtl\inc\ucomplex.pp"/>
+        <UnitName Value="UComplex"/>
+        <CursorPos X="10" Y="59"/>
+        <TopLine Value="17"/>
+        <UsageCount Value="5"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="P:\programming\lazarus\fpc\2.0.4\source\rtl\inc\readme"/>
+        <CursorPos X="50" Y="11"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="5"/>
+        <SyntaxHighlighter Value="None"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="P:\programming\lazarus\fpc\2.0.4\source\rtl\inc\matrix.pp"/>
+        <UnitName Value="matrix"/>
+        <CursorPos X="1" Y="603"/>
+        <TopLine Value="603"/>
+        <UsageCount Value="5"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="P:\programming\lazarus\fpc\2.0.4\source\rtl\inc\mvecimp.inc"/>
+        <CursorPos X="24" Y="307"/>
+        <TopLine Value="305"/>
+        <UsageCount Value="5"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="D:\programming\lazarus\lcl\include\customlistbox.inc"/>
+        <CursorPos X="1" Y="471"/>
+        <TopLine Value="467"/>
+        <UsageCount Value="34"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\streams.inc"/>
+        <CursorPos X="5" Y="323"/>
+        <TopLine Value="316"/>
+        <UsageCount Value="38"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="createparams.pas"/>
+        <ComponentName Value="CreateParamsDialog"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="createparams.lrs"/>
+        <UnitName Value="createparams"/>
+        <CursorPos X="57" Y="46"/>
+        <TopLine Value="23"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="72"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="D:\programming\lazarus\lcl\utrace.pp"/>
+        <UnitName Value="UTrace"/>
+        <CursorPos X="45" Y="56"/>
+        <TopLine Value="33"/>
+        <UsageCount Value="18"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="D:\programming\lazarus\lcl\extendedstrings.pas"/>
+        <UnitName Value="ExtendedStrings"/>
+        <CursorPos X="1" Y="163"/>
+        <TopLine Value="148"/>
+        <UsageCount Value="11"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="D:\programming\lazarus\lcl\include\menuitem.inc"/>
+        <CursorPos X="1" Y="263"/>
+        <TopLine Value="248"/>
+        <UsageCount Value="11"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="D:\programming\lazarus\lcl\interfaces\win32\win32callback.inc"/>
+        <CursorPos X="1" Y="1094"/>
+        <TopLine Value="1079"/>
+        <UsageCount Value="11"/>
+      </Unit18>
+    </Units>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="createparams.pas"/>
+        <Caret Line="43" Column="6" TopLine="18"/>
+      </Position1>
+      <Position2>
+        <Filename Value="createparams.pas"/>
+        <Caret Line="32" Column="45" TopLine="16"/>
+      </Position2>
+      <Position3>
+        <Filename Value="gui.pas"/>
+        <Caret Line="45" Column="40" TopLine="31"/>
+      </Position3>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Watches Count="8">
+      <Item1>
+        <Expression Value="i"/>
+      </Item1>
+      <Item2>
+        <Expression Value="j"/>
+      </Item2>
+      <Item3>
+        <Expression Value="rows[1]"/>
+      </Item3>
+      <Item4>
+        <Expression Value="c"/>
+      </Item4>
+      <Item5>
+        <Expression Value="x"/>
+      </Item5>
+      <Item6>
+        <Expression Value="y"/>
+      </Item6>
+      <Item7>
+        <Expression Value="result"/>
+      </Item7>
+      <Item8>
+        <Expression Value="bit"/>
+      </Item8>
+    </Watches>
+  </Debugging>
+</CONFIG>

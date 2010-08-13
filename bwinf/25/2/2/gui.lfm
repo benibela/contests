@@ -1,0 +1,165 @@
+object BidokuForm: TBidokuForm
+  Left = 236
+  Height = 370
+  Top = 231
+  Width = 411
+  HorzScrollBar.Page = 410
+  VertScrollBar.Page = 350
+  ActiveControl = bidokuList
+  Caption = 'Bidoku'
+  Menu = MainMenu1
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poMainFormCenter
+  object Panel2: TPanel
+    Height = 331
+    Width = 78
+    Align = alLeft
+    TabOrder = 0
+    Visible = False
+    object bidokuList: TListBox
+      Left = 4
+      Height = 306
+      Top = 7
+      Width = 64
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      OnSelectionChange = bidokuListSelectionChange
+      TabOrder = 0
+    end
+  end
+  object StatusBar1: TStatusBar
+    Height = 20
+    Top = 331
+    Width = 411
+    Panels = <    
+      item
+        Text = '256'
+        Width = 30
+      end    
+      item
+        Text = 'leere Felder'
+        Width = 100
+      end    
+      item
+        Width = 100
+      end>
+    SimpleText = '256 leere Felder'
+    SimplePanel = False
+  end
+  object ComboBox1: TComboBox
+    Left = 266
+    Height = 21
+    Top = 154
+    Width = 124
+    Anchors = [akRight, akBottom]
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    ItemIndex = 0
+    Items.Strings = (
+      'Anzeige mit Zahlen'
+      'Anzeige durch Farben'
+    )
+    MaxLength = 0
+    OnSelect = ComboBox1Select
+    Style = csDropDownList
+    TabOrder = 1
+    Text = 'Anzeige mit Zahlen'
+  end
+  object StringGrid1: TStringGrid
+    Left = 78
+    Height = 331
+    Width = 333
+    Align = alClient
+    ColCount = 16
+    DefaultColWidth = 20
+    FixedColor = clBtnFace
+    FixedCols = 0
+    FixedRows = 0
+    GridLineWidth = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goSmoothScroll]
+    RowCount = 16
+    ScrollBars = ssAutoBoth
+    TabOrder = 2
+    TabStop = True
+    OnDrawCell = StringGrid1DrawCell
+    OnEditingDone = StringGrid1EditingDone
+    OnPrepareCanvas = StringGrid1PrepareCanvas
+  end
+  object OpenDialog1: TOpenDialog
+    Title = 'Vorhandene Datei öffnen'
+    FilterIndex = 0
+    left = 40
+    top = 168
+  end
+  object SaveDialog1: TSaveDialog
+    Title = 'Datei sichern als'
+    FilterIndex = 0
+    left = 64
+    top = 112
+  end
+  object MainMenu1: TMainMenu
+    left = 40
+    top = 240
+    object MenuItem1: TMenuItem
+      Caption = 'Verwaltung'
+      object createBidoku: TMenuItem
+        Caption = 'erzeugen...'
+        ShortCut = 16462
+        OnClick = createBidokuClick
+      end
+      object MenuItem4: TMenuItem
+        Caption = 'Verschlüsselung erzeugen...'
+        OnClick = MenuItem4Click
+      end
+      object loadbidoku: TMenuItem
+        Caption = 'laden...'
+        ShortCut = 16463
+        OnClick = loadbidokuClick
+      end
+      object saveBidoku: TMenuItem
+        Caption = 'speichern...'
+        ShortCut = 16467
+        OnClick = saveBidokuClick
+      end
+      object saveAll: TMenuItem
+        Caption = 'alle speichern...'
+        ShortCut = 49235
+        OnClick = saveAllClick
+      end
+      object MenuItem3: TMenuItem
+        Caption = 'kopieren'
+        ShortCut = 16451
+        OnClick = MenuItem3Click
+      end
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Algorithmen'
+      object singleSolve: TMenuItem
+        Caption = 'eine Lösung'
+        OnClick = singleSolveClick
+      end
+      object allSolve: TMenuItem
+        Caption = 'alle Lösungen'
+        ShortCut = 16460
+        OnClick = allSolveClick
+      end
+      object logicSolve: TMenuItem
+        Caption = 'eine logische Teillösung'
+        OnClick = logicSolveClick
+      end
+      object minizeBidoku: TMenuItem
+        Caption = 'minimieren'
+        ShortCut = 16461
+        OnClick = minizeBidokuClick
+      end
+      object showSteps: TMenuItem
+        Caption = 'Einzelschritte zeigen'
+        ShortCut = 16467
+        OnClick = showStepsClick
+      end
+      object MenuItem5: TMenuItem
+        Caption = 'versteckten Text anzeigen'
+        OnClick = MenuItem5Click
+      end
+    end
+  end
+end

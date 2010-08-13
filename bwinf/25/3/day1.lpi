@@ -1,0 +1,310 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="5"/>
+    <General>
+      <Flags>
+        <AlwaysBuild Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="8"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="25">
+      <Unit0>
+        <Filename Value="day1.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="day1"/>
+        <CursorPos X="26" Y="3"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="44"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="day1.pas"/>
+        <ComponentName Value="Form1"/>
+        <ResourceFilename Value="day1.lrs"/>
+        <UnitName Value="day1"/>
+        <CursorPos X="15" Y="24"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="33"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="user.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="user.lrs"/>
+        <UnitName Value="user"/>
+        <CursorPos X="23" Y="336"/>
+        <TopLine Value="316"/>
+        <EditorIndex Value="8"/>
+        <UsageCount Value="44"/>
+        <Bookmarks Count="5">
+          <Item0 X="21" Y="455" ID="1"/>
+          <Item1 X="27" Y="332" ID="2"/>
+          <Item2 X="14" Y="161" ID="3"/>
+          <Item3 X="18" Y="490" ID="6"/>
+          <Item4 X="7" Y="184" ID="8"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="data.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="data"/>
+        <CursorPos X="27" Y="124"/>
+        <TopLine Value="107"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="44"/>
+        <Bookmarks Count="1">
+          <Item0 X="45" Y="221" ID="9"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="D:\programming\lazarus\lcl\interfaces\win32\win32wscontrols.pp"/>
+        <UnitName Value="Win32WSControls"/>
+        <CursorPos X="51" Y="231"/>
+        <TopLine Value="218"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="D:\programming\lazarus\lcl\ldockctrl.pas"/>
+        <UnitName Value="LDockCtrl"/>
+        <CursorPos X="6" Y="558"/>
+        <TopLine Value="545"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="D:\programming\lazarus\lcl\lclproc.pas"/>
+        <UnitName Value="LCLProc"/>
+        <CursorPos X="10" Y="764"/>
+        <TopLine Value="751"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\fcl\image\fpcanvas.pp"/>
+        <UnitName Value="FPCanvas"/>
+        <CursorPos X="45" Y="76"/>
+        <TopLine Value="62"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\fcl\image\fpimage.pp"/>
+        <UnitName Value="FPimage"/>
+        <CursorPos X="9" Y="31"/>
+        <TopLine Value="17"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="D:\programming\lazarus\lcl\stdctrls.pp"/>
+        <UnitName Value="StdCtrls"/>
+        <CursorPos X="24" Y="1097"/>
+        <TopLine Value="1083"/>
+        <EditorIndex Value="19"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="D:\programming\lazarus\lcl\include\buttoncontrol.inc"/>
+        <CursorPos X="4" Y="31"/>
+        <TopLine Value="29"/>
+        <EditorIndex Value="21"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="D:\programming\lazarus\lcl\include\customcheckbox.inc"/>
+        <CursorPos X="28" Y="159"/>
+        <TopLine Value="145"/>
+        <EditorIndex Value="20"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="D:\programming\lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <CursorPos X="1" Y="113"/>
+        <TopLine Value="113"/>
+        <EditorIndex Value="18"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="D:\programming\lazarus\lcl\include\control.inc"/>
+        <CursorPos X="19" Y="1603"/>
+        <TopLine Value="1595"/>
+        <EditorIndex Value="17"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <CursorPos X="15" Y="1233"/>
+        <TopLine Value="1219"/>
+        <EditorIndex Value="14"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\win32\tthread.inc"/>
+        <CursorPos X="10" Y="180"/>
+        <TopLine Value="175"/>
+        <EditorIndex Value="15"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\win32\wininc\func.inc"/>
+        <CursorPos X="10" Y="145"/>
+        <TopLine Value="131"/>
+        <EditorIndex Value="16"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="D:\programming\lazarus\lcl\grids.pas"/>
+        <UnitName Value="Grids"/>
+        <CursorPos X="1" Y="6726"/>
+        <TopLine Value="6710"/>
+        <EditorIndex Value="13"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\sysutils\osutilsh.inc"/>
+        <CursorPos X="11" Y="25"/>
+        <TopLine Value="11"/>
+        <UsageCount Value="12"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\win32\sysutils.pp"/>
+        <UnitName Value="sysutils"/>
+        <CursorPos X="3" Y="835"/>
+        <TopLine Value="832"/>
+        <UsageCount Value="12"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="w32initopengl.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="w32initOpengl"/>
+        <CursorPos X="1" Y="81"/>
+        <TopLine Value="31"/>
+        <EditorIndex Value="11"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="ogldrawing.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="oglDrawing"/>
+        <CursorPos X="13" Y="62"/>
+        <TopLine Value="44"/>
+        <EditorIndex Value="12"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\packages\extra\opengl\glu.pp"/>
+        <UnitName Value="GLu"/>
+        <CursorPos X="64" Y="115"/>
+        <TopLine Value="101"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\packages\extra\opengl\gl.pp"/>
+        <UnitName Value="GL"/>
+        <CursorPos X="3" Y="904"/>
+        <TopLine Value="888"/>
+        <EditorIndex Value="10"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="D:\programming\lazarus\lcl\graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <CursorPos X="10" Y="1352"/>
+        <TopLine Value="1336"/>
+        <EditorIndex Value="9"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit24>
+    </Units>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="D:\programming\lazarus\lcl\grids.pas"/>
+        <Caret Line="6726" Column="1" TopLine="6710"/>
+      </Position1>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <PathDelim Value="\"/>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Watches Count="2">
+      <Item1>
+        <Expression Value="j"/>
+      </Item1>
+      <Item2>
+        <Expression Value="fhandle"/>
+        <Enabled Value="False"/>
+      </Item2>
+    </Watches>
+  </Debugging>
+</CONFIG>
