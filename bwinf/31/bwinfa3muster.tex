@@ -1,0 +1,241 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage[ngerman]{babel}
+\usepackage{algpseudocode}
+\newcommand{\notsure}[1]{{\color{red} #1}}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{url}
+\begin{document}
+
+\setcounter{section}{2}
+\section{Aufgabe 3: Turn 90}
+
+\subsection{Lösungsidee}
+
+Da der Raum für den Roboter anfangs unbekannt ist, kann man keines der üblichen Pfadsuchverfahren anwenden, sondern muss den Raum von dem Roboter tatsächlich ">erforschen"< lassen.
+
+
+%Die erste Beobachtung ist, 
+Man sieht leicht, dass der Roboter, wenn es keine Hindernisse gäbe,  nur entlang der Wand des Raumes fahren müsste, um das Ziel zu erreichen, da es sich an der Außenwand befindet und der Roboter auf diese Weise alle äußeren Rasterquadrate besucht.
+
+Gibt es nun Hindernisse, welche die Außenwand berühren, so kann man diese als Teil der Außenwand betrachten, da sie einen zusammenhängenden Pfad entlang der Wand bilden. %  an ihnen in der gleichen Weise entlang fahren kann. Dabei muss man nur darauf geachtet werden, tatsächliche alle Rasterquadrate der Außenwand und der Hindernisse zu besuchen, und nicht in einer . 
+Dabei muss nur darauf geachtet werden, tatsächlich an dieser Wand entlangzufahren, und sich nicht irgendwo zu ">verirren"<.
+
+
+Hierzu kann man die so genannte Linke-Hand-Regel verwenden: Berührt man nämlich mit einer (im folgenden der linken) Hand stets die Wand eines Labyrinth und läuft vorwärts, so erreicht man jeden Punkt entlang der Wand\footnote{Beweis: \url{http://de.wikipedia.org/wiki/L\%C3\%B6sungsalgorithmen_f\%C3\%BCr_Irrg\%C3\%A4rten}}.
+
+Für einen handlosen Roboter entstehen dabei vier Fälle: 
+
+\begin{itemize}
+\item Falls das linke Rasterquadrat frei ist, muss der Roboter nach links abbiegen
+\item Ansonsten, falls möglich, vorwärts fahren
+\item Ansonsten, falls möglich, nach rechts abbiegen
+\item Ansonsten umkehren\footnote{Der Fall muss aber nicht berücksichtigt werden, da sich der Roboter im vorherigen Fall beim Versuch, nach rechts abzubiegen, dreht, so dass das Feld hinter dem Roboter zum neuen rechten Feld wird.}
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.75]
+\foreach \i in {1, 2, 3, 4}
+{
+	\draw[thick] (\i, 1) -- (\i, 4);
+	\draw[thick] (1, \i) -- (4, \i);
+};
+\fill (1, 1) rectangle (2, 3);
+\draw[blue,very thick,->] (2.5, 1) -- (2.5, 3.5) -- (1.5, 3.5); 
+\end{tikzpicture}
+\begin{tikzpicture}[scale=0.75]
+\foreach \i in {1, 2, 3, 4}
+{
+	\draw[thick] (\i, 1) -- (\i, 4);
+	\draw[thick] (1, \i) -- (4, \i);
+};
+\fill (1, 1) rectangle (2, 4);
+\fill (3, 1) rectangle (4, 2);
+\draw[blue,very thick,->] (2.5, 1) -- (2.5, 4);
+\end{tikzpicture}
+\begin{tikzpicture}[scale=0.75]
+\foreach \i in {1, 2, 3, 4}
+{
+	\draw[thick] (\i, 1) -- (\i, 4);
+	\draw[thick] (1, \i) -- (4, \i);
+};
+\fill (1, 1) rectangle (2, 4);
+\fill (1, 3) rectangle (4, 4);
+\draw[blue,very thick,->] (2.5, 1) -- (2.5, 2.5) -- (4, 2.5);
+\end{tikzpicture}
+\begin{tikzpicture}[scale=0.75]
+\foreach \i in {1, 2, 3, 4}
+{
+	\draw[thick] (\i, 1) -- (\i, 4);
+	\draw[thick] (1, \i) -- (4, \i);
+};
+\fill (1, 1) rectangle (2, 4);
+\fill (1, 3) rectangle (4, 4);
+\fill (3, 1) rectangle (4, 4);
+\draw[blue,very thick,->] (2.25, 1) -- (2.25, 2.5) -- (2.75, 2.5) -- (2.75, 1);
+\end{tikzpicture}
+\end{center}
+
+Falls der Roboter auf ein Hindernis trifft, welches nicht Bestandteil der Außenwand ist, muss er dem Hindernis ausweichen, indem er am Rande des Hindernis entlangfährt, bis er sich auf der anderen Seite befindet und sich wieder vom Hindernis lösen kann. %solange es sich vor ihm befinden und sich vom Hindernis löst, wenn .  
+Dazu kann  die Linke-Hand-Regel nicht direkt verwendet werden, da der Roboter dann ewig am Rande des Hindernisses entlangführe, und den Raum nie verließe. Stattdessen muss der Roboter nur solange an dem Hindernis entlang fahren, bis er wieder dieselbe Ausrichtung wie zuvor hat, dann kann er das Hindernis verlassen und %in dieselbe Richtung wie zuvor 
+weiterfahren. Dies wird auch als Pledge-Algorithmus bezeichnet.
+
+Dabei ist zu beachten, dass als Ausrichtung die absolute Rotation des Roboters gezählt wird. So ergeben zum Beispiel vier 90$^\circ$-Drehungen in dieselbe Richtung, eine Ausrichtung von 360$^\circ$ und nicht von 0$^\circ$, und erst nach vier weiteren 90$^\circ$-Drehungen in die Gegenrichtung, würde der Roboter wieder dieselbe Ausrichtung besitzen. Ansonsten könnte der Roboter in einem Teil eines Hindernis in einer Schleife hängenbleiben, wie das folgenden Bild zeigt:
+ 
+
+\begin{center}
+\begin{tikzpicture}[scale=1]
+\foreach \i in {1, 2, 3, 4, 5}
+{
+	\draw[thick] (\i, 1) -- (\i, 5);
+	\draw[thick] (1, \i) -- (5, \i);
+};
+\fill (4, 1) rectangle (5, 5);
+\fill (1, 4) rectangle (5, 5);
+\fill (2, 1) rectangle (4, 2);
+\fill (2, 1) rectangle (3, 3);
+\draw[blue,very thick,->] (1.5, 1) -- (1.5, 3.5) -- (3.75, 3.5) -- (3.75, 2.25) -- (3.25, 2.25) -- (3.25, 3.75) -- (3.75, 3.75);
+\end{tikzpicture}
+\end{center}
+
+Es ist nicht nötig diese Sorte von Hindernissen von der Außenwand zu unterscheiden, da der Roboter sowieso nie die andere Seite der Außenwand erreichen kann, ohne dabei den Ausgang zu durchqueren. %das Ziel zu erreichen.
+
+Dieses Verfahren hat eine Speicherkomplexität von $O(1)$ und eine Fahrzeitkomplexität\footnote{Keine Laufzeit, weil der Roboter ja fährt.} von $O(N)$, wobei $N$ die Zahl der freien Quadrate bezeichnet, da jedes Hindernis nur einmal umrundet wird.
+
+\vspace*{0.5cm}
+
+Eine Alternative zum Pledge-Algorithmus ist es, alle besuchten Rasterquadrate entlang dem aktuellen Hindernis zu markieren. Dann hat der Roboter ein Hindernis vollständig umrundet, wenn er ein Quadrat zum zweiten Mal erreicht. Daraufhin muss er zu dem besuchten Quadrat fahren, bei dem die größte Strecke entlang der initialen Fahrtrichtung zurückgelegt wurde, da er von diesem Quadrat weiterfahren kann, ohne erneut mit dem Hindernis zu kollidieren. %Dabei davon auszugehen, dass der Roboter Rasterquadrat für Rasterquadrat fährt, kann man auch seine Position tracken, und von einer vollständigen Umrundung eines Hindernisses ausgehen, wenn ein Quadrat zum zweiten Mal besucht wird. 
+Dies hätte eine Speicherkomplexität von $O(N)$ und eine Fahrzeitkomplexität von $O(N)$.
+
+%\vspace{0.5cm}
+
+%Zu Beginn befindet sich der Roboter inmitten des Labyrinths, nicht in Kontakt mit einem Hindernisse, so dass man eine beliebige Fahrrichtung wählen kann, bis das erste Hindernis erreicht wird.
+
+\vspace{0.5cm}
+
+Eine weitere alternative, noch schlechtere Lösung ist es, die Position sämtlicher Hindernisse zu speichern, um eine Karte von dem Raum zu erstellen, die alle blockierten Rasterquadrate verzeichnet.  Dann kann ein Standardalgorithmus (z.B.: Breitensuche, A*) angewandt werden, und der Roboter auf dem berechneten Pfad zum Ziel fahren. Trifft er dabei auf ein bisher unbekanntes Hindernis, ist der Pfad ungültig, wird verworfen, und ein neuer Pfad auf der Karte berechnet. 
+
+Dies hätte Speicherkomplexität $O(N)$ für die Karte und Fahrzeitkomplexität $O(N^2)$, da jeder versuchte Pfad eine Länge von $O(N)$ hat und der Roboter mehrmals dieselbe Strecke fahren könnte, aber maximal einmal für jedes freie Feld. \notsure{Da gibts bestimmt noch eine niedrigere Komplexitätsgrenze} % Laufzeitkomplexität $O(N^2)$, da die Berechnung des Pfades $O(N)$ benötigt und jeder fehlgeschlagene Versuch die Position eines neuen, bisher unbekannten Hindernisses auf der $O(N)$ großen Karte verrät; und auch Fahrzeitkomplexität $O(N^2)$, da der Roboter nur durch berechnete Quadrate fährt, aber beim Ausprobieren eines neuen Pfades mehrmals dieselbe Strecke zurücklegen könnte.
+ 
+\vspace{0.5cm}
+ 
+In einer Zweitrundenaufgabe könnte man als Erweiterung einen Hybridansatz erstellen, bei dem der Roboter bei der Anwendung des Pledge-Algorithmus eine Karte erstellt. Wird der Roboter dann ein zweites Mal ins Labyrinth versetzt oder  befinden sich dort mehrere Roboter simultan, so kann die Position der Roboter in den bereits bekannten Kartenstücken ermittelt werden und von dort der kürzeste Weg zum Ausgang gesucht werden, so weit bekannt und ansonsten der Pledge-Algorithmus verwendet werden.
+  
+\subsection{Umsetzung}
+
+%  X    XXXX   XXXX   XXx
+%  X    X         X   X X
+%  X    X         X   X X
+
+\newcommand{\RobotRotation}{\texttt{Aktuelle-Rotation}}
+\newcommand{\RobotTurnLeft}{\texttt{Drehe-Links}}
+\newcommand{\RobotTurnRight}{\texttt{Drehe-Rechts}}
+\newcommand{\RobotTurnAround}{\texttt{Drehe-Herum}}
+\newcommand{\RobotMoveForward}{\texttt{Fahre-Vorwärts}}
+\newcommand{\RobotWon}{\texttt{Am Ziel}}
+
+
+\subsubsection{Robotersteuermodul}:
+
+Der folgende Pseudocode implementiert den Pledge-Algorithmus für Roboter wie oben beschrieben, unter Verwendung der Robotersteuerfunktionen, \RobotRotation, \RobotTurnLeft, \RobotTurnRight, \RobotTurnAround, \RobotMoveForward, \RobotWon: \notsure{Habe es aber nicht getestet}
+
+\notsure{Das Paket erzeugt kein besonders schönes Layout. Vielleicht die Kommentare linksbündig ausrichten?}
+
+\begin{algorithmic}
+\Function{\texttt{Gehe-zum-linken-Rasterquadrat-falls-frei}}{}
+    \State \RobotTurnLeft
+    \If {nicht (\RobotMoveForward)}
+    \State \RobotTurnRight    
+    \Comment Quadrat ist nicht frei, drehe zurück
+    \EndIf
+\EndFunction
+
+\While {nicht (\RobotWon)}
+	\State 	\Comment {Vorwärts fahren, bis zu einem Hindernis:}
+	\While {nicht(\RobotWon)\ $\wedge$\ \RobotMoveForward}
+	\EndWhile
+	\State\Comment {Hindernis getroffen, Rotation speichern}
+	\State anfängliche-Rotation $\gets$ \RobotRotation
+	\State\Comment {Roboter am Hindernis ausrichten (">Hand"< ausstrecken)}
+	\State \RobotTurnRight
+	\State\Comment {Mit dem Pledge-Algorithmus am Hindernis entlangfahren:}
+	\While {nicht(\RobotWon)\ $\wedge$\ anfängliche-Rotation $\neq$ \RobotRotation}
+	\If {\RobotMoveForward}
+	\State \texttt{Gehe-zum-linken-Rasterquadrat-falls-frei}
+	\Else 
+	\State \RobotTurnRight
+	\EndIf
+	\EndWhile
+\EndWhile
+\end{algorithmic}
+
+
+\subsubsection{Umgebungssimulation}
+Der folgende Pseudocode implementiert die Simulation der Roboterbewegung und seine Interaktion mit den Hindernissen:
+\begin{algorithmic}
+\State $r_x, r_y, r_r \gets $ absolute Roboterposition mit Rotation
+\State $e_{x1},e_{y1},  e_{x2}, e_{y2}\gets$ Zielrechteck, wie im BWInf-Format
+\State $h_{i, x1},h_{i,y1},  h_{i, x2}, h_{i, y2}\gets$ Hindernisrechtecke, wie im BWInf-Format
+\Function {Punkt-Im-Rechteck} {$rect$, $p$}
+\State\Return $rect_{x1} \leq p_{x} \leq rect_{x2} \wedge rect_{y1} \leq p_{y} \leq rect_{y2}$ 
+\EndFunction
+\Function {\RobotRotation} {}
+\State\Return $r_r$
+\EndFunction
+\Function {\RobotTurnLeft} {}
+\State $r_r \gets r_r - 1$
+\EndFunction
+\Function {\RobotTurnRight} {}
+\State $r_r \gets r_r + 1$
+\EndFunction
+\Function {\RobotTurnAround} {}
+\State \RobotTurnLeft
+\State \RobotTurnLeft
+\EndFunction
+\Function {\RobotMoveForward} {}
+\State \Comment {Ermittele die aktuelle Richtung als Vektor:}
+\State Richtungs-Vektoren $\gets [(1,0), (0, 1), (-1, 0), (0, -1)]$
+\State Richtung $\gets \text{Richtungs-Vektoren}[r_r \mod 4]$
+\State\Comment {Überprüfe, ob der Roboter in ein Hindernis fahren würde:}
+\If {$\exists i: $ Punkt-Im-Rechteck($h_i$, $r$ + Richtung) }
+\State\Return False
+\EndIf
+\State\Comment {Lasse den Roboter fahren}
+\State $r \gets r + \text{Richtung}$
+\State\Return True
+\EndFunction
+
+\Function {\RobotWon} {}
+\State\Return Punkt-Im-Rechteck($e$, $r$)
+\EndFunction
+\end{algorithmic}
+  
+\subsection{Bewertungskriterien}
+  
+\begin{itemize}
+
+\item Der Roboter muss immer den existierenden Ausgang finden. Verfahren, die dies nicht garantieren  sind nicht akzeptable.
+
+\item Es muss erkannt worden sein, dass eine Hand-Regel alleine nicht ausreicht.
+
+\item Es muss erkannt worden sein, dass dem Roboter die Position der Hindernisse nicht zu Beginn, sondern erst nach einer Kollision bekannt sind.
+
+\item Beim Pledge-Algorithmus muss die Gesamtzahl der Drehungen berücksichtigt werden, nicht nur die resultierende Richtung.
+
+\item Die Wegsuche sollte höchstens Speicherkomplexität $O(N)$ und  Fahrzeitkomplexität $O(N)$ haben, $O(N^2)$ ist für letzteres aber auch akzeptable. \notsure{Vielleicht schon einen Punkt dafür abziehen? Und zwei für noch langsamer?}. Die Laufzeitkomplexität des Algorithmus zur Berechnung des Weges  sollte nicht schlechter sein, als die Fahrzeitkomplexität des tatsächlich gefahrenen Weges.
+
+\item Die Komplexität muss nicht explizit angegeben werden, es gibt aber einen Pluspunkt, falls sie es wurde. \notsure{?}
+
+\item Es ist nicht nötig ein Programm zu schreiben, das die Beispielsdateien lädt oder das Environment -- den Raum und die Hindernisse -- simuliert. Es muss jedoch das auf dem Roboter laufende Wegsucheprogramm geschrieben werden\footnote{ohne Environmentprogramm muss das Roboterprogramm dann nach jedem Schritt den Benutzer nach einem Hindernis fragen}. %Es muss jedoch ein Programm geschrieben sein, dass die Pfadsuche des Roboters simuliert\footnote{ohne Environmentprogramm muss das Roboterprogramm dann nach jedem Schritt den Benutzer nach einem Hindernis fragen}.
+
+
+\item Die Lösung muss nicht berücksichtigen, dass ein echter Roboter beim Drehen sich nicht exakt im Raster positionieren und langsam Drift ansammeln würde.
+
+\end{itemize}
+
+\end{document}
