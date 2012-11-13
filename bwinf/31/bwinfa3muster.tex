@@ -17,7 +17,7 @@
 
 \subsection{Lösungsidee}
 
-Da der Raum für den Roboter anfangs unbekannt ist, kann man keines der üblichen Pfadsuchverfahren anwenden, sondern muss den Raum von dem Roboter tatsächlich ">erforschen"< lassen.
+Da der Raum für den Roboter zu Beginn unbekannt ist, kann man keines der üblichen Pfadsuchverfahren anwenden, sondern muss den Raum von dem Roboter tatsächlich ">erforschen"< lassen.
 
 
 %Die erste Beobachtung ist, 
@@ -27,7 +27,7 @@ Gibt es nun Hindernisse, welche die Außenwand berühren, so kann man diese als 
 Dabei muss nur darauf geachtet werden, tatsächlich an dieser Wand entlangzufahren, und sich nicht irgendwo zu ">verirren"<.
 
 
-Hierzu kann man die so genannte Linke-Hand-Regel verwenden: Berührt man nämlich mit einer (im folgenden der linken) Hand stets die Wand eines Labyrinth und läuft vorwärts, so erreicht man jeden Punkt entlang der Wand\footnote{Beweis: \url{http://de.wikipedia.org/wiki/L\%C3\%B6sungsalgorithmen_f\%C3\%BCr_Irrg\%C3\%A4rten}}.
+Hierzu kann man die so genannte Linke-Hand-Regel verwenden: Berührt man nämlich mit einer (im Folgenden der linken) Hand stets die Wand eines Labyrinth und läuft vorwärts, so erreicht man jeden Punkt entlang der Wand\footnote{Beweis: \url{http://de.wikipedia.org/wiki/L\%C3\%B6sungsalgorithmen_f\%C3\%BCr_Irrg\%C3\%A4rten}}.
 
 Für einen handlosen Roboter entstehen dabei vier Fälle: 
 
@@ -85,7 +85,7 @@ Falls der Roboter auf ein Hindernis trifft, welches nicht Bestandteil der Außen
 Dazu kann  die Linke-Hand-Regel nicht direkt verwendet werden, da der Roboter dann ewig am Rande des Hindernisses entlangführe, und den Raum nie verließe. Stattdessen muss der Roboter nur solange an dem Hindernis entlang fahren, bis er wieder dieselbe Ausrichtung wie zuvor hat, dann kann er das Hindernis verlassen und %in dieselbe Richtung wie zuvor 
 weiterfahren. Dies wird auch als Pledge-Algorithmus bezeichnet.
 
-Dabei ist zu beachten, dass als Ausrichtung die absolute Rotation des Roboters gezählt wird. So ergeben zum Beispiel vier 90$^\circ$-Drehungen in dieselbe Richtung, eine Ausrichtung von 360$^\circ$ und nicht von 0$^\circ$, und erst nach vier weiteren 90$^\circ$-Drehungen in die Gegenrichtung, würde der Roboter wieder dieselbe Ausrichtung besitzen. Ansonsten könnte der Roboter in einem Teil eines Hindernis in einer Schleife hängenbleiben, wie das folgenden Bild zeigt:
+Dabei ist zu beachten, dass als Ausrichtung die absolute Rotation des Roboters gezählt wird. So ergeben zum Beispiel vier 90$^\circ$-Drehungen in dieselbe Richtung, eine Ausrichtung von 360$^\circ$ und nicht von 0$^\circ$, und erst nach vier weiteren 90$^\circ$-Drehungen in die Gegenrichtung, würde der Roboter wieder dieselbe Ausrichtung besitzen. Ansonsten könnte der Roboter in einem Teil eines Hindernis in einer Schleife hängenbleiben, wie das folgende Bild demonstriert:
  
 
 \begin{center}
@@ -105,11 +105,11 @@ Dabei ist zu beachten, dass als Ausrichtung die absolute Rotation des Roboters g
 
 Es ist nicht nötig diese Sorte von Hindernissen von der Außenwand zu unterscheiden, da der Roboter sowieso nie die andere Seite der Außenwand erreichen kann, ohne dabei den Ausgang zu durchqueren. %das Ziel zu erreichen.
 
-Dieses Verfahren hat eine Speicherkomplexität von $O(1)$ und eine Fahrzeitkomplexität\footnote{Keine Laufzeit, weil der Roboter ja fährt.} von $O(N)$, wobei $N$ die Zahl der freien Quadrate bezeichnet, da jedes Hindernis nur einmal umrundet wird.
+Dieses Verfahren hat eine Speicherkomplexität von $O(1)$ und eine Fahrzeitkomplexität\footnote{Keine Laufzeit, weil der Roboter ja fährt.} von $O(N)$, wobei $N$ die Zahl der freien Quadrate bezeichnet, da jedes Hindernis maximal einmal umrundet wird.
 
 \vspace*{0.5cm}
 
-Eine Alternative zum Pledge-Algorithmus ist es, alle besuchten Rasterquadrate entlang dem aktuellen Hindernis zu markieren. Dann hat der Roboter ein Hindernis vollständig umrundet, wenn er ein Quadrat zum zweiten Mal erreicht. Daraufhin muss er zu dem besuchten Quadrat fahren, bei dem die größte Strecke entlang der initialen Fahrtrichtung zurückgelegt wurde, da er von diesem Quadrat weiterfahren kann, ohne erneut mit dem Hindernis zu kollidieren. %Dabei davon auszugehen, dass der Roboter Rasterquadrat für Rasterquadrat fährt, kann man auch seine Position tracken, und von einer vollständigen Umrundung eines Hindernisses ausgehen, wenn ein Quadrat zum zweiten Mal besucht wird. 
+Eine Alternative zum Pledge-Algorithmus ist es, alle besuchten Rasterquadrate entlang dem aktuellen Hindernis zu markieren. Dann hat der Roboter ein Hindernis vollständig umrundet, wenn er ein Quadrat zum zweiten Mal erreicht. Daraufhin muss er zu dem besuchten Quadrat fahren, bei dem die größte Strecke entlang der initialen Fahrtrichtung zurückgelegt wurde, da er von dort weiterfahren kann, ohne erneut mit dem Hindernis zu kollidieren. %Dabei davon auszugehen, dass der Roboter Rasterquadrat für Rasterquadrat fährt, kann man auch seine Position tracken, und von einer vollständigen Umrundung eines Hindernisses ausgehen, wenn ein Quadrat zum zweiten Mal besucht wird. 
 Dies hätte eine Speicherkomplexität von $O(N)$ und eine Fahrzeitkomplexität von $O(N)$.
 
 %\vspace{0.5cm}
@@ -120,7 +120,7 @@ Dies hätte eine Speicherkomplexität von $O(N)$ und eine Fahrzeitkomplexität v
 
 Eine weitere alternative, noch schlechtere Lösung ist es, die Position sämtlicher Hindernisse zu speichern, um eine Karte von dem Raum zu erstellen, die alle blockierten Rasterquadrate verzeichnet.  Dann kann ein Standardalgorithmus (z.B.: Breitensuche, A*) angewandt werden, und der Roboter auf dem berechneten Pfad zum Ziel fahren. Trifft er dabei auf ein bisher unbekanntes Hindernis, ist der Pfad ungültig, wird verworfen, und ein neuer Pfad auf der Karte berechnet. 
 
-Dies hätte Speicherkomplexität $O(N)$ für die Karte und Fahrzeitkomplexität $O(N^2)$, da jeder versuchte Pfad eine Länge von $O(N)$ hat und der Roboter mehrmals dieselbe Strecke fahren könnte, aber maximal einmal für jedes freie Feld. \notsure{Da gibts bestimmt noch eine niedrigere Komplexitätsgrenze} % Laufzeitkomplexität $O(N^2)$, da die Berechnung des Pfades $O(N)$ benötigt und jeder fehlgeschlagene Versuch die Position eines neuen, bisher unbekannten Hindernisses auf der $O(N)$ großen Karte verrät; und auch Fahrzeitkomplexität $O(N^2)$, da der Roboter nur durch berechnete Quadrate fährt, aber beim Ausprobieren eines neuen Pfades mehrmals dieselbe Strecke zurücklegen könnte.
+Dies hätte Speicherkomplexität $O(N)$ für die Karte und Fahrzeitkomplexität $O(N^2)$, da jeder evaluierte Pfad eine Länge von $O(N)$ hat und der Roboter mehrmals dieselbe Strecke fahren könnte, aber maximal einmal für jedes freie Feld. \notsure{Da gibts bestimmt noch eine niedrigere Komplexitätsgrenze} % Laufzeitkomplexität $O(N^2)$, da die Berechnung des Pfades $O(N)$ benötigt und jeder fehlgeschlagene Versuch die Position eines neuen, bisher unbekannten Hindernisses auf der $O(N)$ großen Karte verrät; und auch Fahrzeitkomplexität $O(N^2)$, da der Roboter nur durch berechnete Quadrate fährt, aber beim Ausprobieren eines neuen Pfades mehrmals dieselbe Strecke zurücklegen könnte.
  
 \vspace{0.5cm}
  
@@ -227,11 +227,11 @@ Der folgende Pseudocode implementiert die Simulation der Roboterbewegung und sei
 
 \item Beim Pledge-Algorithmus muss die Gesamtzahl der Drehungen berücksichtigt werden, nicht nur die resultierende Richtung.
 
-\item Die Wegsuche sollte höchstens Speicherkomplexität $O(N)$ und  Fahrzeitkomplexität $O(N)$ haben, $O(N^2)$ ist für letzteres aber auch akzeptable. \notsure{Vielleicht schon einen Punkt dafür abziehen? Und zwei für noch langsamer?}. Die Laufzeitkomplexität des Algorithmus zur Berechnung des Weges  sollte nicht schlechter sein, als die Fahrzeitkomplexität des tatsächlich gefahrenen Weges.
+\item Die Wegsuche sollte höchstens Speicherkomplexität $O(N)$ und  Fahrzeitkomplexität $O(N)$ haben, $O(N^2)$ ist für letzteres aber auch akzeptable. \notsure{Vielleicht schon einen Punkt dafür abziehen? Und zwei für noch langsamer?}. Die Laufzeitkomplexität des Algorithmus zur Berechnung des Weges  sollte nicht viel schlechter sein, als die Fahrzeitkomplexität des tatsächlich gefahrenen Weges.
 
 \item Die Komplexität muss nicht explizit angegeben werden, es gibt aber einen Pluspunkt, falls sie es wurde. \notsure{?}
 
-\item Es ist nicht nötig ein Programm zu schreiben, das die Beispielsdateien lädt oder das Environment -- den Raum und die Hindernisse -- simuliert. Es muss jedoch das auf dem Roboter laufende Wegsucheprogramm geschrieben werden\footnote{ohne Environmentprogramm muss das Roboterprogramm dann nach jedem Schritt den Benutzer nach einem Hindernis fragen}. %Es muss jedoch ein Programm geschrieben sein, dass die Pfadsuche des Roboters simuliert\footnote{ohne Environmentprogramm muss das Roboterprogramm dann nach jedem Schritt den Benutzer nach einem Hindernis fragen}.
+\item Es ist nicht nötig ein Programm zu schreiben, das die Beispielsdateien lädt oder das Environment -- den Raum und die Hindernisse -- simuliert. Es muss jedoch das auf dem Roboter laufende Wegsucheprogramm geschrieben werden\footnote{ohne Environmentprogramm muss das Roboterprogramm dann bei jedem Schritt den Benutzer fragen, ob das nächste Quadrat frei ist}. %Es muss jedoch ein Programm geschrieben sein, dass die Pfadsuche des Roboters simuliert\footnote{ohne Environmentprogramm muss das Roboterprogramm dann nach jedem Schritt den Benutzer nach einem Hindernis fragen}.
 
 
 \item Die Lösung muss nicht berücksichtigen, dass ein echter Roboter beim Drehen sich nicht exakt im Raster positionieren und langsam Drift ansammeln würde.
