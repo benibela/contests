@@ -215,6 +215,453 @@ Der folgende Pseudocode implementiert die Simulation der Roboterbewegung und sei
 \EndFunction
 \end{algorithmic}
   
+\subsection{Beispiele}  
+
+\subsubsection{ASCII}
+{\footnotesize
+\begin{verbatim}
+
+sh -c ./lib/x86_64-linux/a3 < /tmp/raum0_beispiel.txt 
+HHHHHHHHHHHHHHHHHHHHHHHH
+HrrrrrrrrrrrrrrrrrHHHrrH
+Hr               rHHHrrH
+Hr               rHHHrrH
+Hr  HHH          rHHHrrH
+Hr  HHH    r     rHHHrrH
+Hr  HHH    r     rHHHrrH
+Hr  HHH    r     rHHHrrH
+Hr         r     rHHHrrH
+Hr         rrrrrrrHHHrrH
+Hr     HHHHHHHHHrrHHHrrH
+Hr     HHHHHHHHHrrrrrrrH
+Hr     HHHHHHHHHr     rH
+Hr     HHHHHHHHHr     rH
+Hr              r     rH
+Hr              r     rH
+Hrrrrrrrrrr     rrrrrrrH
+HHHHHHHHHH222HHHHHHHHHHH
+
+
+
+
+sh -c ./lib/x86_64-linux/a3 < /tmp/raum1.txt 
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+HrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                                                                        rHHHHHH                  H
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHH                  rHHHHHH                  H
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHH                  rHHHHHH                  H
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHH                  rHHHHHH                  H
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHH                  rHHHHHH                  H
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHH                  rHHHHHH                  H
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHH                  rHHHHHH                  H
+Hr                            HHHHHH                                      rHHHHHH                  H
+Hr                            HHHHHH                                      rHHHHHH                  H
+Hr                            HHHHHH                                      rHHHHHH                  H
+Hr                            HHHHHH   rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrHHHHHH                  H
+Hr                            HHHHHH   rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHrrrrrrrrrrrrrrrrrrrrrrrrrrrrrHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr                           rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr                           rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr                           rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr             HHHHHHHHHHH   rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr             HHHHHHHHHHH   rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr     r       HHHHHHHHHHH   rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr     r       HHHHHHHHHHH   rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr     r       HHHHHHHHHHH   rHHHHHH                  2
+Hr                            HHHHHH   rHHHHHHr     r       HHHHHHHHHHH   rHHHHHH                  2
+Hr                            HHHHHH   rrrrrrrr     r                     rHHHHHH                  2
+Hr                            HHHHHH                r                     rHHHHHH                  2
+Hr                            HHHHHH                r                     rHHHHHH                  2
+Hr                            HHHHHH                rrrrrrrrrrrrrrrrrrrrrrrHHHHHH                  2
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                 r2
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                 rH
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                 rH
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                 rH
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                 rH
+Hr                            HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                 rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+HrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrH
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+
+
+
+sh -c ./lib/x86_64-linux/a3 < /tmp/raum2.txt 
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+HrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                 rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr       rH
+Hr                 rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+Hr                 rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+Hr                 rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+Hr                 rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+Hr                 rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+Hr                 rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+Hr                 rHHHHHHrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr                                                        rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH                           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH                           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH                           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH                           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH                           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH                           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH                           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rrrrrrrr           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+Hr                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+2r                 rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr         HHHHHHHHHHHHHHHHHHHH        rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                                     rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                     r               rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                     r               rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                     r               rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                     r               rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                     r               rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                     r               rHHHHHHr           rHHHHHHr       rH
+2                  rHHHHHHr                     r               rHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr           rHHHHHHr       rH
+H                  rHHHHHHrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr           rHHHHHHr       rH
+H                  rHHHHHHr                                            r           rHHHHHHr       rH
+H                  rHHHHHHr                                            r           rHHHHHHr       rH
+H                  rHHHHHHr                                            r           rHHHHHHr       rH
+H                  rHHHHHHr                                            r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    r           rHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHH                    rrrrrrrrrrrrrHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+H                  rHHHHHHr                  HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr       rH
+H                  rrrrrrrr                                                               r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         r       rH
+H                                                                                         rrrrrrrrrH
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+
+
+
+sh -c ./lib/x86_64-linux/a3 < /tmp/raum3.txt 
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+HrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                              HHHHHHH       HHHHHHH       HHHHHHH                               rH
+Hr                              HHHHHHH       HHHHHHH       HHHHHHH                               rH
+Hr                              HHHHHHH       HHHHHHH       HHHHHHH                               rH
+Hr                              HHHHHHH       HHHHHHH       HHHHHHH                               rH
+Hr                              HHHHHHH       HHHHHHH       HHHHHHH                               rH
+Hr                              HHHHHHH       HHHHHHH       HHHHHHH                               rH
+Hr                              HHHHHHH       HHHHHHH       HHHHHHH                               rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                                                                                                rH
+Hr                    HHHHHHHHHHHHHH                           HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH                           HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH                           HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH                           HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH                           HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH                           HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH                           HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH             r             HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH             r             HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH             r             HHHHHHHHHHHHHHH                    rH
+Hr                    HHHHHHHHHHHHHH             r             HHHHHHHHHHHHHHH    rrrrrrrr        rH
+Hr         HHHHHH     HHHHHHHHHHHHHH             r             HHHHHHHHHHHHHHH    rHHHHHHr        rH
+Hr         HHHHHH     HHHHHHHHHHHHHH             r             HHHHHHHHHHHHHHH    rHHHHHHr        rH
+Hr         HHHHHH     HHHHHHHHHHHHHH             r             HHHHHHHHHHHHHHH    rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                r                                rHHHHHHr        rH
+Hr         HHHHHH                                rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrHHHHHHr        rH
+Hr         HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr        rH
+Hr         HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr        rH
+Hr         HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr        rH
+Hr         HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr        rH
+Hr         HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr        rH
+Hr         HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHr        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hr                                                                                       r        rH
+Hrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr                                                rrrrrrrrrrH
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH222222222222222222222HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+
+\end{verbatim}
+
+}
+
+\subsubsection{Tikz}
+
+\verb+sh -c ./lib/x86_64-linux/a3 --tikz < /tmp/raum0_beispiel.txt +
+
+\begin{tikzpicture}[scale=0.5,yscale=-1]
+\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}
+{	\draw[thick,orange,dashed] (\i, 0) -- (\i, 18); }
+\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
+{	\draw[thick,orange,dashed] (0, \i) -- (24, \i); }
+\fill[gray] (0, 0) rectangle (24, 1);
+\fill[gray] (0, 0) rectangle (1, 18);
+\fill[gray] (24, 18) rectangle (23, 1);
+\fill[gray] (24, 18) rectangle (1, 17);
+\fill[white] (10, 17) rectangle (13,18);
+\fill[blue!60] (4, 4) rectangle (7,8);
+\fill[blue!60] (7, 10) rectangle (16,14);
+\fill[blue!60] (18, 1) rectangle (21,11);
+\fill[red] (11.50, 5.50) circle (0.4);
+\draw[red,very thick,->] (11.50, 5.50)
+-- (11.50, 6.50)-- (11.50, 7.50)-- (11.50, 8.50)-- (11.50, 9.50)-- (12.50, 9.50)-- (13.50, 9.50)-- (14.50, 9.50)-- (15.50, 9.50)-- (16.50, 9.50)-- (16.50, 10.50)-- (16.50, 11.50)-- (16.50, 12.50)-- (16.50, 13.50)-- (16.50, 14.50)-- (16.50, 15.50)-- (16.50, 16.50)-- (17.50, 16.50)-- (18.50, 16.50)-- (19.50, 16.50)-- (20.50, 16.50)-- (21.50, 16.50)-- (22.50, 16.50)-- (22.50, 15.50)-- (22.50, 14.50)-- (22.50, 13.50)-- (22.50, 12.50)-- (22.50, 11.50)-- (22.50, 10.50)-- (22.50, 9.50)-- (22.50, 8.50)-- (22.50, 7.50)-- (22.50, 6.50)-- (22.50, 5.50)-- (22.50, 4.50)-- (22.50, 3.50)-- (22.50, 2.50)-- (22.50, 1.50)-- (21.50, 1.50)-- (21.50, 2.50)-- (21.50, 3.50)-- (21.50, 4.50)-- (21.50, 5.50)-- (21.50, 6.50)-- (21.50, 7.50)-- (21.50, 8.50)-- (21.50, 9.50)-- (21.50, 10.50)-- (21.50, 11.50)-- (20.50, 11.50)-- (19.50, 11.50)-- (18.50, 11.50)-- (17.50, 11.50)-- (17.50, 10.50)-- (17.50, 9.50)-- (17.50, 8.50)-- (17.50, 7.50)-- (17.50, 6.50)-- (17.50, 5.50)-- (17.50, 4.50)-- (17.50, 3.50)-- (17.50, 2.50)-- (17.50, 1.50)-- (16.50, 1.50)-- (15.50, 1.50)-- (14.50, 1.50)-- (13.50, 1.50)-- (12.50, 1.50)-- (11.50, 1.50)-- (10.50, 1.50)-- (9.50, 1.50)-- (8.50, 1.50)-- (7.50, 1.50)-- (6.50, 1.50)-- (5.50, 1.50)-- (4.50, 1.50)-- (3.50, 1.50)-- (2.50, 1.50)-- (1.50, 1.50)-- (1.50, 2.50)-- (1.50, 3.50)-- (1.50, 4.50)-- (1.50, 5.50)-- (1.50, 6.50)-- (1.50, 7.50)-- (1.50, 8.50)-- (1.50, 9.50)-- (1.50, 10.50)-- (1.50, 11.50)-- (1.50, 12.50)-- (1.50, 13.50)-- (1.50, 14.50)-- (1.50, 15.50)-- (1.50, 16.50)-- (2.50, 16.50)-- (3.50, 16.50)-- (4.50, 16.50)-- (5.50, 16.50)-- (6.50, 16.50)-- (7.50, 16.50)-- (8.50, 16.50)-- (9.50, 16.50)-- (10.50, 16.50)-- (10.50, 17.50);
+\end{tikzpicture}
+
+
+\verb+sh -c ./lib/x86_64-linux/a3 --tikz < /tmp/raum1.txt+ 
+
+\begin{tikzpicture}[scale=0.15]
+%\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100}
+%{	\draw[thick,orange,dashed] (\i, 0) -- (\i, 100); }
+%\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100}
+%{	\draw[thick,orange,dashed] (0, \i) -- (100, \i); }
+\fill[gray] (0, 0) rectangle (100, 1);
+\fill[gray] (0, 0) rectangle (1, 100);
+\fill[gray] (100, 100) rectangle (99, 1);
+\fill[gray] (100, 100) rectangle (1, 99);
+\fill[white] (99, 40) rectangle (100,61);
+\fill[blue!60] (30, 30) rectangle (56,36);
+\fill[blue!60] (30, 35) rectangle (36,61);
+\fill[blue!60] (30, 60) rectangle (81,66);
+\fill[blue!60] (75, 1) rectangle (81,61);
+\fill[blue!60] (40, 40) rectangle (76,46);
+\fill[blue!60] (40, 45) rectangle (46,56);
+\fill[blue!60] (60, 50) rectangle (71,56);
+\fill[red] (52.50, 52.50) circle (0.4);
+\draw[red,very thick,->] (52.50, 52.50)
+-- (52.50, 53.50)-- (52.50, 54.50)-- (52.50, 55.50)-- (52.50, 56.50)-- (52.50, 57.50)-- (52.50, 58.50)-- (52.50, 59.50)-- (53.50, 59.50)-- (54.50, 59.50)-- (55.50, 59.50)-- (56.50, 59.50)-- (57.50, 59.50)-- (58.50, 59.50)-- (59.50, 59.50)-- (60.50, 59.50)-- (61.50, 59.50)-- (62.50, 59.50)-- (63.50, 59.50)-- (64.50, 59.50)-- (65.50, 59.50)-- (66.50, 59.50)-- (67.50, 59.50)-- (68.50, 59.50)-- (69.50, 59.50)-- (70.50, 59.50)-- (71.50, 59.50)-- (72.50, 59.50)-- (73.50, 59.50)-- (74.50, 59.50)-- (74.50, 58.50)-- (74.50, 57.50)-- (74.50, 56.50)-- (74.50, 55.50)-- (74.50, 54.50)-- (74.50, 53.50)-- (74.50, 52.50)-- (74.50, 51.50)-- (74.50, 50.50)-- (74.50, 49.50)-- (74.50, 48.50)-- (74.50, 47.50)-- (74.50, 46.50)-- (73.50, 46.50)-- (72.50, 46.50)-- (71.50, 46.50)-- (70.50, 46.50)-- (69.50, 46.50)-- (68.50, 46.50)-- (67.50, 46.50)-- (66.50, 46.50)-- (65.50, 46.50)-- (64.50, 46.50)-- (63.50, 46.50)-- (62.50, 46.50)-- (61.50, 46.50)-- (60.50, 46.50)-- (59.50, 46.50)-- (58.50, 46.50)-- (57.50, 46.50)-- (56.50, 46.50)-- (55.50, 46.50)-- (54.50, 46.50)-- (53.50, 46.50)-- (52.50, 46.50)-- (51.50, 46.50)-- (50.50, 46.50)-- (49.50, 46.50)-- (48.50, 46.50)-- (47.50, 46.50)-- (46.50, 46.50)-- (46.50, 47.50)-- (46.50, 48.50)-- (46.50, 49.50)-- (46.50, 50.50)-- (46.50, 51.50)-- (46.50, 52.50)-- (46.50, 53.50)-- (46.50, 54.50)-- (46.50, 55.50)-- (46.50, 56.50)-- (45.50, 56.50)-- (44.50, 56.50)-- (43.50, 56.50)-- (42.50, 56.50)-- (41.50, 56.50)-- (40.50, 56.50)-- (39.50, 56.50)-- (39.50, 55.50)-- (39.50, 54.50)-- (39.50, 53.50)-- (39.50, 52.50)-- (39.50, 51.50)-- (39.50, 50.50)-- (39.50, 49.50)-- (39.50, 48.50)-- (39.50, 47.50)-- (39.50, 46.50)-- (39.50, 45.50)-- (39.50, 44.50)-- (39.50, 43.50)-- (39.50, 42.50)-- (39.50, 41.50)-- (39.50, 40.50)-- (39.50, 39.50)-- (40.50, 39.50)-- (41.50, 39.50)-- (42.50, 39.50)-- (43.50, 39.50)-- (44.50, 39.50)-- (45.50, 39.50)-- (46.50, 39.50)-- (47.50, 39.50)-- (48.50, 39.50)-- (49.50, 39.50)-- (50.50, 39.50)-- (51.50, 39.50)-- (52.50, 39.50)-- (53.50, 39.50)-- (54.50, 39.50)-- (55.50, 39.50)-- (56.50, 39.50)-- (57.50, 39.50)-- (58.50, 39.50)-- (59.50, 39.50)-- (60.50, 39.50)-- (61.50, 39.50)-- (62.50, 39.50)-- (63.50, 39.50)-- (64.50, 39.50)-- (65.50, 39.50)-- (66.50, 39.50)-- (67.50, 39.50)-- (68.50, 39.50)-- (69.50, 39.50)-- (70.50, 39.50)-- (71.50, 39.50)-- (72.50, 39.50)-- (73.50, 39.50)-- (74.50, 39.50)-- (74.50, 38.50)-- (74.50, 37.50)-- (74.50, 36.50)-- (74.50, 35.50)-- (74.50, 34.50)-- (74.50, 33.50)-- (74.50, 32.50)-- (74.50, 31.50)-- (74.50, 30.50)-- (74.50, 29.50)-- (74.50, 28.50)-- (74.50, 27.50)-- (74.50, 26.50)-- (74.50, 25.50)-- (74.50, 24.50)-- (74.50, 23.50)-- (74.50, 22.50)-- (74.50, 21.50)-- (74.50, 20.50)-- (74.50, 19.50)-- (74.50, 18.50)-- (74.50, 17.50)-- (74.50, 16.50)-- (74.50, 15.50)-- (74.50, 14.50)-- (74.50, 13.50)-- (74.50, 12.50)-- (74.50, 11.50)-- (74.50, 10.50)-- (74.50, 9.50)-- (74.50, 8.50)-- (74.50, 7.50)-- (74.50, 6.50)-- (74.50, 5.50)-- (74.50, 4.50)-- (74.50, 3.50)-- (74.50, 2.50)-- (74.50, 1.50)-- (73.50, 1.50)-- (72.50, 1.50)-- (71.50, 1.50)-- (70.50, 1.50)-- (69.50, 1.50)-- (68.50, 1.50)-- (67.50, 1.50)-- (66.50, 1.50)-- (65.50, 1.50)-- (64.50, 1.50)-- (63.50, 1.50)-- (62.50, 1.50)-- (61.50, 1.50)-- (60.50, 1.50)-- (59.50, 1.50)-- (58.50, 1.50)-- (57.50, 1.50)-- (56.50, 1.50)-- (55.50, 1.50)-- (54.50, 1.50)-- (53.50, 1.50)-- (52.50, 1.50)-- (51.50, 1.50)-- (50.50, 1.50)-- (49.50, 1.50)-- (48.50, 1.50)-- (47.50, 1.50)-- (46.50, 1.50)-- (45.50, 1.50)-- (44.50, 1.50)-- (43.50, 1.50)-- (42.50, 1.50)-- (41.50, 1.50)-- (40.50, 1.50)-- (39.50, 1.50)-- (38.50, 1.50)-- (37.50, 1.50)-- (36.50, 1.50)-- (35.50, 1.50)-- (34.50, 1.50)-- (33.50, 1.50)-- (32.50, 1.50)-- (31.50, 1.50)-- (30.50, 1.50)-- (29.50, 1.50)-- (28.50, 1.50)-- (27.50, 1.50)-- (26.50, 1.50)-- (25.50, 1.50)-- (24.50, 1.50)-- (23.50, 1.50)-- (22.50, 1.50)-- (21.50, 1.50)-- (20.50, 1.50)-- (19.50, 1.50)-- (18.50, 1.50)-- (17.50, 1.50)-- (16.50, 1.50)-- (15.50, 1.50)-- (14.50, 1.50)-- (13.50, 1.50)-- (12.50, 1.50)-- (11.50, 1.50)-- (10.50, 1.50)-- (9.50, 1.50)-- (8.50, 1.50)-- (7.50, 1.50)-- (6.50, 1.50)-- (5.50, 1.50)-- (4.50, 1.50)-- (3.50, 1.50)-- (2.50, 1.50)-- (1.50, 1.50)-- (1.50, 2.50)-- (1.50, 3.50)-- (1.50, 4.50)-- (1.50, 5.50)-- (1.50, 6.50)-- (1.50, 7.50)-- (1.50, 8.50)-- (1.50, 9.50)-- (1.50, 10.50)-- (1.50, 11.50)-- (1.50, 12.50)-- (1.50, 13.50)-- (1.50, 14.50)-- (1.50, 15.50)-- (1.50, 16.50)-- (1.50, 17.50)-- (1.50, 18.50)-- (1.50, 19.50)-- (1.50, 20.50)-- (1.50, 21.50)-- (1.50, 22.50)-- (1.50, 23.50)-- (1.50, 24.50)-- (1.50, 25.50)-- (1.50, 26.50)-- (1.50, 27.50)-- (1.50, 28.50)-- (1.50, 29.50)-- (1.50, 30.50)-- (1.50, 31.50)-- (1.50, 32.50)-- (1.50, 33.50)-- (1.50, 34.50)-- (1.50, 35.50)-- (1.50, 36.50)-- (1.50, 37.50)-- (1.50, 38.50)-- (1.50, 39.50)-- (1.50, 40.50)-- (1.50, 41.50)-- (1.50, 42.50)-- (1.50, 43.50)-- (1.50, 44.50)-- (1.50, 45.50)-- (1.50, 46.50)-- (1.50, 47.50)-- (1.50, 48.50)-- (1.50, 49.50)-- (1.50, 50.50)-- (1.50, 51.50)-- (1.50, 52.50)-- (1.50, 53.50)-- (1.50, 54.50)-- (1.50, 55.50)-- (1.50, 56.50)-- (1.50, 57.50)-- (1.50, 58.50)-- (1.50, 59.50)-- (1.50, 60.50)-- (1.50, 61.50)-- (1.50, 62.50)-- (1.50, 63.50)-- (1.50, 64.50)-- (1.50, 65.50)-- (1.50, 66.50)-- (1.50, 67.50)-- (1.50, 68.50)-- (1.50, 69.50)-- (1.50, 70.50)-- (1.50, 71.50)-- (1.50, 72.50)-- (1.50, 73.50)-- (1.50, 74.50)-- (1.50, 75.50)-- (1.50, 76.50)-- (1.50, 77.50)-- (1.50, 78.50)-- (1.50, 79.50)-- (1.50, 80.50)-- (1.50, 81.50)-- (1.50, 82.50)-- (1.50, 83.50)-- (1.50, 84.50)-- (1.50, 85.50)-- (1.50, 86.50)-- (1.50, 87.50)-- (1.50, 88.50)-- (1.50, 89.50)-- (1.50, 90.50)-- (1.50, 91.50)-- (1.50, 92.50)-- (1.50, 93.50)-- (1.50, 94.50)-- (1.50, 95.50)-- (1.50, 96.50)-- (1.50, 97.50)-- (1.50, 98.50)-- (2.50, 98.50)-- (3.50, 98.50)-- (4.50, 98.50)-- (5.50, 98.50)-- (6.50, 98.50)-- (7.50, 98.50)-- (8.50, 98.50)-- (9.50, 98.50)-- (10.50, 98.50)-- (11.50, 98.50)-- (12.50, 98.50)-- (13.50, 98.50)-- (14.50, 98.50)-- (15.50, 98.50)-- (16.50, 98.50)-- (17.50, 98.50)-- (18.50, 98.50)-- (19.50, 98.50)-- (20.50, 98.50)-- (21.50, 98.50)-- (22.50, 98.50)-- (23.50, 98.50)-- (24.50, 98.50)-- (25.50, 98.50)-- (26.50, 98.50)-- (27.50, 98.50)-- (28.50, 98.50)-- (29.50, 98.50)-- (30.50, 98.50)-- (31.50, 98.50)-- (32.50, 98.50)-- (33.50, 98.50)-- (34.50, 98.50)-- (35.50, 98.50)-- (36.50, 98.50)-- (37.50, 98.50)-- (38.50, 98.50)-- (39.50, 98.50)-- (40.50, 98.50)-- (41.50, 98.50)-- (42.50, 98.50)-- (43.50, 98.50)-- (44.50, 98.50)-- (45.50, 98.50)-- (46.50, 98.50)-- (47.50, 98.50)-- (48.50, 98.50)-- (49.50, 98.50)-- (50.50, 98.50)-- (51.50, 98.50)-- (52.50, 98.50)-- (53.50, 98.50)-- (54.50, 98.50)-- (55.50, 98.50)-- (56.50, 98.50)-- (57.50, 98.50)-- (58.50, 98.50)-- (59.50, 98.50)-- (60.50, 98.50)-- (61.50, 98.50)-- (62.50, 98.50)-- (63.50, 98.50)-- (64.50, 98.50)-- (65.50, 98.50)-- (66.50, 98.50)-- (67.50, 98.50)-- (68.50, 98.50)-- (69.50, 98.50)-- (70.50, 98.50)-- (71.50, 98.50)-- (72.50, 98.50)-- (73.50, 98.50)-- (74.50, 98.50)-- (75.50, 98.50)-- (76.50, 98.50)-- (77.50, 98.50)-- (78.50, 98.50)-- (79.50, 98.50)-- (80.50, 98.50)-- (81.50, 98.50)-- (82.50, 98.50)-- (83.50, 98.50)-- (84.50, 98.50)-- (85.50, 98.50)-- (86.50, 98.50)-- (87.50, 98.50)-- (88.50, 98.50)-- (89.50, 98.50)-- (90.50, 98.50)-- (91.50, 98.50)-- (92.50, 98.50)-- (93.50, 98.50)-- (94.50, 98.50)-- (95.50, 98.50)-- (96.50, 98.50)-- (97.50, 98.50)-- (98.50, 98.50)-- (98.50, 97.50)-- (98.50, 96.50)-- (98.50, 95.50)-- (98.50, 94.50)-- (98.50, 93.50)-- (98.50, 92.50)-- (98.50, 91.50)-- (98.50, 90.50)-- (98.50, 89.50)-- (98.50, 88.50)-- (98.50, 87.50)-- (98.50, 86.50)-- (98.50, 85.50)-- (98.50, 84.50)-- (98.50, 83.50)-- (98.50, 82.50)-- (98.50, 81.50)-- (98.50, 80.50)-- (98.50, 79.50)-- (98.50, 78.50)-- (98.50, 77.50)-- (98.50, 76.50)-- (98.50, 75.50)-- (98.50, 74.50)-- (98.50, 73.50)-- (98.50, 72.50)-- (98.50, 71.50)-- (98.50, 70.50)-- (98.50, 69.50)-- (98.50, 68.50)-- (98.50, 67.50)-- (98.50, 66.50)-- (98.50, 65.50)-- (98.50, 64.50)-- (98.50, 63.50)-- (98.50, 62.50)-- (98.50, 61.50)-- (98.50, 60.50)-- (99.50, 60.50);
+\end{tikzpicture}
+
+\verb+sh -c ./lib/x86_64-linux/a3 --tikz < /tmp/raum2.txt +
+
+
+\begin{tikzpicture}[scale=0.15]
+%\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100}
+%{	\draw[thick,orange,dashed] (\i, 0) -- (\i, 100); }
+%\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100}
+%{	\draw[thick,orange,dashed] (0, \i) -- (100, \i); }
+\fill[gray] (0, 0) rectangle (100, 1);
+\fill[gray] (0, 0) rectangle (1, 100);
+\fill[gray] (100, 100) rectangle (99, 1);
+\fill[gray] (100, 100) rectangle (1, 99);
+\fill[white] (0, 40) rectangle (1,61);
+\fill[blue!60] (20, 11) rectangle (26,88);
+\fill[blue!60] (25, 11) rectangle (90,17);
+\fill[blue!60] (36, 27) rectangle (56,44);
+\fill[blue!60] (65, 35) rectangle (71,68);
+\fill[blue!60] (25, 62) rectangle (66,68);
+\fill[blue!60] (84, 16) rectangle (90,83);
+\fill[blue!60] (45, 82) rectangle (90,88);
+\fill[blue!60] (45, 73) rectangle (51,83);
+\fill[red] (48.50, 54.50) circle (0.4);
+\draw[red,very thick,->] (48.50, 54.50)
+-- (48.50, 55.50)-- (48.50, 56.50)-- (48.50, 57.50)-- (48.50, 58.50)-- (48.50, 59.50)-- (48.50, 60.50)-- (48.50, 61.50)-- (49.50, 61.50)-- (50.50, 61.50)-- (51.50, 61.50)-- (52.50, 61.50)-- (53.50, 61.50)-- (54.50, 61.50)-- (55.50, 61.50)-- (56.50, 61.50)-- (57.50, 61.50)-- (58.50, 61.50)-- (59.50, 61.50)-- (60.50, 61.50)-- (61.50, 61.50)-- (62.50, 61.50)-- (63.50, 61.50)-- (64.50, 61.50)-- (64.50, 60.50)-- (64.50, 59.50)-- (64.50, 58.50)-- (64.50, 57.50)-- (64.50, 56.50)-- (64.50, 55.50)-- (64.50, 54.50)-- (64.50, 53.50)-- (64.50, 52.50)-- (64.50, 51.50)-- (64.50, 50.50)-- (64.50, 49.50)-- (64.50, 48.50)-- (64.50, 47.50)-- (64.50, 46.50)-- (64.50, 45.50)-- (64.50, 44.50)-- (64.50, 43.50)-- (64.50, 42.50)-- (64.50, 41.50)-- (64.50, 40.50)-- (64.50, 39.50)-- (64.50, 38.50)-- (64.50, 37.50)-- (64.50, 36.50)-- (64.50, 35.50)-- (64.50, 34.50)-- (65.50, 34.50)-- (66.50, 34.50)-- (67.50, 34.50)-- (68.50, 34.50)-- (69.50, 34.50)-- (70.50, 34.50)-- (71.50, 34.50)-- (71.50, 35.50)-- (71.50, 36.50)-- (71.50, 37.50)-- (71.50, 38.50)-- (71.50, 39.50)-- (71.50, 40.50)-- (71.50, 41.50)-- (71.50, 42.50)-- (71.50, 43.50)-- (71.50, 44.50)-- (71.50, 45.50)-- (71.50, 46.50)-- (71.50, 47.50)-- (71.50, 48.50)-- (71.50, 49.50)-- (71.50, 50.50)-- (71.50, 51.50)-- (71.50, 52.50)-- (71.50, 53.50)-- (71.50, 54.50)-- (71.50, 55.50)-- (71.50, 56.50)-- (71.50, 57.50)-- (71.50, 58.50)-- (71.50, 59.50)-- (71.50, 60.50)-- (71.50, 61.50)-- (71.50, 62.50)-- (71.50, 63.50)-- (71.50, 64.50)-- (71.50, 65.50)-- (71.50, 66.50)-- (71.50, 67.50)-- (71.50, 68.50)-- (71.50, 69.50)-- (71.50, 70.50)-- (71.50, 71.50)-- (71.50, 72.50)-- (71.50, 73.50)-- (71.50, 74.50)-- (71.50, 75.50)-- (71.50, 76.50)-- (71.50, 77.50)-- (71.50, 78.50)-- (71.50, 79.50)-- (71.50, 80.50)-- (71.50, 81.50)-- (72.50, 81.50)-- (73.50, 81.50)-- (74.50, 81.50)-- (75.50, 81.50)-- (76.50, 81.50)-- (77.50, 81.50)-- (78.50, 81.50)-- (79.50, 81.50)-- (80.50, 81.50)-- (81.50, 81.50)-- (82.50, 81.50)-- (83.50, 81.50)-- (83.50, 80.50)-- (83.50, 79.50)-- (83.50, 78.50)-- (83.50, 77.50)-- (83.50, 76.50)-- (83.50, 75.50)-- (83.50, 74.50)-- (83.50, 73.50)-- (83.50, 72.50)-- (83.50, 71.50)-- (83.50, 70.50)-- (83.50, 69.50)-- (83.50, 68.50)-- (83.50, 67.50)-- (83.50, 66.50)-- (83.50, 65.50)-- (83.50, 64.50)-- (83.50, 63.50)-- (83.50, 62.50)-- (83.50, 61.50)-- (83.50, 60.50)-- (83.50, 59.50)-- (83.50, 58.50)-- (83.50, 57.50)-- (83.50, 56.50)-- (83.50, 55.50)-- (83.50, 54.50)-- (83.50, 53.50)-- (83.50, 52.50)-- (83.50, 51.50)-- (83.50, 50.50)-- (83.50, 49.50)-- (83.50, 48.50)-- (83.50, 47.50)-- (83.50, 46.50)-- (83.50, 45.50)-- (83.50, 44.50)-- (83.50, 43.50)-- (83.50, 42.50)-- (83.50, 41.50)-- (83.50, 40.50)-- (83.50, 39.50)-- (83.50, 38.50)-- (83.50, 37.50)-- (83.50, 36.50)-- (83.50, 35.50)-- (83.50, 34.50)-- (83.50, 33.50)-- (83.50, 32.50)-- (83.50, 31.50)-- (83.50, 30.50)-- (83.50, 29.50)-- (83.50, 28.50)-- (83.50, 27.50)-- (83.50, 26.50)-- (83.50, 25.50)-- (83.50, 24.50)-- (83.50, 23.50)-- (83.50, 22.50)-- (83.50, 21.50)-- (83.50, 20.50)-- (83.50, 19.50)-- (83.50, 18.50)-- (83.50, 17.50)-- (82.50, 17.50)-- (81.50, 17.50)-- (80.50, 17.50)-- (79.50, 17.50)-- (78.50, 17.50)-- (77.50, 17.50)-- (76.50, 17.50)-- (75.50, 17.50)-- (74.50, 17.50)-- (73.50, 17.50)-- (72.50, 17.50)-- (71.50, 17.50)-- (70.50, 17.50)-- (69.50, 17.50)-- (68.50, 17.50)-- (67.50, 17.50)-- (66.50, 17.50)-- (65.50, 17.50)-- (64.50, 17.50)-- (63.50, 17.50)-- (62.50, 17.50)-- (61.50, 17.50)-- (60.50, 17.50)-- (59.50, 17.50)-- (58.50, 17.50)-- (57.50, 17.50)-- (56.50, 17.50)-- (55.50, 17.50)-- (54.50, 17.50)-- (53.50, 17.50)-- (52.50, 17.50)-- (51.50, 17.50)-- (50.50, 17.50)-- (49.50, 17.50)-- (48.50, 17.50)-- (47.50, 17.50)-- (46.50, 17.50)-- (45.50, 17.50)-- (44.50, 17.50)-- (43.50, 17.50)-- (42.50, 17.50)-- (41.50, 17.50)-- (40.50, 17.50)-- (39.50, 17.50)-- (38.50, 17.50)-- (37.50, 17.50)-- (36.50, 17.50)-- (35.50, 17.50)-- (34.50, 17.50)-- (33.50, 17.50)-- (32.50, 17.50)-- (31.50, 17.50)-- (30.50, 17.50)-- (29.50, 17.50)-- (28.50, 17.50)-- (27.50, 17.50)-- (26.50, 17.50)-- (26.50, 18.50)-- (26.50, 19.50)-- (26.50, 20.50)-- (26.50, 21.50)-- (26.50, 22.50)-- (26.50, 23.50)-- (26.50, 24.50)-- (26.50, 25.50)-- (26.50, 26.50)-- (26.50, 27.50)-- (26.50, 28.50)-- (26.50, 29.50)-- (26.50, 30.50)-- (26.50, 31.50)-- (26.50, 32.50)-- (26.50, 33.50)-- (26.50, 34.50)-- (26.50, 35.50)-- (26.50, 36.50)-- (26.50, 37.50)-- (26.50, 38.50)-- (26.50, 39.50)-- (26.50, 40.50)-- (26.50, 41.50)-- (26.50, 42.50)-- (26.50, 43.50)-- (26.50, 44.50)-- (26.50, 45.50)-- (26.50, 46.50)-- (26.50, 47.50)-- (26.50, 48.50)-- (26.50, 49.50)-- (26.50, 50.50)-- (26.50, 51.50)-- (26.50, 52.50)-- (26.50, 53.50)-- (26.50, 54.50)-- (26.50, 55.50)-- (26.50, 56.50)-- (26.50, 57.50)-- (26.50, 58.50)-- (26.50, 59.50)-- (26.50, 60.50)-- (26.50, 61.50)-- (27.50, 61.50)-- (28.50, 61.50)-- (29.50, 61.50)-- (30.50, 61.50)-- (31.50, 61.50)-- (32.50, 61.50)-- (33.50, 61.50)-- (34.50, 61.50)-- (35.50, 61.50)-- (36.50, 61.50)-- (37.50, 61.50)-- (38.50, 61.50)-- (39.50, 61.50)-- (40.50, 61.50)-- (41.50, 61.50)-- (42.50, 61.50)-- (43.50, 61.50)-- (44.50, 61.50)-- (45.50, 61.50)-- (46.50, 61.50)-- (47.50, 61.50)-- (48.50, 61.50)-- (49.50, 61.50)-- (50.50, 61.50)-- (51.50, 61.50)-- (52.50, 61.50)-- (53.50, 61.50)-- (54.50, 61.50)-- (55.50, 61.50)-- (56.50, 61.50)-- (57.50, 61.50)-- (58.50, 61.50)-- (59.50, 61.50)-- (60.50, 61.50)-- (61.50, 61.50)-- (62.50, 61.50)-- (63.50, 61.50)-- (64.50, 61.50)-- (64.50, 60.50)-- (64.50, 59.50)-- (64.50, 58.50)-- (64.50, 57.50)-- (64.50, 56.50)-- (64.50, 55.50)-- (64.50, 54.50)-- (64.50, 53.50)-- (64.50, 52.50)-- (64.50, 51.50)-- (64.50, 50.50)-- (64.50, 49.50)-- (64.50, 48.50)-- (64.50, 47.50)-- (64.50, 46.50)-- (64.50, 45.50)-- (64.50, 44.50)-- (64.50, 43.50)-- (64.50, 42.50)-- (64.50, 41.50)-- (64.50, 40.50)-- (64.50, 39.50)-- (64.50, 38.50)-- (64.50, 37.50)-- (64.50, 36.50)-- (64.50, 35.50)-- (64.50, 34.50)-- (65.50, 34.50)-- (66.50, 34.50)-- (67.50, 34.50)-- (68.50, 34.50)-- (69.50, 34.50)-- (70.50, 34.50)-- (71.50, 34.50)-- (71.50, 35.50)-- (71.50, 36.50)-- (71.50, 37.50)-- (71.50, 38.50)-- (71.50, 39.50)-- (71.50, 40.50)-- (71.50, 41.50)-- (71.50, 42.50)-- (71.50, 43.50)-- (71.50, 44.50)-- (71.50, 45.50)-- (71.50, 46.50)-- (71.50, 47.50)-- (71.50, 48.50)-- (71.50, 49.50)-- (71.50, 50.50)-- (71.50, 51.50)-- (71.50, 52.50)-- (71.50, 53.50)-- (71.50, 54.50)-- (71.50, 55.50)-- (71.50, 56.50)-- (71.50, 57.50)-- (71.50, 58.50)-- (71.50, 59.50)-- (71.50, 60.50)-- (71.50, 61.50)-- (71.50, 62.50)-- (71.50, 63.50)-- (71.50, 64.50)-- (71.50, 65.50)-- (71.50, 66.50)-- (71.50, 67.50)-- (71.50, 68.50)-- (70.50, 68.50)-- (69.50, 68.50)-- (68.50, 68.50)-- (67.50, 68.50)-- (66.50, 68.50)-- (65.50, 68.50)-- (64.50, 68.50)-- (63.50, 68.50)-- (62.50, 68.50)-- (61.50, 68.50)-- (60.50, 68.50)-- (59.50, 68.50)-- (58.50, 68.50)-- (57.50, 68.50)-- (56.50, 68.50)-- (55.50, 68.50)-- (54.50, 68.50)-- (53.50, 68.50)-- (52.50, 68.50)-- (51.50, 68.50)-- (50.50, 68.50)-- (49.50, 68.50)-- (48.50, 68.50)-- (47.50, 68.50)-- (46.50, 68.50)-- (45.50, 68.50)-- (44.50, 68.50)-- (43.50, 68.50)-- (42.50, 68.50)-- (41.50, 68.50)-- (40.50, 68.50)-- (39.50, 68.50)-- (38.50, 68.50)-- (37.50, 68.50)-- (36.50, 68.50)-- (35.50, 68.50)-- (34.50, 68.50)-- (33.50, 68.50)-- (32.50, 68.50)-- (31.50, 68.50)-- (30.50, 68.50)-- (29.50, 68.50)-- (28.50, 68.50)-- (27.50, 68.50)-- (26.50, 68.50)-- (26.50, 69.50)-- (26.50, 70.50)-- (26.50, 71.50)-- (26.50, 72.50)-- (26.50, 73.50)-- (26.50, 74.50)-- (26.50, 75.50)-- (26.50, 76.50)-- (26.50, 77.50)-- (26.50, 78.50)-- (26.50, 79.50)-- (26.50, 80.50)-- (26.50, 81.50)-- (26.50, 82.50)-- (26.50, 83.50)-- (26.50, 84.50)-- (26.50, 85.50)-- (26.50, 86.50)-- (26.50, 87.50)-- (26.50, 88.50)-- (25.50, 88.50)-- (24.50, 88.50)-- (23.50, 88.50)-- (22.50, 88.50)-- (21.50, 88.50)-- (20.50, 88.50)-- (19.50, 88.50)-- (19.50, 87.50)-- (19.50, 86.50)-- (19.50, 85.50)-- (19.50, 84.50)-- (19.50, 83.50)-- (19.50, 82.50)-- (19.50, 81.50)-- (19.50, 80.50)-- (19.50, 79.50)-- (19.50, 78.50)-- (19.50, 77.50)-- (19.50, 76.50)-- (19.50, 75.50)-- (19.50, 74.50)-- (19.50, 73.50)-- (19.50, 72.50)-- (19.50, 71.50)-- (19.50, 70.50)-- (19.50, 69.50)-- (19.50, 68.50)-- (19.50, 67.50)-- (19.50, 66.50)-- (19.50, 65.50)-- (19.50, 64.50)-- (19.50, 63.50)-- (19.50, 62.50)-- (19.50, 61.50)-- (19.50, 60.50)-- (19.50, 59.50)-- (19.50, 58.50)-- (19.50, 57.50)-- (19.50, 56.50)-- (19.50, 55.50)-- (19.50, 54.50)-- (19.50, 53.50)-- (19.50, 52.50)-- (19.50, 51.50)-- (19.50, 50.50)-- (19.50, 49.50)-- (19.50, 48.50)-- (19.50, 47.50)-- (19.50, 46.50)-- (19.50, 45.50)-- (19.50, 44.50)-- (19.50, 43.50)-- (19.50, 42.50)-- (19.50, 41.50)-- (19.50, 40.50)-- (19.50, 39.50)-- (19.50, 38.50)-- (19.50, 37.50)-- (19.50, 36.50)-- (19.50, 35.50)-- (19.50, 34.50)-- (19.50, 33.50)-- (19.50, 32.50)-- (19.50, 31.50)-- (19.50, 30.50)-- (19.50, 29.50)-- (19.50, 28.50)-- (19.50, 27.50)-- (19.50, 26.50)-- (19.50, 25.50)-- (19.50, 24.50)-- (19.50, 23.50)-- (19.50, 22.50)-- (19.50, 21.50)-- (19.50, 20.50)-- (19.50, 19.50)-- (19.50, 18.50)-- (19.50, 17.50)-- (19.50, 16.50)-- (19.50, 15.50)-- (19.50, 14.50)-- (19.50, 13.50)-- (19.50, 12.50)-- (19.50, 11.50)-- (19.50, 10.50)-- (20.50, 10.50)-- (21.50, 10.50)-- (22.50, 10.50)-- (23.50, 10.50)-- (24.50, 10.50)-- (25.50, 10.50)-- (26.50, 10.50)-- (27.50, 10.50)-- (28.50, 10.50)-- (29.50, 10.50)-- (30.50, 10.50)-- (31.50, 10.50)-- (32.50, 10.50)-- (33.50, 10.50)-- (34.50, 10.50)-- (35.50, 10.50)-- (36.50, 10.50)-- (37.50, 10.50)-- (38.50, 10.50)-- (39.50, 10.50)-- (40.50, 10.50)-- (41.50, 10.50)-- (42.50, 10.50)-- (43.50, 10.50)-- (44.50, 10.50)-- (45.50, 10.50)-- (46.50, 10.50)-- (47.50, 10.50)-- (48.50, 10.50)-- (49.50, 10.50)-- (50.50, 10.50)-- (51.50, 10.50)-- (52.50, 10.50)-- (53.50, 10.50)-- (54.50, 10.50)-- (55.50, 10.50)-- (56.50, 10.50)-- (57.50, 10.50)-- (58.50, 10.50)-- (59.50, 10.50)-- (60.50, 10.50)-- (61.50, 10.50)-- (62.50, 10.50)-- (63.50, 10.50)-- (64.50, 10.50)-- (65.50, 10.50)-- (66.50, 10.50)-- (67.50, 10.50)-- (68.50, 10.50)-- (69.50, 10.50)-- (70.50, 10.50)-- (71.50, 10.50)-- (72.50, 10.50)-- (73.50, 10.50)-- (74.50, 10.50)-- (75.50, 10.50)-- (76.50, 10.50)-- (77.50, 10.50)-- (78.50, 10.50)-- (79.50, 10.50)-- (80.50, 10.50)-- (81.50, 10.50)-- (82.50, 10.50)-- (83.50, 10.50)-- (84.50, 10.50)-- (85.50, 10.50)-- (86.50, 10.50)-- (87.50, 10.50)-- (88.50, 10.50)-- (89.50, 10.50)-- (90.50, 10.50)-- (90.50, 11.50)-- (90.50, 12.50)-- (90.50, 13.50)-- (90.50, 14.50)-- (90.50, 15.50)-- (90.50, 16.50)-- (90.50, 17.50)-- (90.50, 18.50)-- (90.50, 19.50)-- (90.50, 20.50)-- (90.50, 21.50)-- (90.50, 22.50)-- (90.50, 23.50)-- (90.50, 24.50)-- (90.50, 25.50)-- (90.50, 26.50)-- (90.50, 27.50)-- (90.50, 28.50)-- (90.50, 29.50)-- (90.50, 30.50)-- (90.50, 31.50)-- (90.50, 32.50)-- (90.50, 33.50)-- (90.50, 34.50)-- (90.50, 35.50)-- (90.50, 36.50)-- (90.50, 37.50)-- (90.50, 38.50)-- (90.50, 39.50)-- (90.50, 40.50)-- (90.50, 41.50)-- (90.50, 42.50)-- (90.50, 43.50)-- (90.50, 44.50)-- (90.50, 45.50)-- (90.50, 46.50)-- (90.50, 47.50)-- (90.50, 48.50)-- (90.50, 49.50)-- (90.50, 50.50)-- (90.50, 51.50)-- (90.50, 52.50)-- (90.50, 53.50)-- (90.50, 54.50)-- (90.50, 55.50)-- (90.50, 56.50)-- (90.50, 57.50)-- (90.50, 58.50)-- (90.50, 59.50)-- (90.50, 60.50)-- (90.50, 61.50)-- (90.50, 62.50)-- (90.50, 63.50)-- (90.50, 64.50)-- (90.50, 65.50)-- (90.50, 66.50)-- (90.50, 67.50)-- (90.50, 68.50)-- (90.50, 69.50)-- (90.50, 70.50)-- (90.50, 71.50)-- (90.50, 72.50)-- (90.50, 73.50)-- (90.50, 74.50)-- (90.50, 75.50)-- (90.50, 76.50)-- (90.50, 77.50)-- (90.50, 78.50)-- (90.50, 79.50)-- (90.50, 80.50)-- (90.50, 81.50)-- (90.50, 82.50)-- (90.50, 83.50)-- (90.50, 84.50)-- (90.50, 85.50)-- (90.50, 86.50)-- (90.50, 87.50)-- (90.50, 88.50)-- (90.50, 89.50)-- (90.50, 90.50)-- (90.50, 91.50)-- (90.50, 92.50)-- (90.50, 93.50)-- (90.50, 94.50)-- (90.50, 95.50)-- (90.50, 96.50)-- (90.50, 97.50)-- (90.50, 98.50)-- (91.50, 98.50)-- (92.50, 98.50)-- (93.50, 98.50)-- (94.50, 98.50)-- (95.50, 98.50)-- (96.50, 98.50)-- (97.50, 98.50)-- (98.50, 98.50)-- (98.50, 97.50)-- (98.50, 96.50)-- (98.50, 95.50)-- (98.50, 94.50)-- (98.50, 93.50)-- (98.50, 92.50)-- (98.50, 91.50)-- (98.50, 90.50)-- (98.50, 89.50)-- (98.50, 88.50)-- (98.50, 87.50)-- (98.50, 86.50)-- (98.50, 85.50)-- (98.50, 84.50)-- (98.50, 83.50)-- (98.50, 82.50)-- (98.50, 81.50)-- (98.50, 80.50)-- (98.50, 79.50)-- (98.50, 78.50)-- (98.50, 77.50)-- (98.50, 76.50)-- (98.50, 75.50)-- (98.50, 74.50)-- (98.50, 73.50)-- (98.50, 72.50)-- (98.50, 71.50)-- (98.50, 70.50)-- (98.50, 69.50)-- (98.50, 68.50)-- (98.50, 67.50)-- (98.50, 66.50)-- (98.50, 65.50)-- (98.50, 64.50)-- (98.50, 63.50)-- (98.50, 62.50)-- (98.50, 61.50)-- (98.50, 60.50)-- (98.50, 59.50)-- (98.50, 58.50)-- (98.50, 57.50)-- (98.50, 56.50)-- (98.50, 55.50)-- (98.50, 54.50)-- (98.50, 53.50)-- (98.50, 52.50)-- (98.50, 51.50)-- (98.50, 50.50)-- (98.50, 49.50)-- (98.50, 48.50)-- (98.50, 47.50)-- (98.50, 46.50)-- (98.50, 45.50)-- (98.50, 44.50)-- (98.50, 43.50)-- (98.50, 42.50)-- (98.50, 41.50)-- (98.50, 40.50)-- (98.50, 39.50)-- (98.50, 38.50)-- (98.50, 37.50)-- (98.50, 36.50)-- (98.50, 35.50)-- (98.50, 34.50)-- (98.50, 33.50)-- (98.50, 32.50)-- (98.50, 31.50)-- (98.50, 30.50)-- (98.50, 29.50)-- (98.50, 28.50)-- (98.50, 27.50)-- (98.50, 26.50)-- (98.50, 25.50)-- (98.50, 24.50)-- (98.50, 23.50)-- (98.50, 22.50)-- (98.50, 21.50)-- (98.50, 20.50)-- (98.50, 19.50)-- (98.50, 18.50)-- (98.50, 17.50)-- (98.50, 16.50)-- (98.50, 15.50)-- (98.50, 14.50)-- (98.50, 13.50)-- (98.50, 12.50)-- (98.50, 11.50)-- (98.50, 10.50)-- (98.50, 9.50)-- (98.50, 8.50)-- (98.50, 7.50)-- (98.50, 6.50)-- (98.50, 5.50)-- (98.50, 4.50)-- (98.50, 3.50)-- (98.50, 2.50)-- (98.50, 1.50)-- (97.50, 1.50)-- (96.50, 1.50)-- (95.50, 1.50)-- (94.50, 1.50)-- (93.50, 1.50)-- (92.50, 1.50)-- (91.50, 1.50)-- (90.50, 1.50)-- (89.50, 1.50)-- (88.50, 1.50)-- (87.50, 1.50)-- (86.50, 1.50)-- (85.50, 1.50)-- (84.50, 1.50)-- (83.50, 1.50)-- (82.50, 1.50)-- (81.50, 1.50)-- (80.50, 1.50)-- (79.50, 1.50)-- (78.50, 1.50)-- (77.50, 1.50)-- (76.50, 1.50)-- (75.50, 1.50)-- (74.50, 1.50)-- (73.50, 1.50)-- (72.50, 1.50)-- (71.50, 1.50)-- (70.50, 1.50)-- (69.50, 1.50)-- (68.50, 1.50)-- (67.50, 1.50)-- (66.50, 1.50)-- (65.50, 1.50)-- (64.50, 1.50)-- (63.50, 1.50)-- (62.50, 1.50)-- (61.50, 1.50)-- (60.50, 1.50)-- (59.50, 1.50)-- (58.50, 1.50)-- (57.50, 1.50)-- (56.50, 1.50)-- (55.50, 1.50)-- (54.50, 1.50)-- (53.50, 1.50)-- (52.50, 1.50)-- (51.50, 1.50)-- (50.50, 1.50)-- (49.50, 1.50)-- (48.50, 1.50)-- (47.50, 1.50)-- (46.50, 1.50)-- (45.50, 1.50)-- (44.50, 1.50)-- (43.50, 1.50)-- (42.50, 1.50)-- (41.50, 1.50)-- (40.50, 1.50)-- (39.50, 1.50)-- (38.50, 1.50)-- (37.50, 1.50)-- (36.50, 1.50)-- (35.50, 1.50)-- (34.50, 1.50)-- (33.50, 1.50)-- (32.50, 1.50)-- (31.50, 1.50)-- (30.50, 1.50)-- (29.50, 1.50)-- (28.50, 1.50)-- (27.50, 1.50)-- (26.50, 1.50)-- (25.50, 1.50)-- (24.50, 1.50)-- (23.50, 1.50)-- (22.50, 1.50)-- (21.50, 1.50)-- (20.50, 1.50)-- (19.50, 1.50)-- (18.50, 1.50)-- (17.50, 1.50)-- (16.50, 1.50)-- (15.50, 1.50)-- (14.50, 1.50)-- (13.50, 1.50)-- (12.50, 1.50)-- (11.50, 1.50)-- (10.50, 1.50)-- (9.50, 1.50)-- (8.50, 1.50)-- (7.50, 1.50)-- (6.50, 1.50)-- (5.50, 1.50)-- (4.50, 1.50)-- (3.50, 1.50)-- (2.50, 1.50)-- (1.50, 1.50)-- (1.50, 2.50)-- (1.50, 3.50)-- (1.50, 4.50)-- (1.50, 5.50)-- (1.50, 6.50)-- (1.50, 7.50)-- (1.50, 8.50)-- (1.50, 9.50)-- (1.50, 10.50)-- (1.50, 11.50)-- (1.50, 12.50)-- (1.50, 13.50)-- (1.50, 14.50)-- (1.50, 15.50)-- (1.50, 16.50)-- (1.50, 17.50)-- (1.50, 18.50)-- (1.50, 19.50)-- (1.50, 20.50)-- (1.50, 21.50)-- (1.50, 22.50)-- (1.50, 23.50)-- (1.50, 24.50)-- (1.50, 25.50)-- (1.50, 26.50)-- (1.50, 27.50)-- (1.50, 28.50)-- (1.50, 29.50)-- (1.50, 30.50)-- (1.50, 31.50)-- (1.50, 32.50)-- (1.50, 33.50)-- (1.50, 34.50)-- (1.50, 35.50)-- (1.50, 36.50)-- (1.50, 37.50)-- (1.50, 38.50)-- (1.50, 39.50)-- (1.50, 40.50)-- (0.50, 40.50);
+\end{tikzpicture}
+
+\verb+sh -c ./lib/x86_64-linux/a3 --tikz < /tmp/raum3.txt +
+
+\begin{tikzpicture}[scale=0.15]
+%\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100}
+%{	\draw[thick,orange,dashed] (\i, 0) -- (\i, 100); }
+%\foreach \i in {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100}
+%{	\draw[thick,orange,dashed] (0, \i) -- (100, \i); }
+\fill[gray] (0, 0) rectangle (100, 1);
+\fill[gray] (0, 0) rectangle (1, 100);
+\fill[gray] (100, 100) rectangle (99, 1);
+\fill[gray] (100, 100) rectangle (1, 99);
+\fill[white] (40, 99) rectangle (61,100);
+\fill[blue!60] (11, 48) rectangle (17,61);
+\fill[blue!60] (11, 60) rectangle (89,66);
+\fill[blue!60] (83, 48) rectangle (89,61);
+\fill[blue!60] (22, 37) rectangle (36,51);
+\fill[blue!60] (63, 37) rectangle (78,51);
+\fill[blue!60] (32, 25) rectangle (39,32);
+\fill[blue!60] (46, 25) rectangle (53,32);
+\fill[blue!60] (60, 25) rectangle (67,32);
+\fill[red] (49.50, 44.50) circle (0.4);
+\draw[red,very thick,->] (49.50, 44.50)
+-- (49.50, 45.50)-- (49.50, 46.50)-- (49.50, 47.50)-- (49.50, 48.50)-- (49.50, 49.50)-- (49.50, 50.50)-- (49.50, 51.50)-- (49.50, 52.50)-- (49.50, 53.50)-- (49.50, 54.50)-- (49.50, 55.50)-- (49.50, 56.50)-- (49.50, 57.50)-- (49.50, 58.50)-- (49.50, 59.50)-- (50.50, 59.50)-- (51.50, 59.50)-- (52.50, 59.50)-- (53.50, 59.50)-- (54.50, 59.50)-- (55.50, 59.50)-- (56.50, 59.50)-- (57.50, 59.50)-- (58.50, 59.50)-- (59.50, 59.50)-- (60.50, 59.50)-- (61.50, 59.50)-- (62.50, 59.50)-- (63.50, 59.50)-- (64.50, 59.50)-- (65.50, 59.50)-- (66.50, 59.50)-- (67.50, 59.50)-- (68.50, 59.50)-- (69.50, 59.50)-- (70.50, 59.50)-- (71.50, 59.50)-- (72.50, 59.50)-- (73.50, 59.50)-- (74.50, 59.50)-- (75.50, 59.50)-- (76.50, 59.50)-- (77.50, 59.50)-- (78.50, 59.50)-- (79.50, 59.50)-- (80.50, 59.50)-- (81.50, 59.50)-- (82.50, 59.50)-- (82.50, 58.50)-- (82.50, 57.50)-- (82.50, 56.50)-- (82.50, 55.50)-- (82.50, 54.50)-- (82.50, 53.50)-- (82.50, 52.50)-- (82.50, 51.50)-- (82.50, 50.50)-- (82.50, 49.50)-- (82.50, 48.50)-- (82.50, 47.50)-- (83.50, 47.50)-- (84.50, 47.50)-- (85.50, 47.50)-- (86.50, 47.50)-- (87.50, 47.50)-- (88.50, 47.50)-- (89.50, 47.50)-- (89.50, 48.50)-- (89.50, 49.50)-- (89.50, 50.50)-- (89.50, 51.50)-- (89.50, 52.50)-- (89.50, 53.50)-- (89.50, 54.50)-- (89.50, 55.50)-- (89.50, 56.50)-- (89.50, 57.50)-- (89.50, 58.50)-- (89.50, 59.50)-- (89.50, 60.50)-- (89.50, 61.50)-- (89.50, 62.50)-- (89.50, 63.50)-- (89.50, 64.50)-- (89.50, 65.50)-- (89.50, 66.50)-- (89.50, 67.50)-- (89.50, 68.50)-- (89.50, 69.50)-- (89.50, 70.50)-- (89.50, 71.50)-- (89.50, 72.50)-- (89.50, 73.50)-- (89.50, 74.50)-- (89.50, 75.50)-- (89.50, 76.50)-- (89.50, 77.50)-- (89.50, 78.50)-- (89.50, 79.50)-- (89.50, 80.50)-- (89.50, 81.50)-- (89.50, 82.50)-- (89.50, 83.50)-- (89.50, 84.50)-- (89.50, 85.50)-- (89.50, 86.50)-- (89.50, 87.50)-- (89.50, 88.50)-- (89.50, 89.50)-- (89.50, 90.50)-- (89.50, 91.50)-- (89.50, 92.50)-- (89.50, 93.50)-- (89.50, 94.50)-- (89.50, 95.50)-- (89.50, 96.50)-- (89.50, 97.50)-- (89.50, 98.50)-- (90.50, 98.50)-- (91.50, 98.50)-- (92.50, 98.50)-- (93.50, 98.50)-- (94.50, 98.50)-- (95.50, 98.50)-- (96.50, 98.50)-- (97.50, 98.50)-- (98.50, 98.50)-- (98.50, 97.50)-- (98.50, 96.50)-- (98.50, 95.50)-- (98.50, 94.50)-- (98.50, 93.50)-- (98.50, 92.50)-- (98.50, 91.50)-- (98.50, 90.50)-- (98.50, 89.50)-- (98.50, 88.50)-- (98.50, 87.50)-- (98.50, 86.50)-- (98.50, 85.50)-- (98.50, 84.50)-- (98.50, 83.50)-- (98.50, 82.50)-- (98.50, 81.50)-- (98.50, 80.50)-- (98.50, 79.50)-- (98.50, 78.50)-- (98.50, 77.50)-- (98.50, 76.50)-- (98.50, 75.50)-- (98.50, 74.50)-- (98.50, 73.50)-- (98.50, 72.50)-- (98.50, 71.50)-- (98.50, 70.50)-- (98.50, 69.50)-- (98.50, 68.50)-- (98.50, 67.50)-- (98.50, 66.50)-- (98.50, 65.50)-- (98.50, 64.50)-- (98.50, 63.50)-- (98.50, 62.50)-- (98.50, 61.50)-- (98.50, 60.50)-- (98.50, 59.50)-- (98.50, 58.50)-- (98.50, 57.50)-- (98.50, 56.50)-- (98.50, 55.50)-- (98.50, 54.50)-- (98.50, 53.50)-- (98.50, 52.50)-- (98.50, 51.50)-- (98.50, 50.50)-- (98.50, 49.50)-- (98.50, 48.50)-- (98.50, 47.50)-- (98.50, 46.50)-- (98.50, 45.50)-- (98.50, 44.50)-- (98.50, 43.50)-- (98.50, 42.50)-- (98.50, 41.50)-- (98.50, 40.50)-- (98.50, 39.50)-- (98.50, 38.50)-- (98.50, 37.50)-- (98.50, 36.50)-- (98.50, 35.50)-- (98.50, 34.50)-- (98.50, 33.50)-- (98.50, 32.50)-- (98.50, 31.50)-- (98.50, 30.50)-- (98.50, 29.50)-- (98.50, 28.50)-- (98.50, 27.50)-- (98.50, 26.50)-- (98.50, 25.50)-- (98.50, 24.50)-- (98.50, 23.50)-- (98.50, 22.50)-- (98.50, 21.50)-- (98.50, 20.50)-- (98.50, 19.50)-- (98.50, 18.50)-- (98.50, 17.50)-- (98.50, 16.50)-- (98.50, 15.50)-- (98.50, 14.50)-- (98.50, 13.50)-- (98.50, 12.50)-- (98.50, 11.50)-- (98.50, 10.50)-- (98.50, 9.50)-- (98.50, 8.50)-- (98.50, 7.50)-- (98.50, 6.50)-- (98.50, 5.50)-- (98.50, 4.50)-- (98.50, 3.50)-- (98.50, 2.50)-- (98.50, 1.50)-- (97.50, 1.50)-- (96.50, 1.50)-- (95.50, 1.50)-- (94.50, 1.50)-- (93.50, 1.50)-- (92.50, 1.50)-- (91.50, 1.50)-- (90.50, 1.50)-- (89.50, 1.50)-- (88.50, 1.50)-- (87.50, 1.50)-- (86.50, 1.50)-- (85.50, 1.50)-- (84.50, 1.50)-- (83.50, 1.50)-- (82.50, 1.50)-- (81.50, 1.50)-- (80.50, 1.50)-- (79.50, 1.50)-- (78.50, 1.50)-- (77.50, 1.50)-- (76.50, 1.50)-- (75.50, 1.50)-- (74.50, 1.50)-- (73.50, 1.50)-- (72.50, 1.50)-- (71.50, 1.50)-- (70.50, 1.50)-- (69.50, 1.50)-- (68.50, 1.50)-- (67.50, 1.50)-- (66.50, 1.50)-- (65.50, 1.50)-- (64.50, 1.50)-- (63.50, 1.50)-- (62.50, 1.50)-- (61.50, 1.50)-- (60.50, 1.50)-- (59.50, 1.50)-- (58.50, 1.50)-- (57.50, 1.50)-- (56.50, 1.50)-- (55.50, 1.50)-- (54.50, 1.50)-- (53.50, 1.50)-- (52.50, 1.50)-- (51.50, 1.50)-- (50.50, 1.50)-- (49.50, 1.50)-- (48.50, 1.50)-- (47.50, 1.50)-- (46.50, 1.50)-- (45.50, 1.50)-- (44.50, 1.50)-- (43.50, 1.50)-- (42.50, 1.50)-- (41.50, 1.50)-- (40.50, 1.50)-- (39.50, 1.50)-- (38.50, 1.50)-- (37.50, 1.50)-- (36.50, 1.50)-- (35.50, 1.50)-- (34.50, 1.50)-- (33.50, 1.50)-- (32.50, 1.50)-- (31.50, 1.50)-- (30.50, 1.50)-- (29.50, 1.50)-- (28.50, 1.50)-- (27.50, 1.50)-- (26.50, 1.50)-- (25.50, 1.50)-- (24.50, 1.50)-- (23.50, 1.50)-- (22.50, 1.50)-- (21.50, 1.50)-- (20.50, 1.50)-- (19.50, 1.50)-- (18.50, 1.50)-- (17.50, 1.50)-- (16.50, 1.50)-- (15.50, 1.50)-- (14.50, 1.50)-- (13.50, 1.50)-- (12.50, 1.50)-- (11.50, 1.50)-- (10.50, 1.50)-- (9.50, 1.50)-- (8.50, 1.50)-- (7.50, 1.50)-- (6.50, 1.50)-- (5.50, 1.50)-- (4.50, 1.50)-- (3.50, 1.50)-- (2.50, 1.50)-- (1.50, 1.50)-- (1.50, 2.50)-- (1.50, 3.50)-- (1.50, 4.50)-- (1.50, 5.50)-- (1.50, 6.50)-- (1.50, 7.50)-- (1.50, 8.50)-- (1.50, 9.50)-- (1.50, 10.50)-- (1.50, 11.50)-- (1.50, 12.50)-- (1.50, 13.50)-- (1.50, 14.50)-- (1.50, 15.50)-- (1.50, 16.50)-- (1.50, 17.50)-- (1.50, 18.50)-- (1.50, 19.50)-- (1.50, 20.50)-- (1.50, 21.50)-- (1.50, 22.50)-- (1.50, 23.50)-- (1.50, 24.50)-- (1.50, 25.50)-- (1.50, 26.50)-- (1.50, 27.50)-- (1.50, 28.50)-- (1.50, 29.50)-- (1.50, 30.50)-- (1.50, 31.50)-- (1.50, 32.50)-- (1.50, 33.50)-- (1.50, 34.50)-- (1.50, 35.50)-- (1.50, 36.50)-- (1.50, 37.50)-- (1.50, 38.50)-- (1.50, 39.50)-- (1.50, 40.50)-- (1.50, 41.50)-- (1.50, 42.50)-- (1.50, 43.50)-- (1.50, 44.50)-- (1.50, 45.50)-- (1.50, 46.50)-- (1.50, 47.50)-- (1.50, 48.50)-- (1.50, 49.50)-- (1.50, 50.50)-- (1.50, 51.50)-- (1.50, 52.50)-- (1.50, 53.50)-- (1.50, 54.50)-- (1.50, 55.50)-- (1.50, 56.50)-- (1.50, 57.50)-- (1.50, 58.50)-- (1.50, 59.50)-- (1.50, 60.50)-- (1.50, 61.50)-- (1.50, 62.50)-- (1.50, 63.50)-- (1.50, 64.50)-- (1.50, 65.50)-- (1.50, 66.50)-- (1.50, 67.50)-- (1.50, 68.50)-- (1.50, 69.50)-- (1.50, 70.50)-- (1.50, 71.50)-- (1.50, 72.50)-- (1.50, 73.50)-- (1.50, 74.50)-- (1.50, 75.50)-- (1.50, 76.50)-- (1.50, 77.50)-- (1.50, 78.50)-- (1.50, 79.50)-- (1.50, 80.50)-- (1.50, 81.50)-- (1.50, 82.50)-- (1.50, 83.50)-- (1.50, 84.50)-- (1.50, 85.50)-- (1.50, 86.50)-- (1.50, 87.50)-- (1.50, 88.50)-- (1.50, 89.50)-- (1.50, 90.50)-- (1.50, 91.50)-- (1.50, 92.50)-- (1.50, 93.50)-- (1.50, 94.50)-- (1.50, 95.50)-- (1.50, 96.50)-- (1.50, 97.50)-- (1.50, 98.50)-- (2.50, 98.50)-- (3.50, 98.50)-- (4.50, 98.50)-- (5.50, 98.50)-- (6.50, 98.50)-- (7.50, 98.50)-- (8.50, 98.50)-- (9.50, 98.50)-- (10.50, 98.50)-- (11.50, 98.50)-- (12.50, 98.50)-- (13.50, 98.50)-- (14.50, 98.50)-- (15.50, 98.50)-- (16.50, 98.50)-- (17.50, 98.50)-- (18.50, 98.50)-- (19.50, 98.50)-- (20.50, 98.50)-- (21.50, 98.50)-- (22.50, 98.50)-- (23.50, 98.50)-- (24.50, 98.50)-- (25.50, 98.50)-- (26.50, 98.50)-- (27.50, 98.50)-- (28.50, 98.50)-- (29.50, 98.50)-- (30.50, 98.50)-- (31.50, 98.50)-- (32.50, 98.50)-- (33.50, 98.50)-- (34.50, 98.50)-- (35.50, 98.50)-- (36.50, 98.50)-- (37.50, 98.50)-- (38.50, 98.50)-- (39.50, 98.50)-- (40.50, 98.50)-- (40.50, 99.50);
+\end{tikzpicture}
+
+
+
+
 \subsection{Bewertungskriterien}
   
 \begin{itemize}
