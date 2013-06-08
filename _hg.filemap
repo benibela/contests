@@ -1,0 +1,6 @@
+include programs/contests
+exclude programs/contests/acm
+exclude programs/contests/euler
+exclude programs/contests/matasano
+exclude programs/contests/usaco
+rename programs/contests .
