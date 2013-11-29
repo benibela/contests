@@ -1,0 +1,42 @@
+For n>= 2013.
+
+U(n) = [ 1/(1,n) , 2/ (2,n) …., (n-1)/ (n-1,n) , n/(n,n) ]
+
+[ ]-> LCM , ( )-> GCD.
+
+Identify all values of n for which U(n) = (n-1)* U(n-1).
+
+[Note: here the parenthesis has its usual meaning]
+
+Find the sum of the cubes of those values of n.
+
+Output the sum of digits of the above calculated result.
+
+Small Case: n=3000
+
+
+  def U_(f: Int => BigInt)(i: Int): BigInt = {
+    if (i <= 1) 1
+    else {
+      val g = (i / n.gcd(i).toInt) ;
+      f(i-1) * g / f(i-1).gcd(g)
+    }
+  }
+  val U = memoize(U_, (0, 3000))
+  U.fill()
+  for (n <- 2013 to 3000) 
+    if ((n-1) * U()
+}
+
+
+def U(n: Int) = {
+  val nb = BigInt(n);
+  var res = SafeLong(1);
+  for (i <- 1 to n) {
+    val g = i / nb.gcd(i).toInt;
+    res = res * g / res.gcd(g)
+  }
+  res
+}
+
+for (

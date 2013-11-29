@@ -1,0 +1,59 @@
+Micheal Nobbs is organizing a training camp for identifying new talents in Indian Hockey. The camp witnessed a total of (3K+1) players. Each of the players was given a unique number between 1 and 3K+1. On the first day of the camp, Micheal Nobbs wants all the players to align in a line for a brief introduction about the camp. He wants that players must align themselves in such a way that:
+
+“For each player P , the sum of numbers given to each player standing before P in the line, including the number given to player P, should not be divisible by 3”.
+
+In how many ways the players can align themselves according to the condition given by Michael Nobbs?
+
+The number of ways can be very large, so output the number of ways modulus 1000000007 i.e. (10^9 + 7).
+
+
+def ref(k: Int) = {
+  val n = 3*k+1;
+  (1 to n).permutations.count(l => (l.view.scanLeft(0)(_+_).drop(1) ) forall(a => a % 3 != 0))
+}
+
+
+def refn(n: Int) = {
+  (1 to n).permutations.count(l => (l.view.scanLeft(0)(_+_).drop(1) ) forall(a => a % 3 != 0))
+}
+
+
+def test(k: Int) = {
+  def x(a0: Int, a1: Int, a2: Int, cursumMod: Int): BigInt = {
+    if (a0 == 0 && a1 == 0 && a2 == 0) 1
+    else if (a0 < 0 || a1 < 0 || a2 < 0) 0
+    else cursumMod match {
+      case 0 => a1 * x(a0, a1-1, a2, 1) + a2 * x(a0, a1, a2-1,2)
+      case 1 => a0 * x(a0-1, a1, a2, 1) + a1 * x(a0, a1-1, a2, 2)
+      case 2 => a0 * x(a0-1, a1, a2, 2) + a2 * x(a0, a1, a2-1, 1)
+    }
+  }
+  x(k, k+1, k, 0)
+}
+
+def C(k: Int) = fact(2*k) / fact(k)  / fact(k+1)
+def A108(k: Int) = (3*k-2) * C(k-1)
+def test2(k: Int) = fact(3*k+1) / A108(k+1)
+
+def test3(k: Int) = fact(3*k) * fact(k)  * fact(k+1) / fact(2*k)
+
+
+def test4(k: Int) = {
+  var res = SafeLong(1);
+  val MOD = 1000000007;
+  cfor (1) (_ <= k, _+1) { i => 
+    res = (((res *  i) % MOD) * (i+1)) % MOD
+  }
+  cfor (2*k+1) (_ <= 3*k, _+1) { i => 
+    res = ((res *  i) % MOD) 
+  }
+  res
+}
+
+
+scala> test4(200)
+res52: spire.math.SafeLong = 665308361
+
+scala> test4(10**8)
+res53: spire.math.SafeLong = 900575654
+

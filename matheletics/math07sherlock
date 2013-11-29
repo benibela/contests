@@ -1,0 +1,31 @@
+55
+5070
+
+4 3
+
+2 4
+
+3 1
+
+def makePoints(s: String) = s.split("\n").filter(_!="").map(s => s.split(" ").map(_.toInt)).map(x => (x(0), x(1)))
+
+def bestProb(points: Array[(Int, Int)], B: Int) = {
+  def calcP(x: Int, y: Int) = {
+    var res = 1.0;
+    cfor(0)(_ < points.length, _ + 1) { i =>
+      val D = math.abs((math.abs(points(i)._1 - x) + math.abs(points(i)._2 - y)) - B);
+      if (D != 0)  res *= math.pow(D, -1.2)
+    }
+    res
+  }
+  var best = 0;
+  var bestP = 0.0;
+  cfor(0)(_ < 2000, _ + 1) { x => 
+    cfor(0)(_ < 2000, _ + 1) { y => 
+      val p = calcP(x, y);
+      //println(x,y,p)
+      if (p > bestP) { bestP = p; best = 100*x+y; }
+    }
+  }
+  best
+}

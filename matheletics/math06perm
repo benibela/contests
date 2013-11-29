@@ -1,0 +1,31 @@
+For any positive integer n, determine the number of permutations (a1, a2, . . . , an) of the set {1, 2, . . . , n} with the following property:
+
+2(a1 + a2 + . . .+ ak) is divisible by k for each k in [1, n], where [] denotes a closed interval.
+
+Answer should be number of permutations modulo 1000000007 i.e. (10^9 + 7).
+
+Small Case: 10000 (10^4)
+
+Large Case: 10^18
+
+Points:
+
+Small Case: 10
+
+Large Case: 20
+
+How to submit ?
+
+For Small Case: Type the answer in line 1. Then submit the answer by clicking the ‘Submit’ button below text area.
+
+For Large Case: Type the answer of small case in line 1. Then type the answer of large case in line 2 and then submit the answer by clicking the ‘Submit’ button below text area.
+
+
+def ref(n: Int) = {
+  val divs = (1 to n) map ( i => if (i % 2 == 0) i / 2 else i)
+  (1 to n).permutations.count(l => (l.view.scanLeft(0)(_+_).drop(1) zip divs) forall(a => a._1 % a._2 == 0))
+}
+
+def fast(n: Long) = {
+  (BigInt(2).modPow(n-3, 1000000007) * 6) % 1000000007
+}
