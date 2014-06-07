@@ -143,8 +143,8 @@ void fieldcon(const vector<vector<bool> >& map, const vector<vector<int> > &ids,
      if (i+d < 0 || i+d >= map.size()) return;
      if (j+e < 0 || j+e >= map[0].size()) return;
      if (!map[i+d][j+e]) return;
-     t.add_edge(ids[i][j] + 1, ids[i+d][j+e]);
-     t.add_edge(ids[i+d][j+e] + 1, ids[i][j]);
+     t.add_edge_int(ids[i][j] + 1, ids[i+d][j+e]);
+     t.add_edge_int(ids[i+d][j+e] + 1, ids[i][j]);
 }
 
 int calcflow(int w, int h, const vector<vector<bool> >& map){
@@ -164,7 +164,7 @@ int calcflow(int w, int h, const vector<vector<bool> >& map){
 
      fori (j, h) {
           if (map[0][j]) g.add_edge_int(0, ids[0][j]);
-          if (map[w-1][j]) g.add_edge_int(ids[0][j]+1, 1);
+          if (map[w-1][j]) g.add_edge_int(ids[w-1][j]+1, 1);
           fori (i, w) g.add_edge_int(ids[i][j], ids[i][j]+1);
      }
 
@@ -172,9 +172,9 @@ int calcflow(int w, int h, const vector<vector<bool> >& map){
           ids[i].resize(h);
           fori (j, h) {
                if (!map[i][j]) continue;
-               fieldcon(map, ids, g, i, j, -1, 0);
+           //    fieldcon(map, ids, g, i, j, -1, 0);
                fieldcon(map, ids, g, i, j, 1, 0);
-               fieldcon(map, ids, g, i, j, 0, -1);
+           //    fieldcon(map, ids, g, i, j, 0, -1);
                fieldcon(map, ids, g, i, j, 0, 1);
           }
      }
@@ -186,9 +186,10 @@ int calcflow(int w, int h, const vector<vector<bool> >& map){
    //  std::vector<long> distance(num_vertices(g));
      long flow = boykov_kolmogorov_max_flow(g.g ,g.verts[0], g.verts[1]);
 
+   /*
      std::cout << "ids" << endl;
-     fori (i, w) {
-          fori (j, h) {
+     fori (j, h) {
+          fori (i, w) {
                printf("%d\t", ids[i][h-1-j]);
           }
           printf("\n");
@@ -203,7 +204,7 @@ int calcflow(int w, int h, const vector<vector<bool> >& map){
          if (g.capacity[*ei] > 0)
              std::cout << "f " << g.vid(*u_iter, ids) << " " << g.vid(target(*ei, g.g), ids) << " "
              << (g.capacity[*ei] - g.residual_capacity[*ei]) << std::endl;
-
+*/
   //   std::cout << "c  The total flow:" << std::endl;
   //   std::cout << "s " << flow << std::endl << std::endl;
      return flow;
