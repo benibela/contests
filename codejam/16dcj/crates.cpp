@@ -107,7 +107,7 @@ int main() {
             receive();
             get(&localcount);
             totalcount += localcount;
-            counts[i] = localcount;
+            counts[curFrom] = localcount;
        }
 
        leftmost = totalcount % n;
