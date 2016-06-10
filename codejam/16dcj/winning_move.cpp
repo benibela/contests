@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <algorithm>
 #include <map>
+#include <set>
+#include <vector>
 #include <string.h>
 
 #include <climits>
@@ -64,6 +66,17 @@ struct pipe{
     for (;i<sizeof(buffer);i++) *this >> buffer[i];
     memcpy(&data, &buffer[0], sizeof(data));
     return *this;
+  }
+
+  template <typename Data> pipe& operator<<(const vector<Data>& data) {
+    *this << (ll)data.size();
+    for (int i=0;i<data.size();i++) *this << data[i];
+  }
+  template <typename Data> pipe& operator>>(vector<Data>& data) {
+    ll size;
+    *this >> size;
+    data.resize(size);
+    for (int i=0;i<data.size();i++) *this >> data[i];
   }
 
   pipe& operator<< (int data) {
@@ -169,25 +182,70 @@ struct ReducerMinMax {
   void getData(MinMax& res, ll i);
 };
 
-#include "oops.h"
+#include "winning_move.h"
 
 void ReducerMinMax::getData(MinMax& res, ll i) {
-  res.maxi = GetNumber(i);
-  res.mini = res.maxi;
+
 }
 
 
 
+int xhash(ll sub){
+  return ((sub * 0x1010101010101010) ^ sub) % nodes;
+}
 
 
 int main() {
   init();
 
-  ll N = GetN();
-  MinMax minmax = fullReduce<ReducerMinMax,MinMax>(N);
+  ll N = GetNumPlayers();
+  set<ll> seen;
+  set<ll> candidates;
+  for (ll i=id;i<N;i+=nodes) {
+    ll sub = GetSubmission(i);
+    if (seen.find(sub) == seen.end()) {
+      seen.insert(sub);
+      candidates.insert(sub);
+    } else candidates.erase(sub);
+  }
+  vector<ll> candies[nodes];
+  for (set<ll>::iterator it = candidates.begin(), end = candidates.end(); it != end; ++it) {
+    candies[xhash(*it)].push_back(*it);
+  }
+  for (int i=0;i<nodes;i++)
+    pipe(i) << candies[i];
+
+  candidates.clear();
+  seen.clear();
+  for (int i=0;i<nodes;i++) {
+    vector<ll> temp;
+    pipe(i) >> temp;
+    for (int i=0;i<temp.size();i++) {
+      ll sub = temp[i];
+      if (seen.find(sub) == seen.end()) {
+        seen.insert(sub);
+        candidates.insert(sub);
+      } else candidates.erase(sub);
+    }
+  }
+
+  ll minimal = N + 1;
+  for (set<ll>::iterator it = candidates.begin(), end = candidates.end(); it != end; ++it) {
+    if (*it < minimal) minimal = *it;
+  }
+
+  pipe(0) << minimal;
+  if (!id) {
+    for (int i=0;i<nodes;i++) {
+      ll temp;
+      pipe(i) >> temp;
+      if (temp < minimal && temp <= N) minimal = temp;
+    }
+    if (minimal > N) minimal = 0;
+    printf("%lld\n", minimal);
+  }
 
 
-  if (!id) printf("%lld\n", minmax.maxi - minmax.mini);
   return 0;
 }
 
